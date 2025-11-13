@@ -7,6 +7,7 @@ import {
   type UseInfiniteQueryOptions,
   type UseInfiniteQueryResult,
   type QueryKey,
+  type QueryFunctionContext,
 } from "@tanstack/react-query";
 
 export function useApiQuery<TData>(
@@ -14,7 +15,14 @@ export function useApiQuery<TData>(
   queryFn: () => Promise<TData>,
   options?: Omit<UseQueryOptions<TData>, "queryKey" | "queryFn">
 ) {
-  return useQuery({ queryKey, queryFn, ...options });
+  return useQuery({
+    queryKey,
+    queryFn,
+    retry: 2,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    ...options,
+  });
 }
 
 export function useApiInfiniteQuery<
@@ -33,7 +41,24 @@ export function useApiInfiniteQuery<
 ): UseInfiniteQueryResult<TData, TError> {
   return useInfiniteQuery<TQueryFnData, TError, TData, TQueryKey, TPageParam>({
     queryKey,
-    queryFn,
+    queryFn: (ctx: QueryFunctionContext<TQueryKey, TPageParam>) =>
+      queryFn({ pageParam: ctx.pageParam as TPageParam }),
+    getNextPageParam:
+      ((options as unknown as { getNextPageParam?: unknown })
+        ?.getNextPageParam as
+        | ((
+            lastPage: TQueryFnData,
+            allPages: TQueryFnData[],
+            lastPageParam: TPageParam,
+            allPageParams: TPageParam[]
+          ) => TPageParam)
+        | undefined) ?? (() => undefined as unknown as TPageParam),
+    initialPageParam:
+      ((options as unknown as { initialPageParam?: TPageParam })
+        ?.initialPageParam as TPageParam | undefined) ??
+      (undefined as unknown as TPageParam),
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
     ...options,
   });
 }
@@ -42,5 +67,9 @@ export function useApiMutation<TInput, TOutput>(
   mutationFn: (input: TInput) => Promise<TOutput>,
   options?: UseMutationOptions<TOutput, unknown, TInput>
 ) {
-  return useMutation({ mutationFn, ...options });
+  return useMutation({
+    mutationFn,
+    retry: 1,
+    ...options,
+  });
 }

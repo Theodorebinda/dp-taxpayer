@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useStore } from "zustand";
-import { ApiInputType, FormProps } from "@/types/types";
+import { ApiInputType, FormProps, ValueType } from "@/types/types";
 import SVGComponent from "../atoms/displaySVG";
 import HttpClient from "@/utils/http-client";
 import Loader from "../atoms/loader";
@@ -182,7 +182,7 @@ const Form: React.FC<FormProps> = ({
                   key={field.property}
                   {...field}
                   parentValue={value}
-                  value={value[field.property]}
+                  value={value[field.property] as ValueType}
                   options={options}
                   parentFields={formFields}
                   setValue={(v) => {

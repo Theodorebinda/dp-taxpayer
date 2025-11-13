@@ -1,4 +1,4 @@
-Projet [Next.js](https://nextjs.org) (App Router) démarré avec [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app), adapté à React 19, TypeScript 5, Zustand et Tailwind CSS 4.
+Projet Next.js 16 (App Router) – React 19 – TypeScript 5 – TanStack Query 5 – Architecture pilotée par backend, authentifiée avec NextAuth, UI modulaire.
 
 ## Démarrage
 
@@ -20,7 +20,40 @@ Créer un fichier `.env` à la racine avec, a minima :
 ```env
 NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
 NEXT_PUBLIC_WORKSPACE_ID=KINSHASA
+NEXTAUTH_URL=http://localhost:3600
+NEXTAUTH_SECRET=change-me
 ```
+
+## Architecture
+
+src/
+
+- app/
+  - (marketing)/
+  - (public)/
+  - (auth)/login
+  - (protected)/
+  - api/auth/[...nextauth]
+  - layout.tsx
+  - providers.tsx
+- components/
+  - ui/: ToastProvider, ErrorBoundary, LoaderGlobal, MotionWrapper, ThemeSwitcher
+  - form/engine/: FormRenderer, ChildrenRenderer
+- hooks/: useApi, useAuth, useFormEngine, useToast
+- lib/
+  - api/: client.ts, endpoints.ts
+  - auth/: auth-options.ts, token.ts
+  - cache/: query-client.ts
+  - forms/: schema.ts, serialization.ts
+- middleware.ts (protection des routes)
+- services/: auth, taxpayer, navigation, view, operations
+- utils/: http-client.ts
+
+Règles:
+
+- Aucun fetch dans les composants UI, uniquement via services et `apiClient`.
+- Toute logique métier dans `services/`, logique technique dans `lib/`.
+- Rendu dynamique (menus, vues, formulaires) piloté par backend.
 
 ## Scripts
 
@@ -31,7 +64,7 @@ NEXT_PUBLIC_WORKSPACE_ID=KINSHASA
 
 ## Documentation
 
-Consulter la documentation détaillée dans `docs/documentation.md`.
+Consulter la documentation détaillée dans `docs/documentation.md`. Les principaux modules nouvellement introduits sont documentés dans leur dossier respectif.
 
 ## Déploiement
 

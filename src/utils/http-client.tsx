@@ -7,7 +7,7 @@ class HttpClient {
   error: {
     code: number;
     message: string;
-    [key: string]: any;
+    [key: string]: unknown;
   } | null = null;
 
   constructor(defaultHeaders: HeadersInit = {}) {
@@ -22,7 +22,7 @@ class HttpClient {
   private async request<T>(
     endpoint: string,
     method: HttpMethod,
-    body?: Record<string, any> | FormData,
+    body?: Record<string, unknown> | FormData,
     customHeaders?: HeadersInit,
     customToken?: string
   ): Promise<
@@ -30,50 +30,45 @@ class HttpClient {
         code: number;
         message: string;
         data: T;
-        meta?: any;
-        form?: any;
+        meta?: unknown;
+        form?: unknown;
       }
     | false
   > {
     const url = `${this.baseUrl}${
       endpoint[0] == "/" ? endpoint : `/${endpoint}`
     }`;
-    const browserToken =
-      typeof window !== "undefined"
-        ? window.localStorage.getItem("dp-sk-moto-token")
-        : null;
-    const token = customToken || browserToken || undefined;
+    const token = customToken || undefined;
 
-    const headers: Record<string, string> = {
-      ...this.defaultHeaders,
-      "x-workspace-id": this.workspaceId,
-    };
+    const headersObj = new Headers(this.defaultHeaders);
+    headersObj.set("x-workspace-id", this.workspaceId);
 
     // Merge custom headers (override defaults)
     if (customHeaders) {
       Object.entries(customHeaders).forEach(([k, v]) => {
         if (typeof v !== "undefined") {
-          headers[k] = String(v);
+          headersObj.set(k, String(v));
         }
       });
     }
 
     // Authorization header only if token provided/available
     if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
+      headersObj.set("Authorization", `Bearer ${token}`);
     }
 
     // Determine Content-Type based on body type
     if (body instanceof FormData) {
       // Remove Content-Type header for FormData; browser will set it automatically
-      delete headers["Content-Type"];
+      headersObj.delete("Content-Type");
     } else if (body && typeof body === "object") {
-      headers["Content-Type"] = "application/json";
+      headersObj.set("Content-Type", "application/json");
     }
 
     const options: RequestInit = {
       method,
-      headers: headers,
+      headers: headersObj,
+      cache: "no-store",
     };
 
     if (body) {
@@ -95,14 +90,15 @@ class HttpClient {
 
       const data = await response.json();
       return data;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string; code?: string } | undefined;
       this.error = {
         code: 500,
-        message: error.message || "une erreur s'est produite",
+        message: err?.message || "une erreur s'est produite",
         error: {
-          errorCode: error.code,
-          errorMessage: error.message,
-          details: error.toString(),
+          errorCode: err?.code,
+          errorMessage: err?.message,
+          details: String(error),
         },
       };
       return false;
@@ -125,7 +121,7 @@ class HttpClient {
 
   public post<T>(
     endpoint: string,
-    body: Record<string, any> | FormData,
+    body: Record<string, unknown> | FormData,
     customHeaders?: HeadersInit,
     customToken?: string
   ) {
@@ -134,7 +130,7 @@ class HttpClient {
 
   public put<T>(
     endpoint: string,
-    body: Record<string, any> | FormData,
+    body: Record<string, unknown> | FormData,
     customHeaders?: HeadersInit,
     customToken?: string
   ) {
@@ -157,7 +153,7 @@ class HttpClient {
 
   public patch<T>(
     endpoint: string,
-    body: Record<string, any> | FormData,
+    body: Record<string, unknown> | FormData,
     customHeaders?: HeadersInit,
     customToken?: string
   ) {
