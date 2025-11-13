@@ -15,7 +15,10 @@ import {
 } from "lucide-react";
 import Input from "@/components/commons/dynamicInput";
 import { ApiInputType } from "@/types/types";
-import HttpClient from "@/utils/http-client";
+import {
+  getRegistrationFields,
+  registerTaxpayer,
+} from "@/services/taxpayer.service";
 import Loader from "@/components/atoms/loader";
 
 export default function DigiPublicSignupForm() {
@@ -44,15 +47,10 @@ export default function DigiPublicSignupForm() {
 
   useEffect(() => {
     const fetchFields = async () => {
-      const client = new HttpClient();
-      const response: { data: ApiInputType[] } | false = await client.get(
-        "/taxpayer/registration"
-      );
-      if (!response) {
-        setError(client.error);
-      } else {
-        setFields(response.data);
-      }
+      const response: { data: ApiInputType[] } | false =
+        await getRegistrationFields();
+      if (!response) setError({ message: "Impossible de charger les champs." });
+      else setFields(response.data);
       setLoading(false);
     };
 
@@ -133,19 +131,15 @@ export default function DigiPublicSignupForm() {
     setSubmitting(true);
     setSubmitError(null);
 
-    const client = new HttpClient();
-    const response: { data: Record<string, any> } | false = await client.post(
-      "/taxpayer/registration",
-      formData
-    );
+    const response: { data: Record<string, any> } | false =
+      await registerTaxpayer(formData);
 
     setSubmitting(false);
 
     if (!response) {
       // Handle error - formData is preserved
       setSubmitError(
-        client.error?.message ||
-          "Une erreur est survenue lors de la création de votre compte. Veuillez réessayer."
+        "Une erreur est survenue lors de la création de votre compte. Veuillez réessayer."
       );
     } else {
       // Handle success
