@@ -88,10 +88,10 @@ const useDynamicOptions = (props: InputType) => {
       if (optionsTags?.getOptionValueFromStore) {
         const tags = optionsTags.getOptionValueFromStore;
 
-        let path = tags.path;
-        if (path.startsWith("{PARENT_")) {
-          const lvl = +path.split("PARENT_")[1][0] || 0;
-          path = removeLastElements(storePath, "?.", lvl);
+        let path = tags.path as string;
+        if (path?.startsWith("{PARENT_")) {
+          const lvl = +(path.split("PARENT_")[1]?.[0] ?? 0) || 0;
+          path = removeLastElements(storePath ?? "", "?.", lvl);
         }
 
         const value = path

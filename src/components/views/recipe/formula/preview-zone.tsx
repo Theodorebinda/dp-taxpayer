@@ -3,7 +3,7 @@ import { FormulaItem } from "./types";
 import { Droppable } from "@hello-pangea/dnd";
 import { FormulaItemComponent } from "./utils";
 import { Trash2 } from "lucide-react";
-import { MathJax } from "better-react-mathjax";
+// import { MathJax } from "better-react-mathjax";
 import HttpClient from "@/utils/http-client";
 import toast, { Toaster } from "react-hot-toast";
 import Button from "@/components/commons/button";
@@ -246,7 +246,7 @@ export const FormulaPreview: React.FC<{
       {/* Affichage mathématique avec LaTeX */}
       <div className="bg-muted/50 p-6 rounded-xl text-center w-full overflow-auto mb-6 bg-primary/10">
         <div className="text-xl">
-          <MathJax dynamic>{`\\[${rawFormula}\\]`}</MathJax>
+          {/* <MathJax dynamic>{`\\[${rawFormula}\\]`}</MathJax> */}
         </div>
       </div>
 
