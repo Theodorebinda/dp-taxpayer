@@ -1,6 +1,7 @@
 import { ApiInputType } from "@/types/types";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+import { createFormDataFromObject as buildFormData } from "@/lib/forms/serialization";
 
 type FormField =
   | string
@@ -249,54 +250,8 @@ export const useFormStore = create<FormStore>()(
         });
       },
 
-      createFormDataFromObject: (
-        obj: Record<string, unknown>
-      ): FormData | Record<string, unknown> => {
-        const formData = new FormData();
-        const files: Array<File> = [];
-
-        const findFiles = (
-          currentObj: Record<string, unknown>,
-          currentPath: string
-        ) => {
-          for (const key in currentObj) {
-            if (currentObj.hasOwnProperty(key)) {
-              const value = currentObj[key] as unknown;
-              const newPath = currentPath ? `${currentPath}.${key}` : key;
-
-              if (value instanceof File) {
-                files.push(new File([value], newPath));
-              } else if (typeof value === "object" && value !== null) {
-                findFiles(value as Record<string, unknown>, newPath);
-              }
-            }
-          }
-        };
-
-        findFiles(obj, "");
-
-        const removeFiles = (currentObj: Record<string, unknown>) => {
-          for (const key in currentObj) {
-            if (currentObj.hasOwnProperty(key)) {
-              const value = currentObj[key] as unknown;
-              if (value instanceof File) {
-                delete currentObj[key];
-              } else if (typeof value === "object" && value !== null) {
-                removeFiles(value as Record<string, unknown>);
-              }
-            }
-          }
-        };
-
-        if (files.length == 0) return obj;
-        else files.forEach((file) => formData.append(`files`, file));
-        const objWithoutFiles = JSON.parse(JSON.stringify(obj));
-        removeFiles(objWithoutFiles as Record<string, unknown>);
-
-        formData.append("json", JSON.stringify(objWithoutFiles));
-
-        return formData;
-      },
+      createFormDataFromObject: (obj: Record<string, unknown>) =>
+        buildFormData(obj),
     }),
     { name: "form-state" }
   )

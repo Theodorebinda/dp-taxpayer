@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 import Input from "@/components/commons/dynamicInput";
-import { ApiInputType } from "@/types/types";
+import { ApiInputType, ValueType } from "@/types/types";
 import {
   getRegistrationFields,
   registerTaxpayer,
@@ -23,7 +23,7 @@ import Loader from "@/components/atoms/loader";
 
 export default function DigiPublicSignupForm() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<Record<string, any>>({
+  const [formData, setFormData] = useState<Record<string, unknown>>({
     firstName: "",
     middleName: "",
     lastName: "",
@@ -91,7 +91,7 @@ export default function DigiPublicSignupForm() {
     },
   ];
 
-  const handleValueChange = (property: string, value: any) => {
+  const handleValueChange = (property: string, value: unknown) => {
     setFormData((prev) => ({
       ...prev,
       [property]: value,
@@ -131,7 +131,7 @@ export default function DigiPublicSignupForm() {
     setSubmitting(true);
     setSubmitError(null);
 
-    const response: { data: Record<string, any> } | false =
+    const response: { data: Record<string, unknown> } | false =
       await registerTaxpayer(formData);
 
     setSubmitting(false);
@@ -199,19 +199,20 @@ export default function DigiPublicSignupForm() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-6">
         <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 max-w-lg w-full text-center relative overflow-hidden">
           {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-full -translate-y-20 translate-x-20"></div>
+          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from.green-400/20 to-blue-400/20 rounded-full -translate-y-20 translate-x-20"></div>
           <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-purple-400/20 to-pink-400/20 rounded-full translate-y-20 -translate-x-20"></div>
 
           <div className="relative z-10">
-            <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+            <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items.center justify-center mx-auto mb-6 animate-bounce">
               <CheckCircle className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
               Compte créé avec succès ! 🎉
             </h2>
             <p className="text-gray-600 mb-8 text-lg">
-              Bienvenue sur DigiPublic, {formData.firstName} ! Votre compte a
-              été créé et vous pouvez maintenant commencer vos déclarations.
+              Bienvenue sur DigiPublic, {String(formData.firstName)} ! Votre
+              compte a été créé et vous pouvez maintenant commencer vos
+              déclarations.
             </p>
             <div className="space-y-3">
               <button
@@ -237,7 +238,7 @@ export default function DigiPublicSignupForm() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex.justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-white" />
@@ -319,7 +320,7 @@ export default function DigiPublicSignupForm() {
         {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100">
           {/* Step Header */}
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex.items-center gap-4 mb-8">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
               <StepIcon className="w-8 h-8 text-white" />
             </div>
@@ -334,14 +335,13 @@ export default function DigiPublicSignupForm() {
           {/* Form Fields */}
           <div className="space-y-6 mb-8">
             {getCurrentStepFields().map((field) => (
-              <div
-                key={field.property}
-                //className="transform transition-all hover:scale-[1.01]"
-              >
+              <div key={field.property}>
                 <Input
                   {...field}
-                  value={formData[field.property]}
-                  setValue={(value) => handleValueChange(field.property, value)}
+                  value={formData[field.property] as ValueType}
+                  setValue={(value: ValueType) =>
+                    handleValueChange(field.property, value)
+                  }
                 />
               </div>
             ))}
@@ -352,7 +352,7 @@ export default function DigiPublicSignupForm() {
             <button
               onClick={handlePrevious}
               disabled={currentStep === 0}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all.duration-300 ${
                 currentStep === 0
                   ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md"
@@ -366,7 +366,7 @@ export default function DigiPublicSignupForm() {
               <button
                 onClick={handleNext}
                 disabled={!isStepValid()}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all.duration-300 ${
                   isStepValid()
                     ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg hover:scale-105"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
@@ -379,7 +379,7 @@ export default function DigiPublicSignupForm() {
               <button
                 onClick={handleSubmit}
                 disabled={!isStepValid() || submitting}
-                className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all.duration-300 ${
                   isStepValid() && !submitting
                     ? "bg-gradient-to-r from-green-600 to-green-700 text-white hover:shadow-lg hover:scale-105"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
@@ -407,7 +407,7 @@ export default function DigiPublicSignupForm() {
             </p>
             <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-300"
+                className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all.duration-300"
                 style={{
                   width: `${((currentStep + 1) / steps.length) * 100}%`,
                 }}

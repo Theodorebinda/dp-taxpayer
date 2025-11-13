@@ -43,7 +43,11 @@ Application publique de gestion des contribuables et de leurs opérations/décla
 
 ### App Router (Next 16)
 
-Le projet utilise l’App Router (dossier `app/`), avec des pages `app/page.tsx` (landing) et `app/registration/page.tsx` (inscription). Par défaut, les composants sont « server components »; un composant devient « client component » s’il déclare `use client` au sommet du fichier.
+Le projet utilise l’App Router (dossier `app/`), avec des groupes de routes pour structurer l’espace public/marketing :
+
+- `app/(marketing)/page.tsx` (landing)
+- `app/(public)/registration/page.tsx` (inscription)
+  Les groupes n’affectent pas les URLs (pas de préfixe). Par défaut, les composants sont « server components »; un composant devient « client component » s’il déclare `use client` au sommet du fichier.
 
 - Exemples clients:
   - `app/page.tsx`
@@ -58,23 +62,38 @@ Le projet utilise l’App Router (dossier `app/`), avec des pages `app/page.tsx`
   ├─ favicon.ico
   ├─ globals.css
   ├─ layout.tsx
-  ├─ page.tsx
-  └─ registration/
-     └─ page.tsx
+  ├─ (marketing)/
+  │   └─ page.tsx
+  └─ (public)/
+      └─ registration/
+          └─ page.tsx
 /components
-  ├─ auth-guard.tsx
+  ├─ ui/                      ← point d’entrée UI ré-exportant atoms/commons utiles
+  ├─ form/
+  │   └─ engine/              ← point d’entrée du moteur de formulaires
   ├─ atoms/
   ├─ commons/
-  ├─ form/
   ├─ graphs/
   ├─ menus/
   ├─ public/declaration/
-  ├─ store/           ← Stores Zustand
+  ├─ store/                   ← re-exports vers /store
   └─ table/
+/store                        ← Stores Zustand (source of truth)
+/lib
+  ├─ api/
+  │   ├─ client.ts
+  │   └─ endpoints.ts
+  ├─ forms/
+  │   ├─ schema.ts
+  │   └─ serialization.ts
+  └─ utils/
+      └─ env.ts
+/services
+  └─ taxpayer.service.ts
 /public
-/types                ← Types et contrats front
+/types                        ← Types et contrats front
 /utils
-  └─ http-client.tsx  ← Client HTTP central
+  └─ http-client.tsx          ← Client HTTP central (wrap par lib/api/client)
 eslint.config.mjs
 next.config.ts
 package.json
