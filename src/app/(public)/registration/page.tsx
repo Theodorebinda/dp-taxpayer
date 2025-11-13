@@ -20,6 +20,8 @@ import {
   registerTaxpayer,
 } from "@/services/taxpayer.service";
 import Loader from "@/components/atoms/loader";
+import { useApiMutation, useApiQuery } from "@/hooks/useApi";
+import { qk } from "@/utils/query-keys";
 
 export default function DigiPublicSignupForm() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -38,24 +40,17 @@ export default function DigiPublicSignupForm() {
     identityCard: "",
     identityCardNumber: "",
   });
-  const [fields, setFields] = useState<ApiInputType[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [submitting, setSubmitting] = useState<boolean>(false);
-  const [error, setError] = useState<{ message: string } | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchFields = async () => {
-      const response: { data: ApiInputType[] } | false =
-        await getRegistrationFields();
-      if (!response) setError({ message: "Impossible de charger les champs." });
-      else setFields(response.data);
-      setLoading(false);
-    };
-
-    fetchFields();
-  }, []);
+  const { data, isLoading, isError, error } = useApiQuery(
+    qk.taxpayer.registration(),
+    async () => {
+      const response = await getRegistrationFields();
+      if (!response) throw new Error("Impossible de charger les champs.");
+      return response.data;
+    }
+  );
 
   const steps = [
     {
@@ -101,6 +96,7 @@ export default function DigiPublicSignupForm() {
   };
 
   const getCurrentStepFields = () => {
+    const fields: ApiInputType[] = (data as ApiInputType[]) ?? [];
     return fields.filter((field) =>
       steps[currentStep].fields.includes(field.property)
     );
@@ -127,24 +123,33 @@ export default function DigiPublicSignupForm() {
     }
   };
 
-  const handleSubmit = async () => {
-    setSubmitting(true);
-    setSubmitError(null);
-
-    const response: { data: Record<string, unknown> } | false =
-      await registerTaxpayer(formData);
-
-    setSubmitting(false);
-
-    if (!response) {
-      // Handle error - formData is preserved
-      setSubmitError(
-        "Une erreur est survenue lors de la création de votre compte. Veuillez réessayer."
-      );
-    } else {
-      // Handle success
-      setSuccess(true);
+  const mutation = useApiMutation<
+    Record<string, unknown>,
+    { data: Record<string, unknown> }
+  >(
+    async (payload) => {
+      const response = await registerTaxpayer(payload);
+      if (!response) throw new Error("Soumission échouée");
+      return response;
+    },
+    {
+      onMutate: async () => {
+        setSubmitError(null);
+        // optimistic noop here; keep slot for future
+      },
+      onError: () => {
+        setSubmitError(
+          "Une erreur est survenue lors de la création de votre compte. Veuillez réessayer."
+        );
+      },
+      onSuccess: () => {
+        setSuccess(true);
+      },
     }
+  );
+
+  const handleSubmit = () => {
+    mutation.mutate(formData);
   };
 
   const handleNewAccount = () => {
@@ -169,9 +174,9 @@ export default function DigiPublicSignupForm() {
 
   const StepIcon = steps[currentStep].icon;
 
-  if (loading) return <Loader />;
+  if (isLoading) return <Loader />;
 
-  if (error) {
+  if (isError) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-6">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
@@ -181,7 +186,9 @@ export default function DigiPublicSignupForm() {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Erreur de chargement
           </h2>
-          <p className="text-gray-600 mb-6">{error.message}</p>
+          <p className="text-gray-600 mb-6">
+            {(error as Error)?.message || "Une erreur s'est produite."}
+          </p>
           <button
             onClick={() => window.location.reload()}
             className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
@@ -378,14 +385,14 @@ export default function DigiPublicSignupForm() {
             ) : (
               <button
                 onClick={handleSubmit}
-                disabled={!isStepValid() || submitting}
+                disabled={!isStepValid() || mutation.isPending}
                 className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all.duration-300 ${
-                  isStepValid() && !submitting
+                  isStepValid() && !mutation.isPending
                     ? "bg-gradient-to-r from-green-600 to-green-700 text-white hover:shadow-lg hover:scale-105"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
                 }`}
               >
-                {submitting ? (
+                {mutation.isPending ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     Création en cours...
