@@ -3,18 +3,19 @@
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import GlobeSection from "./components/GlobeSection";
+import Image from "next/image";
 
 export default function MarketingLanding() {
   return (
     <div className="min-h-screen bg-(--dp-bg) text-neutral-900">
       {/* HERO */}
       <section className="relative">
-        <div className="absolute inset-0 hero-gradient opacity-95"></div>
+        <div className="absolute inset-0  opacity-95"></div>
         {/* mist / subtle shape */}
         <div className="absolute -left-40 top-20 w-[520px] h-[520px] rounded-[120px] bg-white/6 blur-[56px]" />
         <div className="relative max-w-7xl mx-auto px-6 md:px-10 py-28 md:py-36 flex flex-col lg:flex-row items-center gap-12">
           {/* Left: copy */}
-          <div className="w-full lg:w-1/2 text-white">
+          <div className="w-full lg:w-1/2 text-dp-dp">
             <motion.h1
               initial={{ y: 16, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -105,7 +106,7 @@ export default function MarketingLanding() {
       </section>
 
       {/* SECTION 01 Overview (big bubble block) */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 py-20">
+      {/* <section className="max-w-7xl mx-auto px-6 md:px-10 py-20">
         <div className="rounded-bubble overflow-hidden hero-gradient p-12 md:p-16 text-white">
           <div className="flex flex-col md:flex-row items-start gap-8">
             <div className="text-[96px] font-extrabold opacity-20 leading-none">
@@ -124,12 +125,12 @@ export default function MarketingLanding() {
             </div>
           </div>
         </div>
-      </section>
-      <GlobeSection />
+      </section> */}
+
+      {/* <GlobeSection /> */}
 
       {/* PROBLEM & SOLUTION */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 py-16 grid grid-cols-1 lg:grid-cols-2 gap-12">
-        {/* Problem */}
+      {/* <section className="max-w-7xl mx-auto px-6 md:px-10 py-16 grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
           <h4 className="text-2xl font-semibold mb-6">The Problem</h4>
           <div className="bg-white rounded-xl shadow-sm p-6 border border-neutral-200">
@@ -174,7 +175,6 @@ export default function MarketingLanding() {
           </div>
         </div>
 
-        {/* Solution */}
         <div>
           <h4 className="text-2xl font-semibold mb-6">The Solution</h4>
           <div className="bg-(--dp-primary) rounded-xl p-6 text-white shadow-lg">
@@ -211,9 +211,9 @@ export default function MarketingLanding() {
           </div>
         </div>
       </section>
-
+     */}
       {/* CTA / Final */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 py-20">
+      {/* <section className="max-w-7xl mx-auto px-6 md:px-10 py-20">
         <div className="rounded-xl bg-var(--dp-soft) p-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
             <h4 className="text-2xl font-semibold">Prêt à commencer ?</h4>
@@ -239,6 +239,7 @@ export default function MarketingLanding() {
           </div>
         </div>
       </section>
+     */}
     </div>
   );
 }
