@@ -10,7 +10,7 @@ export default function MarketingLanding() {
     <div className="min-h-screen bg-(--dp-bg) text-neutral-900">
       {/* HERO */}
       <section className="relative">
-        <div className="absolute inset-0  opacity-95"></div>
+        <div className="absolute inset-0  opacity-95 dark:bg-(--bg-secondary)/70"></div>
         {/* mist / subtle shape */}
         <div className="absolute -left-40 top-20 w-[520px] h-[520px] rounded-[120px] bg-white/6 blur-[56px]" />
         <div className="relative max-w-7xl mx-auto px-6 md:px-10 py-28 md:py-36 flex flex-col lg:flex-row items-center gap-12">

@@ -6,6 +6,8 @@ const PUBLIC_PATHS: RegExp[] = [
   /^\/login$/,
   /^\/register$/,
   /^\/registration(\/.*)?$/,
+  /^\/auth\/login$/,
+  /^\/auth\/registration(\/.*)?$/,
   /^\/marketing(\/.*)?$/,
   /^\/(public)(\/.*)?$/,
   /^\/api(\/.*)?$/,
@@ -26,7 +28,7 @@ export async function middleware(req: NextRequest) {
   }
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (!token) {
-    const url = new URL("/login", req.url);
+    const url = new URL("/auth/login", req.url);
     url.searchParams.set(
       "callbackUrl",
       req.nextUrl.pathname + req.nextUrl.search

@@ -110,8 +110,14 @@
 body {
   color: var(--color-text);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
   font-weight: 300;
+}
+
+/* Transitions douces au changement de thème */
+html,
+body {
+  transition: background-color 240ms ease, color 240ms ease;
 }
 
 /* Marketing helpers */
