@@ -1,11 +1,10 @@
 "use client";
-import RegistrationLayout from "./registrationLayout";
 import StepSidebar from "./StepSidebar";
 import StepForm from "./StepForm";
 import StepNavigation from "./StepNavigation";
 import { useSignupSteps } from "./useSignupSteps";
 import Loader from "@/components/atoms/loader";
-import { ErrorDisplay } from "@/components/public/declaration/errorDisplay";
+import banner from "@/../public/images/banner.webp";
 
 export default function DigiPublicSignupForm() {
   const {
@@ -27,7 +26,7 @@ export default function DigiPublicSignupForm() {
 
   if (isError) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Erreur de chargement
@@ -36,7 +35,6 @@ export default function DigiPublicSignupForm() {
             {(error as Error)?.message || "Une erreur s'est produite."}
           </p>
         </div>
-        <ErrorDisplay error={error as { message: string } | null} />
       </div>
     );
   }
@@ -44,33 +42,45 @@ export default function DigiPublicSignupForm() {
   const step = steps[currentStep];
 
   return (
-    <RegistrationLayout
-      sidebar={
-        <StepSidebar
-          title={step.title}
-          description={step.description}
-          illustration={step.illustration}
-          stepIndex={currentStep}
-          stepsCount={steps.length}
-        />
-      }
-      form={
-        <StepForm
-          fields={currentFields}
-          formData={formData}
-          onChange={handleValueChange}
-        />
-      }
-      navigation={
-        <StepNavigation
-          currentStep={currentStep}
-          stepsCount={steps.length}
-          canProceed={isStepValid()}
-          onPrevious={goPrevious}
-          onNext={goNext}
-          onSubmit={submit}
-        />
-      }
-    />
+    <main className="w-full relative flex items-center lg:gap-5 h-screen bg-background max-lg:flex-col-reverse">
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${banner.src})` }}
+      ></div>
+
+      {/* LEFT: Formulaire + Navigation */}
+      <div className="w-full max-lg:h-full flex lg:items-center items-start justify-center p-5 max-lg:bg-background/80 z-10">
+        <div className="lg:p-10 p-5 w-3/4 max-lg:w-full lg:bg-background/80 h-fit rounded-xl z-10">
+          <div className="w-full max-w-2xl mx-auto flex flex-col gap-6">
+            <StepForm
+              fields={currentFields}
+              formData={formData}
+              onChange={handleValueChange}
+            />
+            <StepNavigation
+              currentStep={currentStep}
+              stepsCount={steps.length}
+              canProceed={isStepValid()}
+              onPrevious={goPrevious}
+              onNext={goNext}
+              onSubmit={submit}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT: Étapes / Sidebar */}
+      <div className="relative block w-full h-full max-lg:h-fit bg-background/80 max-lg:py-10 px-10">
+        <div className="relative z-10 flex flex-col justify-center items-start h-full max-w-lg mx-auto">
+          <StepSidebar
+            title={step.title}
+            description={step.description}
+            illustration={step.illustration}
+            stepIndex={currentStep}
+            stepsCount={steps.length}
+          />
+        </div>
+      </div>
+    </main>
   );
 }

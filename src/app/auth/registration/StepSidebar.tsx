@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import ImageWithFallback from "@/components/table/components/table-image";
 
 type StepSidebarProps = {
   title: string;
@@ -18,7 +18,7 @@ export default function StepSidebar({
   stepsCount,
 }: StepSidebarProps) {
   return (
-    <aside className="hidden md:flex flex-col justify-between h-full bg-gradient-to-br from-blue-500 to-indigo-200 text-white p-10">
+    <aside className="hidden md:flex flex-col justify-between w-full h-full  text-white p-10">
       <div>
         <div className="mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-white/15 backdrop-blur-sm">
@@ -29,13 +29,12 @@ export default function StepSidebar({
         <p className="text-white/80 text-base">{description}</p>
       </div>
       <div className="flex items-end justify-center">
-        {/* Use a plain img to avoid next/image constraints */}
-        <Image
-          width={100}
-          height={100}
+        <ImageWithFallback
           src={illustration}
           alt="Illustration d'étape"
           className="max-w-full h-64 object-contain opacity-95"
+          width={100}
+          height={100}
         />
       </div>
       <div className="text-white/70 text-sm mt-6">
