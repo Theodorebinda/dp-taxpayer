@@ -19,13 +19,13 @@ export default function Header() {
   const navClassName = clsx(
     "mt-3 mb-3 rounded-2xl transition-all duration-300 dark:bg-(--bg-secondary)/70",
     scrolled
-      ? "border border-white/30 bg-white/70 backdrop-blur-md shadow-sm dark:border-white/10 "
-      : "border-transparent bg-transparent shadow-none"
+      ? "border border-white/30 bg-white/70 backdrop-blur-md shadow-sm dark:border-white/10 dark:bg-(--bg-secondary)/70"
+      : "border-transparent bg-transparent shadow-none dark:border-transparent dark:bg-transparent"
   );
 
   return (
-    <header className="sticky top-0 z-50 text-foreground ">
-      <div className="h-px w-full bg-linear-to-r from-(--app-green-600)/30 via-(--app-blue-600)/30 to-(--app-green-600)/30" />
+    <header className="sticky top-0 z-50 text-foreground dark:bg-(--bg-secondary)/70">
+      <div className="h-px w-full bg-linear-to-r from-(--app-green-600)/30 via-(--app-blue-600)/30 to-(--app-green-600)/30 " />
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <motion.nav
           className={navClassName}
@@ -42,7 +42,7 @@ export default function Header() {
             <Link href="/" className="flex items-center gap-3">
               <span
                 aria-hidden
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-(--dp-primary)  shadow-sm"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-(--primary)  shadow-sm"
               >
                 <span className="h-2 w-2 rounded-full bg-white/90 pulse" />
               </span>
@@ -59,19 +59,19 @@ export default function Header() {
             <div className="hidden md:flex items-center gap-8 font-medium text-app-blue-600 dark:text-white/90 transition-colors">
               <a
                 href="#features"
-                className="relative transition-colors hover:text-(--dp-primary) after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-(--dp-primary) after:transition-transform hover:after:scale-x-100"
+                className="relative transition-colors hover:text-(--primary) after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-(--primary) after:transition-transform hover:after:scale-x-100"
               >
                 Fonctionnalités
               </a>
               <a
                 href="#how"
-                className="relative transition-colors hover:text-(--dp-primary) after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-(--dp-primary) after:transition-transform hover:after:scale-x-100"
+                className="relative transition-colors hover:text-(--primary) after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-(--primary) after:transition-transform hover:after:scale-x-100"
               >
                 Comment ça marche
               </a>
               <Link
                 href="/contact"
-                className="relative transition-colors hover:text-(--dp-primary) after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-(--dp-primary) after:transition-transform hover:after:scale-x-100"
+                className="relative transition-colors hover:text-(--primary) after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-(--primary) after:transition-transform hover:after:scale-x-100"
               >
                 Contact
               </Link>
@@ -81,13 +81,13 @@ export default function Header() {
               <ThemeSwitcher />
               <Link
                 href="/auth/login"
-                className="hidden md:inline px-3 py-2 font-medium text-app-blue-700 hover:text-(--dp-primary) transition-colors dark:text-white/90"
+                className="hidden md:inline px-3 py-2 font-medium text-app-blue-700 hover:text-(--primary) transition-colors dark:text-white/90"
               >
                 Se connecter
               </Link>
               <Link
                 href="/auth/registration"
-                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 font-semibold text-white bg-linear-to-l from-(--dp-primary) to-app-green-600 shadow-sm hover:opacity-95 transition"
+                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 font-semibold text-white bg-(--primary) shadow-sm hover:opacity-95 transition"
               >
                 {"S'inscrire"}
               </Link>

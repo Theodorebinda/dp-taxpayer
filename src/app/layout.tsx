@@ -34,8 +34,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${poppins.variable} antialiased`} data-theme="dark">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className="dark:bg-(--bg-secondary)/70"
+    >
+      <body className={`${poppins.variable} antialiased`}>
         <Providers>
           <ErrorBoundary>{children}</ErrorBoundary>
         </Providers>

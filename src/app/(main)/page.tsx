@@ -1,26 +1,25 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import GlobeSection from "./components/GlobeSection";
 import Image from "next/image";
 
 export default function MarketingLanding() {
   return (
-    <div className="min-h-screen bg-(--dp-bg) text-neutral-900">
+    <div className="min-h-screen bg-(--dp-bg) text-neutral-700 dark:text-white/90 ">
       {/* HERO */}
       <section className="relative">
-        <div className="absolute inset-0  opacity-95 dark:bg-(--bg-secondary)/70"></div>
-        {/* mist / subtle shape */}
+        {/* <div className="absolute inset-0  opacity-95 "></div> */}
+
         <div className="absolute -left-40 top-20 w-[520px] h-[520px] rounded-[120px] bg-white/6 blur-[56px]" />
-        <div className="relative max-w-7xl mx-auto px-6 md:px-10 py-28 md:py-36 flex flex-col lg:flex-row items-center gap-12">
-          {/* Left: copy */}
-          <div className="w-full lg:w-1/2 text-dp-dp">
+        <div className="relative max-w-7xl mx-auto px-6 md:px-10 py-20 md:py-20 flex flex-col lg:flex-row items-center gap-12">
+          <div className="w-full lg:w-1/2 ">
             <motion.h1
               initial={{ y: 16, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7 }}
-              className="text-5xl md:text-6xl font-extrabold leading-tight max-w-2xl"
+              className="text-5xl md:text-7xl font-extrabold leading-tight max-w-2xl"
             >
               La plateforme moderne pour vos démarches fiscales
             </motion.h1>
@@ -29,7 +28,7 @@ export default function MarketingLanding() {
               initial={{ y: 12, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.9 }}
-              className="mt-6 text-lg md:text-xl text-white/90 max-w-xl"
+              className="mt-6 text-lg md:text-xl  max-w-xl"
             >
               Inscription, déclaration et suivi centralisés — un portail simple,
               sécurisé et pensé pour les contribuables et les agents.
@@ -43,14 +42,14 @@ export default function MarketingLanding() {
             >
               <a
                 href="/registration"
-                className="inline-flex items-center gap-3 px-6 py-3 rounded-lg bg-white text-(--dp-primary) font-semibold shadow-lg hover:shadow-xl transition"
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-lg  text-primary font-semibold shadow-lg hover:shadow-xl transition"
               >
                 Commencer maintenant
                 <ArrowRight size={18} />
               </a>
               <a
                 href="#features"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-white/30 text-white/90 hover:bg-white/10 transition"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-white/30  hover:bg-white/10 transition"
               >
                 En savoir plus
               </a>
@@ -85,7 +84,7 @@ export default function MarketingLanding() {
                 </div>
                 <div className="flex-1 p-4">
                   <div className="h-12 rounded-lg bg-(--dp-soft) mb-4" />
-                  <div className="h-44 rounded-lg bg-(--dp-primary)/8 mb-4" />
+                  <div className="h-44 rounded-lg bg-(--primary)/8 mb-4" />
                   <div className="grid grid-cols-3 gap-3">
                     <div className="h-28 rounded-lg bg-white/70" />
                     <div className="h-28 rounded-lg bg-white/70" />
@@ -93,7 +92,7 @@ export default function MarketingLanding() {
                   </div>
                 </div>
                 <div className="h-18 bg-neutral-100/60 flex items-center px-4">
-                  <div className="w-24 h-8 rounded-lg bg-(--dp-primary)" />
+                  <div className="w-24 h-8 rounded-lg bg-(--primary)" />
                 </div>
               </div>
 
@@ -136,7 +135,7 @@ export default function MarketingLanding() {
           <div className="bg-white rounded-xl shadow-sm p-6 border border-neutral-200">
             <ul className="space-y-4 text-neutral-700">
               <li className="flex items-start gap-4">
-                <span className="mt-1 text-[20px] text-[var(--dp-primary)]">
+                <span className="mt-1 text-[20px] text-(--primary)">
                   •
                 </span>
                 <div>
@@ -149,7 +148,7 @@ export default function MarketingLanding() {
               </li>
 
               <li className="flex items-start gap-4">
-                <span className="mt-1 text-[20px] text-[var(--dp-primary)]">
+                <span className="mt-1 text-[20px] text-(--primary)">
                   •
                 </span>
                 <div>
@@ -161,7 +160,7 @@ export default function MarketingLanding() {
               </li>
 
               <li className="flex items-start gap-4">
-                <span className="mt-1 text-[20px] text-[var(--dp-primary)]">
+                <span className="mt-1 text-[20px] text-(--primary)">
                   •
                 </span>
                 <div>
@@ -177,7 +176,7 @@ export default function MarketingLanding() {
 
         <div>
           <h4 className="text-2xl font-semibold mb-6">The Solution</h4>
-          <div className="bg-(--dp-primary) rounded-xl p-6 text-white shadow-lg">
+          <div className="bg-(--primary) rounded-xl p-6 text-white shadow-lg">
             <ul className="space-y-4">
               <li className="flex gap-3 items-start">
                 <CheckCircle className="mt-1" color="white" />
@@ -226,7 +225,7 @@ export default function MarketingLanding() {
           <div className="flex gap-4">
             <a
               href="/registration"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-(--dp-primary) text-white font-semibold hover:bg-(--dp-primary-400)"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-(--primary) text-white font-semibold hover:opacity-95"
             >
               {"S'inscrire"}
             </a>
