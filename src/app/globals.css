@@ -51,6 +51,11 @@
   --foreground: #243147;
   --bg-secondary: #e4e6e9;
   --primary: #048996;
+  /* Landing palette */
+  --dp-primary: #5b7cff;
+  --dp-primary-400: #6f8cff;
+  --dp-bg: #f6f8ff;
+  --dp-soft: #eef2ff;
   --color-text: #000;
   --app-blue: #121823;
   --app-green: #015963;
@@ -107,6 +112,19 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 300;
+}
+
+/* Marketing helpers */
+.hero-gradient {
+  background: radial-gradient(
+      80% 80% at 20% 0%,
+      #8bc6ff 0%,
+      rgba(139, 198, 255, 0) 60%
+    ),
+    linear-gradient(135deg, #5b7cff 0%, #8b5cf6 40%, #ff6b6b 100%);
+}
+.rounded-bubble {
+  border-radius: 32px;
 }
 
 @media not all and (min-width: 1024px) {
