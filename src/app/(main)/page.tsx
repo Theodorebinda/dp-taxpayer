@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import GlobeSection from "./components/GlobeSection";
-import Image from "next/image";
 
 export default function MarketingLanding() {
   return (
@@ -76,7 +75,7 @@ export default function MarketingLanding() {
               {/* phone mockup (placeholder) */}
               <div
                 aria-hidden
-                className="absolute inset-0 m-auto w-[320px] h-[640px] md:w-[360px] md:h-[720px] rounded-3xl bg-gradient-to-b from-white/90 to-white/70 shadow-2xl flex flex-col overflow-hidden"
+                className="absolute inset-0 m-auto w-[320px] h-[640px] md:w-[360px] md:h-[720px] rounded-3xl bg-linear-to-b from-white/90 to-white/70 shadow-2xl flex flex-col overflow-hidden"
                 style={{ border: "10px solid rgba(255,255,255,0.15)" }}
               >
                 <div className="h-12 bg-neutral-100/60 flex items-center px-4">
@@ -92,7 +91,7 @@ export default function MarketingLanding() {
                   </div>
                 </div>
                 <div className="h-18 bg-neutral-100/60 flex items-center px-4">
-                  <div className="w-24 h-8 rounded-lg bg-(--primary)" />
+                  <div className="w-24 h-8 rounded-lg bg-primary" />
                 </div>
               </div>
 

@@ -1,6 +1,6 @@
 // src/components/Input/Input.tsx
-import React, { useMemo } from "react";
-import { InputType, DisplayIf } from "@/types/types";
+import React, { useEffect, useMemo } from "react";
+import { InputType, DisplayIf, DisplayIfValueType } from "@/types/types";
 
 import { capitalizeWords } from "@/utils/utils";
 import { FieldDoc } from "../utils/docs";
@@ -9,9 +9,11 @@ import { InputPerType } from "../utils/inputPerType";
 // Fonction utilitaire pour vérifier les conditions d'affichage
 const checkCondition = (
   displayIf: DisplayIf,
-  object: Record<string, any> | null | undefined
+  object: Record<string, unknown> | null | undefined
 ): boolean => {
-  const valueInObj = object?.[displayIf.property];
+  const valueInObj = object?.[displayIf.property] as
+    | DisplayIfValueType
+    | undefined;
   if (valueInObj === undefined) return false;
 
   switch (displayIf.condition) {
@@ -58,10 +60,16 @@ const Input: React.FC<InputType> = (props) => {
     return false;
   }, [props.displayIf, props.parentValue]);
 
-  if (!shouldDisplay) {
-    if (props.parentValue) {
-      props.parentValue[props.property] = null;
+  // Si le champ ne doit pas s'afficher, on nettoie sa valeur via setValue (sans muter les props)
+  const { setValue } = props;
+  useEffect(() => {
+    if (!shouldDisplay && typeof setValue === "function") {
+      // on remet la valeur à null pour refléter l'absence d'entrée utilisateur
+      setValue(null);
     }
+  }, [shouldDisplay, setValue]);
+
+  if (!shouldDisplay) {
     return null;
   }
 

@@ -42,7 +42,7 @@ export default function Header() {
             <Link href="/" className="flex items-center gap-3">
               <span
                 aria-hidden
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-(--primary)  shadow-sm"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-primary  shadow-sm"
               >
                 <span className="h-2 w-2 rounded-full bg-white/90 pulse" />
               </span>
@@ -59,19 +59,19 @@ export default function Header() {
             <div className="hidden md:flex items-center gap-8 font-medium text-app-blue-600 dark:text-white/90 transition-colors">
               <a
                 href="#features"
-                className="relative transition-colors hover:text-(--primary) after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-(--primary) after:transition-transform hover:after:scale-x-100"
+                className="relative transition-colors hover:text-primary after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-primary after:transition-transform hover:after:scale-x-100"
               >
                 Fonctionnalités
               </a>
               <a
                 href="#how"
-                className="relative transition-colors hover:text-(--primary) after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-(--primary) after:transition-transform hover:after:scale-x-100"
+                className="relative transition-colors hover:text-primary after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-primary after:transition-transform hover:after:scale-x-100"
               >
                 Comment ça marche
               </a>
               <Link
                 href="/contact"
-                className="relative transition-colors hover:text-(--primary) after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-(--primary) after:transition-transform hover:after:scale-x-100"
+                className="relative transition-colors hover:text-primary after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-primary after:transition-transform hover:after:scale-x-100"
               >
                 Contact
               </Link>
@@ -81,13 +81,13 @@ export default function Header() {
               <ThemeSwitcher />
               <Link
                 href="/auth/login"
-                className="hidden md:inline px-3 py-2 font-medium text-app-blue-700 hover:text-(--primary) transition-colors dark:text-white/90"
+                className="hidden md:inline px-3 py-2 font-medium text-app-blue-700 hover:text-primary transition-colors dark:text-white/90"
               >
                 Se connecter
               </Link>
               <Link
                 href="/auth/registration"
-                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 font-semibold text-white bg-(--primary) shadow-sm hover:opacity-95 transition"
+                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 font-semibold text-white bg-primary shadow-sm hover:opacity-95 transition"
               >
                 {"S'inscrire"}
               </Link>
