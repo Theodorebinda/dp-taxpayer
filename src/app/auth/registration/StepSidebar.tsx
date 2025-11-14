@@ -1,6 +1,6 @@
 "use client";
 
-import ImageWithFallback from "@/components/table/components/table-image";
+import Image from "next/image";
 
 type StepSidebarProps = {
   title: string;
@@ -29,12 +29,12 @@ export default function StepSidebar({
         <p className="text-white/80 text-base">{description}</p>
       </div>
       <div className="flex items-end justify-center">
-        <ImageWithFallback
+        <Image
           src={illustration}
           alt="Illustration d'étape"
           className="max-w-full h-64 object-contain opacity-95"
-          width={100}
-          height={100}
+          width={500}
+          height={400}
         />
       </div>
       <div className="text-white/70 text-sm mt-6">
