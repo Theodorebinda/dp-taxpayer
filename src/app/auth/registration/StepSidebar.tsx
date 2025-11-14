@@ -18,7 +18,7 @@ export default function StepSidebar({
   stepsCount,
 }: StepSidebarProps) {
   return (
-    <aside className="hidden md:flex flex-col justify-between w-full h-full  text-white p-10">
+    <aside className="hidden md:flex flex-1 flex-col justify-between w-full h-full  text-white p-10">
       <div>
         <div className="mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-white/15 backdrop-blur-sm">

@@ -48,7 +48,6 @@ export default function DigiPublicSignupForm() {
         style={{ backgroundImage: `url(${banner.src})` }}
       ></div>
 
-      {/* LEFT: Formulaire + Navigation */}
       <div className="w-full max-lg:h-full flex lg:items-center items-start justify-center p-5 max-lg:bg-background/80 z-10">
         <div className="lg:p-10 p-5 w-3/4 max-lg:w-full lg:bg-background/80 h-fit rounded-xl z-10">
           <div className="w-full max-w-2xl mx-auto flex flex-col gap-6">
@@ -70,16 +69,14 @@ export default function DigiPublicSignupForm() {
       </div>
 
       {/* RIGHT: Étapes / Sidebar */}
-      <div className="relative block w-full h-full max-lg:h-fit bg-background/80 max-lg:py-10 px-10">
-        <div className="relative z-10 flex flex-col justify-center items-start h-full max-w-lg mx-auto">
-          <StepSidebar
-            title={step.title}
-            description={step.description}
-            illustration={step.illustration}
-            stepIndex={currentStep}
-            stepsCount={steps.length}
-          />
-        </div>
+      <div className="relative flex w-full h-full max-lg:h-fit bg-background/80 max-lg:py-10 px-1">
+        <StepSidebar
+          title={step.title}
+          description={step.description}
+          illustration={step.illustration}
+          stepIndex={currentStep}
+          stepsCount={steps.length}
+        />
       </div>
     </main>
   );
