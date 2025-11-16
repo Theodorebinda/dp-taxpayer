@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export default function GlobeSection() {
   return (
-    <section className="w-full min-h-screen flex items-center bg-[#0a1b2a] text-white py-32 relative overflow-hidden">
+    <section className="w-full  flex items-center bg-[#0a1b2a] text-white py-32 relative overflow-hidden">
       {/* Glow Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(4,137,150,0.4),transparent_70%)] blur-3xl" />
 
