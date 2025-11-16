@@ -67,7 +67,7 @@ export default function DigiPublicLanding() {
 
   return (
     <div
-      className="min-h-screen text-neutral-700 dark:text-white/90"
+      className=" text-neutral-700 dark:text-white/90"
       style={{ backgroundColor: "var(--dp-bg)" }} // safe use of CSS var
     >
       {/* HERO (je n'ai modifié que les classes invalides) */}
@@ -175,8 +175,8 @@ export default function DigiPublicLanding() {
       </AnimatedGradientBackground>
 
       {/* STORY SECTION */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 ">
-        <StickyVisualStory sections={storySections} stickyTop={300} />
+      <section className="max-w-7xl mx-auto px-6 md:px-10 py-16">
+        <StickyVisualStory sections={storySections} />
       </section>
       <section>
         <GlobeSection />

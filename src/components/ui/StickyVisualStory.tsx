@@ -14,10 +14,10 @@ type Section = {
 
 export default function StickyVisualStory({
   sections,
-  stickyTop = 300,
+  stickyTop = "25%",
 }: {
   sections: Section[];
-  stickyTop?: number;
+  stickyTop?: string;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -91,14 +91,14 @@ export default function StickyVisualStory({
     <div ref={containerRef} className="relative">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
         {/* Colonne gauche - sections défilantes */}
-        <div className="space-y-8 lg:space-y-4">
+        <div className="space-y-8 lg:space-b-4">
           {sections.map((section, index) => (
             <section
               key={section.id}
               ref={(el: HTMLDivElement | null) => {
                 sectionRefs.current[index] = el;
               }}
-              className="min-h-[80vh] lg:min-h-[90vh] flex items-center py-8"
+              className="min-h-[20vh] lg:min-h-[40vh] flex items-center py-8"
             >
               <motion.div
                 initial={false}
