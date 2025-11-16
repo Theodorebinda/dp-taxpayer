@@ -5,11 +5,11 @@ import { motion } from "framer-motion";
 
 export default function GlobeSection() {
   return (
-    <section className="w-full bg-[#0a1b2a] text-white py-32 relative overflow-hidden">
+    <section className="w-full min-h-screen flex items-center bg-[#0a1b2a] text-white py-32 relative overflow-hidden">
       {/* Glow Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(4,137,150,0.4),transparent_70%)] blur-3xl"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(4,137,150,0.4),transparent_70%)] blur-3xl" />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-10 flex flex-col lg:flex-row items-center gap-16 relative z-20">
+      <div className="layout-shell flex flex-col lg:flex-row items-center gap-16 relative z-20">
         {/* LEFT: Text */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}

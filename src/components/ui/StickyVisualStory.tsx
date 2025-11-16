@@ -19,6 +19,7 @@ export default function StickyVisualStory({
   sections: Section[];
   stickyTop?: string;
 }) {
+  const STICKY_HEIGHT = 520;
   const [activeIndex, setActiveIndex] = useState(0);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,7 +32,6 @@ export default function StickyVisualStory({
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      const direction = scrollY > lastScrollY.current ? "down" : "up";
       lastScrollY.current = scrollY;
 
       // Trouver la section la plus proche du centre de l'écran
@@ -89,16 +89,24 @@ export default function StickyVisualStory({
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2   items-start">
         {/* Colonne gauche - sections défilantes */}
-        <div className="space-y-8 lg:space-b-4">
+        <div
+          className="flex flex-col"
+          style={{
+            minHeight: `${STICKY_HEIGHT}px`,
+            alignSelf: "flex-start",
+            gap: `${STICKY_HEIGHT * 0.75}px`,
+            paddingBottom: `${STICKY_HEIGHT * 0.75}px`,
+          }}
+        >
           {sections.map((section, index) => (
             <section
               key={section.id}
               ref={(el: HTMLDivElement | null) => {
                 sectionRefs.current[index] = el;
               }}
-              className="min-h-[20vh] lg:min-h-[40vh] flex items-center py-8"
+              className="  flex items-center py-8"
             >
               <motion.div
                 initial={false}
@@ -125,8 +133,14 @@ export default function StickyVisualStory({
         </div>
 
         {/* Colonne droite - image sticky */}
-        <div className="hidden lg:block sticky" style={{ top: stickyTop }}>
-          <div className="relative w-full max-w-md mx-auto">
+        <div
+          className="hidden lg:block sticky"
+          style={{ top: stickyTop, alignSelf: "flex-start" }}
+        >
+          <div
+            className="relative w-full max-w-md mx-auto"
+            style={{ minHeight: `${STICKY_HEIGHT}px` }}
+          >
             <div className="aspect-[4/5] relative rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl">
               <AnimatePresence mode="wait">
                 <motion.div

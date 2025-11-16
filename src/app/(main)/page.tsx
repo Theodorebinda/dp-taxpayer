@@ -37,9 +37,9 @@ export default function DigiPublicLanding() {
   const storySections = [
     {
       id: "s1",
-      title: "Inscription simplifiée",
+      title: "Une suite de solutions de paiement et de produits financiers ",
       description:
-        "Un formulaire guidé et intelligent pour ajouter vos informations en quelques étapes.",
+        "Réduisez vos coûts, augmentez vos revenus et gagnez en efficacité grâce à une plateforme entièrement intégrée et alimentée par l'IA. Stripe répond à tous vos besoins en matière de paiement, et vous permet de gérer vos revenus et de lancer (ou concevoir) de nouveaux modèles économiques. ",
       image: mainInput.src,
     },
     {
@@ -67,17 +67,17 @@ export default function DigiPublicLanding() {
 
   return (
     <div
-      className=" text-neutral-700 dark:text-white/90"
+      className="  text-neutral-700 dark:text-white/90"
       style={{ backgroundColor: "var(--dp-bg)" }} // safe use of CSS var
     >
       {/* HERO (je n'ai modifié que les classes invalides) */}
       <AnimatedGradientBackground>
         <section className="relative">
           <div
-            className="absolute -left-40 top-20 w-[520px] h-[520px] rounded-[120px] blur-[56px]"
+            className=" absolute -left-40 top-20 w-[520px] h-[520px] rounded-[120px] blur-[56px]"
             style={accentGlowStyle}
           />
-          <div className="relative max-w-7xl mx-auto px-6 md:px-10 py-20 md:py-20 flex flex-col lg:flex-row items-center gap-12">
+          <div className="relative max-w-7xl layout-shell mx-auto px-6 md:px-10 py-20 md:py-20 flex flex-col lg:flex-row items-center gap-12">
             <div className="w-full lg:w-1/2 ">
               <motion.h1
                 initial={{ y: 16, opacity: 0 }}
@@ -175,7 +175,7 @@ export default function DigiPublicLanding() {
       </AnimatedGradientBackground>
 
       {/* STORY SECTION */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 py-16">
+      <section className="max-w-7xl layout-shell mx-auto px-6 md:px-10 py-16">
         <StickyVisualStory sections={storySections} />
       </section>
       <section>

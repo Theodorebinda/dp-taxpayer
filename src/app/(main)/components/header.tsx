@@ -72,10 +72,10 @@ export default function Header() {
     : { type: "spring", stiffness: 420, damping: 32, mass: 0.4 };
 
   return (
-    <header className="relative z-50 ">
+    <header className="relative z-50">
       {/* ========== GRAND HEADER QUI DÉFILE (normal flow) ========= */}
       <div className="w-full backdrop-blur-xl" style={navSurfaceStyle}>
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 flex items-center justify-between">
+        <div className="layout-shell py-6 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <span
               aria-hidden
@@ -135,70 +135,72 @@ export default function Header() {
       {/* fixed so it doesn't take layout space when hidden */}
       <motion.div
         aria-hidden={!scrolled}
-        className="fixed top-0 left-0 right-0 z-[60] pointer-events-auto flex justify-center"
+        className="fixed top-0 left-0 right-0 z-[60] pointer-events-none "
         initial={initial}
         animate={scrolled ? animateIn : animateOut}
         transition={transition as Transition}
         style={{ willChange: "transform, opacity" }}
       >
-        {/* centered container */}
-        <div
-          className="mx-4 sm:mx-6 w-full max-w-7xl mt-2 mb-2 py-3 rounded-xl border shadow-lg"
-          style={miniNavStyle}
-        >
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3">
-              <span
-                aria-hidden
-                className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--primary)] shadow-sm"
-              >
-                <span className="h-2 w-2 rounded-full bg-white/90 pulse" />
-              </span>
+        <div className="layout-shell pointer-events-auto">
+          <div
+            className="mt-2 mb-2 py-3 rounded-xl border shadow-lg px-2 md:px-4"
+            style={miniNavStyle}
+          >
+            <div className="flex items-center justify-between">
+              <Link href="/" className="flex items-center gap-3">
+                <span
+                  aria-hidden
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--primary)] shadow-sm"
+                >
+                  <span className="h-2 w-2 rounded-full bg-white/90 pulse" />
+                </span>
 
-              <Image
-                src={
-                  isDarkTheme
-                    ? "/logo/logo-inline-green.png"
-                    : "/logo/logo-inline.png"
-                }
-                alt="DigiPublic"
-                width={150}
-                height={32}
-                className="h-7 w-auto"
-                priority
-              />
-            </Link>
-            <div className="hidden md:flex items-center gap-6">
-              <a
-                href="#features"
-                className={clsx(linkBaseClass, linkColorClass)}
-              >
-                Fonctionnalités
-              </a>
-              <a href="#how" className={clsx(linkBaseClass, linkColorClass)}>
-                Comment ça marche
-              </a>
-              <Link
-                href="/contact"
-                className={clsx(linkBaseClass, linkColorClass)}
-              >
-                Contact
+                <Image
+                  src={
+                    isDarkTheme
+                      ? "/logo/logo-inline-green.png"
+                      : "/logo/logo-inline.png"
+                  }
+                  alt="DigiPublic"
+                  width={150}
+                  height={32}
+                  className="h-7 w-auto"
+                  priority
+                />
               </Link>
-            </div>
+              <div className="hidden md:flex items-center gap-6">
+                <a
+                  href="#features"
+                  className={clsx(linkBaseClass, linkColorClass)}
+                >
+                  Fonctionnalités
+                </a>
+                <a href="#how" className={clsx(linkBaseClass, linkColorClass)}>
+                  Comment ça marche
+                </a>
+                <Link
+                  href="/contact"
+                  className={clsx(linkBaseClass, linkColorClass)}
+                >
+                  Contact
+                </Link>
+              </div>
 
-            <div className="flex items-center gap-3">
-              <Link
-                href="/auth/login"
-                className={clsx(
-                  "hidden md:inline px-3 py-2 font-medium",
-                  linkColorClass
-                )}
-              >
-                Se connecter
-              </Link>
-              <Link href="/auth/registration" className={signupButtonClass}>
-                {"S'inscrire"}
-              </Link>
+              <div className="flex items-center gap-3">
+                <ThemeSwitcher />
+                <Link
+                  href="/auth/login"
+                  className={clsx(
+                    "hidden md:inline px-3 py-2 font-medium",
+                    linkColorClass
+                  )}
+                >
+                  Se connecter
+                </Link>
+                <Link href="/auth/registration" className={signupButtonClass}>
+                  {"S'inscrire"}
+                </Link>
+              </div>
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@ const PUBLIC_PATHS: RegExp[] = [
   /^\/login$/,
   /^\/register$/,
   /^\/registration(\/.*)?$/,
+  /^\/maintenance(\/.*)?$/,
   /^\/auth\/login$/,
   /^\/auth\/registration(\/.*)?$/,
   /^\/marketing(\/.*)?$/,

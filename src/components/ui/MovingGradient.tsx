@@ -30,7 +30,7 @@ export default function AnimatedGradientBackground({
   }, [isDark]);
 
   return (
-    <div className="relative min-h-screen overflow-hidden transition-colors duration-300">
+    <div className="relative  overflow-hidden transition-colors duration-300">
       {/* Static background */}
       <div
         className="absolute inset-0 transition-colors duration-300"

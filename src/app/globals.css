@@ -93,6 +93,10 @@
   --text-7xl: 72px;
   --text-8xl: 96px;
   --text-9xl: 128px;
+
+  --layout-max-width: 1200px;
+  --layout-gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --layout-gutter-tight: clamp(1rem, 3vw, 2.5rem);
 }
 
 .dark {
@@ -118,7 +122,7 @@ body {
   transition: background-color 240ms ease, color 240ms ease;
 }
 
-/* Marketing helpers */
+/* LandingPage helpers */
 .hero-gradient {
   background: radial-gradient(
       80% 80% at 20% 0%,
@@ -183,4 +187,16 @@ body > * {
 
 body *::-webkit-scrollbar {
   display: none;
+}
+
+.layout-shell {
+  width: min(100%, var(--layout-max-width));
+  margin-inline: auto;
+  padding-inline: var(--layout-gutter);
+}
+
+.layout-shell-tight {
+  width: min(100%, calc(var(--layout-max-width) - 32px));
+  margin-inline: auto;
+  padding-inline: var(--layout-gutter-tight);
 }
