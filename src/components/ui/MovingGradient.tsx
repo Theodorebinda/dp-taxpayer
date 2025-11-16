@@ -9,22 +9,25 @@ export default function AnimatedGradientBackground({
   children?: React.ReactNode;
 }) {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme !== "light";
+  const isDark = resolvedTheme === "dark";
 
-  const baseBackground = isDark ? "#243147" : "#f4f7ff";
-  const gradientStyle = useMemo(
-    () =>
-      isDark
-        ? `
-            radial-gradient(600px at 30% 20%, rgba(4,137,150,0.25), transparent 70%),
-            radial-gradient(800px at 80% 70%, rgba(4,137,150,0.15), transparent 80%)
-          `
-        : `
-            radial-gradient(720px at 20% 20%, rgba(53,132,255,0.22), transparent 70%),
-            radial-gradient(860px at 80% 60%, rgba(14,165,233,0.18), transparent 80%)
-          `,
-    [isDark]
-  );
+  const baseBackground = isDark ? "var(--background)" : "var(--dp-bg)";
+  const gradientStyle = useMemo(() => {
+    const primaryGlow = "color-mix(in srgb, var(--primary) 28%, transparent)";
+    const depthGlow = isDark
+      ? "color-mix(in srgb, var(--app-blue-800) 24%, transparent)"
+      : "color-mix(in srgb, var(--app-blue) 18%, transparent)";
+
+    return isDark
+      ? `
+          radial-gradient(620px at 32% 18%, ${primaryGlow}, transparent 70%),
+          radial-gradient(840px at 78% 72%, ${depthGlow}, transparent 80%)
+        `
+      : `
+          radial-gradient(720px at 22% 22%, ${primaryGlow}, transparent 72%),
+          radial-gradient(900px at 82% 64%, ${depthGlow}, transparent 82%)
+        `;
+  }, [isDark]);
 
   return (
     <div className="relative min-h-screen overflow-hidden transition-colors duration-300">
@@ -37,12 +40,20 @@ export default function AnimatedGradientBackground({
       {/* Animated gradient layer */}
       <div
         className={`absolute inset-0 ${
-          isDark ? "opacity-[0.35] blur-3xl" : "opacity-[0.5] blur-2xl"
+          isDark ? "opacity-60 blur-[120px]" : "opacity-70 blur-[100px]"
         } animate-premiumGradient`}
         style={{
           background: gradientStyle,
-          mixBlendMode: isDark ? "normal" : "multiply",
+          mixBlendMode: isDark ? "screen" : "multiply",
           transform: "translate3d(0,0,0)",
+        }}
+      />
+
+      <div
+        className="pointer-events-none absolute inset-x-0 top-10 mx-auto h-64 w-3/4 blur-[140px] opacity-50"
+        style={{
+          background:
+            "radial-gradient(50% 50% at 50% 50%, color-mix(in srgb, var(--primary) 20%, transparent), transparent)",
         }}
       />
 
