@@ -1,16 +1,14 @@
 "use client";
 
-import DPGlobe from "./Globe";
+import DPGlobe from "../../../components/ui/Globe";
 import { motion } from "framer-motion";
 
 export default function GlobeSection() {
   return (
     <section className="w-full  flex items-center bg-[#0a1b2a] text-white py-32 relative overflow-hidden">
-      {/* Glow Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(4,137,150,0.4),transparent_70%)] blur-3xl" />
 
       <div className="layout-shell flex flex-col lg:flex-row items-center gap-16 relative z-20">
-        {/* LEFT: Text */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -38,8 +36,6 @@ export default function GlobeSection() {
             </a>
           </div>
         </motion.div>
-
-        {/* RIGHT: Globe */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}

@@ -66,15 +66,14 @@ export default function FooterComponent() {
     <footer
       className="relative overflow-hidden text-slate-800 dark:text-white/90"
       style={{
-        backgroundColor: isDarkTheme ? "var(-primary)" : "var(-bg-secondary)",
+        backgroundColor: isDarkTheme
+          ? "var(--app-blue-900)"
+          : "var(--bg-secondary)",
       }}
     >
       <div className="layout-shell relative py-16">
-        {/* Main footer content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          {/* Left column - Brand and newsletter */}
           <div className="space-y-8">
-            {/* Brand */}
             <div className="space-y-4">
               <Link href="/" className="inline-block">
                 <motion.div

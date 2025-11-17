@@ -6,8 +6,7 @@ import { useTheme } from "next-themes";
 import AnimatedGradientBackground from "@/components/ui/MovingGradient";
 import StickyVisualStory from "@/components/ui/StickyVisualStory";
 import GlobeSection from "./components/GlobeSection";
-import mainInput from "@/../public/images/main-input.webp";
-import banner from "@/../public/images/banner.webp";
+import { storySections } from "@/lib/data/storieSectionData";
 
 export default function DigiPublicLanding() {
   const { resolvedTheme } = useTheme();
@@ -34,43 +33,11 @@ export default function DigiPublicLanding() {
     ? "bg-white/10 backdrop-blur-md shadow-xl"
     : "bg-white/80 backdrop-blur-md shadow-xl border border-white/60";
 
-  const storySections = [
-    {
-      id: "s1",
-      title: "Une suite de solutions de paiement et de produits financiers ",
-      description:
-        "Réduisez vos coûts, augmentez vos revenus et gagnez en efficacité grâce à une plateforme entièrement intégrée et alimentée par l'IA. Stripe répond à tous vos besoins en matière de paiement, et vous permet de gérer vos revenus et de lancer (ou concevoir) de nouveaux modèles économiques. ",
-      image: mainInput.src,
-    },
-    {
-      id: "s2",
-      title: "Paiement sécurisé",
-      description:
-        "Acceptez les paiements et suivez les transactions en temps réel depuis un tableau de bord simple.",
-      image: banner.src,
-    },
-    {
-      id: "s3",
-      title: "Reporting & automatisation",
-      description:
-        "Exportez, planifiez et automatisez vos déclarations. Contrôlez tout depuis une API puissante.",
-      image: mainInput.src,
-    },
-    {
-      id: "s4",
-      title: "Reporting & automatisation",
-      description:
-        "Exportez, planifiez et automatisez vos déclarations. Contrôlez tout depuis une API puissante.",
-      image: mainInput.src,
-    },
-  ];
-
   return (
     <div
-      className="  text-neutral-700 dark:text-white/90"
-      style={{ backgroundColor: "var(--dp-bg)" }} // safe use of CSS var
+      className="  text-neutral-700 "
+      style={{ backgroundColor: "var(--dp-soft) dark:var(--app-blue-900)" }}
     >
-      {/* HERO (je n'ai modifié que les classes invalides) */}
       <AnimatedGradientBackground>
         <section className="relative">
           <div
@@ -162,7 +129,7 @@ export default function DigiPublicLanding() {
                     </div>
                   </div>
                   <div className="h-18 bg-neutral-100/60 flex items-center px-4">
-                    <div className="w-24 h-8 rounded-lg bg-[var(--primary)]" />
+                    <div className="w-24 h-8 rounded-lg bg-var(--primary)" />
                   </div>
                 </div>
 

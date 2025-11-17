@@ -1,8 +1,8 @@
 "use client";
-import StepSidebar from "./StepSidebar";
-import StepForm from "./StepForm";
-import StepNavigation from "./StepNavigation";
-import { useSignupSteps } from "./useSignupSteps";
+import StepSidebar from "./components/StepSidebar";
+import StepForm from "./components/StepForm";
+import StepNavigation from "./components/StepNavigation";
+import { useSignupSteps } from "./components/useSignupSteps";
 import Loader from "@/components/atoms/loader";
 import banner from "@/../public/images/banner.webp";
 
