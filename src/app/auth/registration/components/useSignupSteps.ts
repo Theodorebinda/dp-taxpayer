@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { signupSteps } from "./steps.config";
 import { ApiInputType } from "@/types/types";
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
@@ -8,7 +8,11 @@ import { qk } from "@/utils/query-keys";
 import {
   getRegistrationFields,
   registerTaxpayer,
+  type RegistrationFieldsPayload,
 } from "@/services/taxpayer.service";
+import { useToast } from "@/hooks/useToast";
+
+const EMPTY_FIELDS: ApiInputType[] = [];
 
 export type SignupFormData = Record<string, unknown>;
 
@@ -31,17 +35,46 @@ type UseSignupStepsReturn = {
 export function useSignupSteps(): UseSignupStepsReturn {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<SignupFormData>({});
+  const { success } = useToast();
+  const hydratedFormRef = useRef<string | null>(null);
+  const shownMessageRef = useRef<string | null>(null);
 
   const {
-    data: fields,
+    data: registrationPayload,
     isLoading,
     isError,
     error,
-  } = useApiQuery(qk.taxpayer.registration(), async () => {
-    const response = await getRegistrationFields();
-    if (!response) throw new Error("Impossible de charger les champs.");
-    return response.data as ApiInputType[];
-  });
+  } = useApiQuery<RegistrationFieldsPayload>(
+    qk.taxpayer.registration(),
+    async () => {
+      const response = await getRegistrationFields();
+      if (!response) throw new Error("Impossible de charger les champs.");
+      return response;
+    }
+  );
+
+  const fields = registrationPayload?.fields ?? EMPTY_FIELDS;
+  const serverForm = registrationPayload?.form ?? null;
+  const serverMessage = registrationPayload?.message;
+
+  useEffect(() => {
+    if (!serverForm) return;
+    const serialized = JSON.stringify(serverForm);
+    if (hydratedFormRef.current === serialized) return;
+    hydratedFormRef.current = serialized;
+
+    setFormData((prev) => ({
+      ...serverForm,
+      ...prev,
+    }));
+  }, [serverForm]);
+
+  useEffect(() => {
+    if (!serverMessage) return;
+    if (shownMessageRef.current === serverMessage) return;
+    success(serverMessage);
+    shownMessageRef.current = serverMessage;
+  }, [serverMessage, success]);
 
   const handleValueChange = (property: string, value: unknown) => {
     setFormData((prev) => ({
@@ -52,7 +85,7 @@ export function useSignupSteps(): UseSignupStepsReturn {
 
   const currentFields = useMemo<ApiInputType[]>(
     () =>
-      (fields ?? []).filter((f) =>
+      fields.filter((f) =>
         signupSteps[currentStep]?.fields.includes(f.property)
       ),
     [fields, currentStep]

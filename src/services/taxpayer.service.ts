@@ -10,6 +10,12 @@ type ApiWrapper<T> = {
   form?: unknown;
 };
 
+type ApiLikePayload = {
+  message?: string;
+  form?: unknown;
+  data?: unknown;
+};
+
 function unwrapData<T>(res: unknown): T {
   if (res && typeof res === "object") {
     const r = res as Partial<ApiWrapper<unknown>> & { data?: unknown };
@@ -25,15 +31,50 @@ function unwrapData<T>(res: unknown): T {
   return res as T;
 }
 
+function extractForm(payload: unknown): Record<string, unknown> | null {
+  if (!payload || typeof payload !== "object") return null;
+  const record = payload as Record<string, unknown>;
+
+  if ("form" in record) {
+    const maybeForm = record["form"];
+    if (maybeForm && typeof maybeForm === "object") {
+      return maybeForm as Record<string, unknown>;
+    }
+  }
+
+  if ("data" in record) {
+    return extractForm(record["data"]);
+  }
+
+  return null;
+}
+
+export type RegistrationFieldsPayload = {
+  fields: ApiInputType[];
+  form: Record<string, unknown> | null;
+  message?: string;
+};
+
 export async function getRegistrationFields(): Promise<
-  { data: ApiInputType[] } | false
+  RegistrationFieldsPayload | false
 > {
-  const res = await apiClient.get<{ data: ApiInputType[] }>(
+  const res = await apiClient.get<ApiInputType[] | { data: ApiInputType[] }>(
     API_ENDPOINTS.TAXPAYER_REGISTRATION
   );
   if (!res) return false;
-  const payload = unwrapData<ApiInputType[]>(res);
-  return { data: payload };
+
+  const payload = unwrapData<ApiInputType[]>(res) ?? [];
+  const meta = res as ApiLikePayload;
+  const form = extractForm(res) ?? null;
+
+  return {
+    fields: payload,
+    form,
+    message:
+      typeof meta.message === "string" && meta.message.trim().length > 0
+        ? meta.message
+        : undefined,
+  };
 }
 
 export async function registerTaxpayer(

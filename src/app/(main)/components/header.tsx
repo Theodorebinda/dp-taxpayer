@@ -9,11 +9,17 @@ import { motion, Transition, useReducedMotion } from "framer-motion";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { resolvedTheme } = useTheme();
-  const isDarkTheme = resolvedTheme === "dark";
+  const isDarkTheme = isMounted && resolvedTheme === "dark";
 
   // respect user reduced motion preference
   const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setIsMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 200);
@@ -79,7 +85,7 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-3">
             <span
               aria-hidden
-              className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--primary)] shadow-sm"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm"
             >
               <span className="h-2 w-2 rounded-full bg-white/90 pulse" />
             </span>
@@ -135,7 +141,7 @@ export default function Header() {
       {/* fixed so it doesn't take layout space when hidden */}
       <motion.div
         aria-hidden={!scrolled}
-        className="fixed top-0 left-0 right-0 z-[60] pointer-events-none "
+        className="fixed top-0 left-0 right-0 z-60 pointer-events-none "
         initial={initial}
         animate={scrolled ? animateIn : animateOut}
         transition={transition as Transition}
@@ -150,7 +156,7 @@ export default function Header() {
               <Link href="/" className="flex items-center gap-3">
                 <span
                   aria-hidden
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--primary)] shadow-sm"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm"
                 >
                   <span className="h-2 w-2 rounded-full bg-white/90 pulse" />
                 </span>

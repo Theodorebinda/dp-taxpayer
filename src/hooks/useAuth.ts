@@ -3,7 +3,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import type { Session } from "next-auth";
 import { useState } from "react";
 
-type LoginInput = { username: string; password: string };
+type LoginInput = { identifier: string; password: string };
 type LoginResult = { ok: true } | { ok: false; error?: string };
 
 type UseAuthReturn = {
@@ -40,7 +40,7 @@ export function useAuth(): UseAuthReturn {
   }
 
   async function logout(): Promise<void> {
-    await signOut({ redirect: true, callbackUrl: "/login" });
+    await signOut({ redirect: true, callbackUrl: "/auth/login" });
   }
 
   return {

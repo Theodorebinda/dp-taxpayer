@@ -5,6 +5,7 @@ import StepNavigation from "./components/StepNavigation";
 import { useSignupSteps } from "./components/useSignupSteps";
 import Loader from "@/components/atoms/loader";
 import banner from "@/../public/images/banner.webp";
+import { ErrorDisplay } from "@/components/public/declaration/errorDisplay";
 
 export default function DigiPublicSignupForm() {
   const {
@@ -26,16 +27,17 @@ export default function DigiPublicSignupForm() {
 
   if (isError) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Erreur de chargement
-          </h2>
-          <p className="text-gray-600">
-            {(error as Error)?.message || "Une erreur s'est produite."}
-          </p>
-        </div>
-      </div>
+      <ErrorDisplay error={error as { message: string } | null} />
+      // <div className="min-h-screen flex items-center justify-center p-6 bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50">
+      //   <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+      //     <h2 className="text-2xl font-bold text-gray-900 mb-2">
+      //       Erreur de chargement
+      //     </h2>
+      //     <p className="text-gray-600">
+      //       {(error as Error)?.message || "Une erreur s'est produite."}
+      //     </p>
+      //   </div>
+      // </div>
     );
   }
 
