@@ -19,13 +19,11 @@ export default function LoginPage() {
     setSubmitting(false);
     if (res.ok) {
       success("Connexion réussie");
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     } else {
       error(res.error || "Identifiants invalides");
     }
   }
-
-  console.log(error);
 
   return (
     <MotionWrapper className="min-h-dvh grid place-items-center p-6">

@@ -7,7 +7,6 @@ import GridLayout from "@/components/menus/grid-layout";
 import ListLayout from "@/components/menus/list-layout";
 import { useApplications } from "@/hooks/use-applications";
 import { useUiStore } from "@/store/ui-store";
-import { ApplicationType } from "@/types/application.type";
 import Button from "@/components/commons/button";
 
 const DashboardPage = () => {
