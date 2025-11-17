@@ -1,28 +1,40 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect } from "react";
 import Sidebar from "@/components/commons/sidebar";
-import DisplayLayoutMenu from "@/components/menus/menu-display-layout";
-import GridLayout from "@/components/menus/grid-layout";
-import ListLayout from "@/components/menus/list-layout";
-import { useApplications } from "@/hooks/use-applications";
-import { useUiStore } from "@/store/ui-store";
 import Button from "@/components/commons/button";
+import MenuCard from "@/components/menus/menu-card";
+import { usePrimaryApplication } from "@/hooks/use-primary-application";
+import { useApplicationMenus } from "@/hooks/use-application-menus";
+import { useNavigationStore } from "@/store/navigation-store";
 
-const DashboardPage = () => {
+export default function DashboardPage() {
   const {
-    data: applications = [],
+    data: application,
     isPending,
     isError,
     error,
     refetch,
-  } = useApplications();
-  const displayLayout = useUiStore((state) => state.displayLayout);
+  } = usePrimaryApplication();
+  const {
+    data: menus = [],
+    isPending: menusPending,
+    isError: menusError,
+  } = useApplicationMenus(application?.id);
+  const setCurrentApplicationId = useNavigationStore(
+    (state) => state.setCurrentApplicationId
+  );
 
-  const content = useMemo(() => {
-    if (isPending) {
-      return <LoadingState />;
+  useEffect(() => {
+    if (application) {
+      setCurrentApplicationId(application.id);
     }
+  }, [application, setCurrentApplicationId]);
+
+  const isLoading = isPending || menusPending;
+
+  const renderContent = () => {
+    if (isLoading) return <LoadingState />;
     if (isError) {
       return (
         <ErrorState
@@ -31,37 +43,54 @@ const DashboardPage = () => {
         />
       );
     }
-    if (!applications.length) {
-      return <EmptyState />;
+    if (!application) {
+      return <EmptyApplicationState />;
+    }
+    if (menusError) {
+      return (
+        <ErrorState
+          message="Impossible de charger les menus."
+          onRetry={refetch}
+        />
+      );
+    }
+    if (menus.length === 0) {
+      return <EmptyMenusState />;
     }
 
-    return displayLayout === "grid" ? (
-      <GridLayout applications={applications} />
-    ) : (
-      <ListLayout applications={applications} />
+    return (
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {menus.map((menu) => (
+          <MenuCard
+            key={menu.id}
+            menu={menu}
+            applicationId={application.id}
+            applicationName={application.verbose || application.name}
+          />
+        ))}
+      </section>
     );
-  }, [applications, displayLayout, error, isError, isPending, refetch]);
+  };
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       <Sidebar />
       <main className="flex flex-1 flex-col gap-6 overflow-y-auto p-6">
-        <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-sm uppercase text-muted-foreground">Workspace</p>
-            <h1 className="text-2xl font-semibold">Portail DigiPublic</h1>
-            <p className="text-sm text-muted-foreground">
-              Sélectionnez une application pour afficher ses menus et
-              formulaires.
-            </p>
-          </div>
-          <DisplayLayoutMenu />
+        <header className="flex flex-col gap-3">
+          <p className="text-sm uppercase text-muted-foreground">Workspace</p>
+          <h1 className="text-3xl font-semibold">
+            {application?.verbose || application?.name || "DigiPublic"}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {application?.description ||
+              "Accédez aux routes dynamiques exposées par votre administration fiscale."}
+          </p>
         </header>
-        {content}
+        {renderContent()}
       </main>
     </div>
   );
-};
+}
 
 const LoadingState = () => (
   <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -80,25 +109,29 @@ const ErrorState = ({
 }) => (
   <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-destructive/30 bg-destructive/5 p-8 text-center">
     <p className="text-base font-medium text-destructive">
-      Impossible de charger les applications.
+      {message || "Une erreur est survenue."}
     </p>
-    <code className="rounded-lg bg-background px-3 py-2 text-sm">
-      {message}
-    </code>
     <Button onClick={onRetry} variant="outline">
       Réessayer
     </Button>
   </div>
 );
 
-const EmptyState = () => (
+const EmptyApplicationState = () => (
   <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-muted-foreground/40 p-10 text-center">
     <h2 className="text-lg font-semibold">Aucune application disponible</h2>
     <p className="max-w-md text-sm text-muted-foreground">
-      Les applications assignées à votre espace apparaîtront ici dès
-      qu&apos;elles seront disponibles.
+      Contactez votre administrateur pour activer votre portail.
     </p>
   </div>
 );
 
-export default DashboardPage;
+const EmptyMenusState = () => (
+  <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-muted-foreground/40 p-10 text-center">
+    <h2 className="text-lg font-semibold">Aucun menu configuré</h2>
+    <p className="max-w-md text-sm text-muted-foreground">
+      Les routes exposées par l&apos;API apparaîtront automatiquement ici dès
+      qu&apos;elles seront publiées.
+    </p>
+  </div>
+);

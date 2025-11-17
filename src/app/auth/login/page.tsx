@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import MotionWrapper from "@/components/ui/MotionWrapper";
@@ -7,21 +7,46 @@ import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const { success, error } = useToast();
+  const { success, error: showError, info, dismiss } = useToast();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const pendingToastId = useRef<string | undefined>(undefined);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
-    const res = await login({ identifier, password });
-    setSubmitting(false);
-    if (res.ok) {
-      success("Connexion réussie");
-      window.location.href = "/dashboard";
-    } else {
-      error(res.error || "Identifiants invalides");
+
+    if (!pendingToastId.current) {
+      pendingToastId.current = info("Connexion en cours...", {
+        id: "login-status",
+      });
+    }
+
+    try {
+      const res = await login({ identifier, password });
+      if (process.env.NODE_ENV !== "production") {
+        console.info("[LoginPage] login result", res);
+      }
+      if (res.ok) {
+        success(res.message || "Connexion réussie");
+        window.location.href = "/dashboard";
+      } else {
+        showError(res.error || "Identifiants invalides");
+      }
+    } catch (err) {
+      const message =
+        (err as { message?: string })?.message || "Erreur de connexion";
+      showError(message);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("[LoginPage] unexpected error", err);
+      }
+    } finally {
+      setSubmitting(false);
+      if (pendingToastId.current) {
+        dismiss(pendingToastId.current);
+        pendingToastId.current = undefined;
+      }
     }
   }
 

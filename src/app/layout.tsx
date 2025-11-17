@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+// import TokenWatcher from "./TokenWatcher";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -41,7 +42,10 @@ export default function RootLayout({
     >
       <body className={`${poppins.variable} antialiased`}>
         <Providers>
-          <ErrorBoundary>{children}</ErrorBoundary>
+          <ErrorBoundary>
+            {/* <TokenWatcher /> */}
+            {children}
+          </ErrorBoundary>
         </Providers>
       </body>
     </html>

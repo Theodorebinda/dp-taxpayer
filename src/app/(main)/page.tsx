@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -11,6 +13,17 @@ import { storySections } from "@/lib/data/storieSectionData";
 export default function DigiPublicLanding() {
   const { resolvedTheme } = useTheme();
   const isDarkTheme = resolvedTheme === "dark";
+  const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const token =
+      window.localStorage.getItem("nextauth.message") ||
+      window.localStorage.getItem("dp-sk-moto-token");
+    // if (token) {
+    //   router.replace("/dashboard");
+    // }
+  }, [router]);
 
   const heroHeadingClass = isDarkTheme ? "text-white" : "text-slate-900";
   const heroDescriptionClass = isDarkTheme ? "text-white/80" : "text-slate-600";
@@ -110,14 +123,14 @@ export default function DigiPublicLanding() {
 
                 <div
                   aria-hidden
-                  className="absolute inset-0 m-auto w-[320px] h-[640px] md:w-[360px] md:h-[720px] rounded-3xl shadow-2xl flex flex-col overflow-hidden bg-gradient-to-b from-white/90 to-white/70"
+                  className="absolute inset-0 m-auto w-[320px] h-[640px] md:w-[360px] md:h-[720px] rounded-3xl shadow-2xl flex flex-col overflow-hidden bg-linear-to-b from-white/90 to-white/70"
                   style={{ border: "10px solid rgba(255,255,255,0.15)" }}
                 >
                   <div className="h-12 bg-neutral-100/60 flex items-center px-4">
                     <div className="w-14 h-8 rounded-lg bg-neutral-200/60" />
                   </div>
                   <div className="flex-1 p-4">
-                    <div className="h-12 rounded-lg bg-[var(--dp-soft)] mb-4" />
+                    <div className="h-12 rounded-lg bg-(--dp-soft) mb-4" />
                     <div
                       className="h-44 rounded-lg"
                       style={{ backgroundColor: "rgba(4,137,150,0.08)" }}

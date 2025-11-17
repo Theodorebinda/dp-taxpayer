@@ -5,8 +5,8 @@ export const API_ENDPOINTS = {
   AUTH_ME: "/auth/me",
   APPLICATIONS: "/load/app",
   APPLICATION_MENUS: (applicationId: string) =>
-    `/applications/${applicationId}/menus`,
-  MENU_VISITS: (menuId: string) => `/menus/${menuId}/visit`,
+    `/applications/${applicationId}/menu`,
+  MENU_VISITS: (menuId: string) => `/menu/${menuId}/visit`,
   MENU: "/menu",
   VIEWS: (id: string | number) => `/views/${id}`,
   OPERATIONS: "/operations",
