@@ -9,6 +9,7 @@ export type ApplicationType = {
   isActive: boolean;
   backgroundImageUrl: string;
   menus: SideMenuType[];
+  meta?: Record<string, unknown>;
 };
 
 export type SideMenuType = {
@@ -25,4 +26,6 @@ export type SideMenuType = {
       method: string;
     };
   }[];
+  visited?: boolean;
+  meta?: Record<string, unknown>;
 };

@@ -1,5 +1,13 @@
 import { QueryClient } from "@tanstack/react-query";
 
+const FIVE_MINUTES = 5 * 60 * 1000;
+
+function redirectToLogin() {
+  if (typeof window !== "undefined") {
+    window.location.href = "/auth/login";
+  }
+}
+
 let queryClient: QueryClient | undefined;
 
 export function getQueryClient() {
@@ -7,8 +15,17 @@ export function getQueryClient() {
     queryClient = new QueryClient({
       defaultOptions: {
         queries: {
-          retry: 2,
-          staleTime: 60_000,
+          retry: (failureCount, error) => {
+            const status =
+              (error as { code?: number })?.code ??
+              (error as { status?: number })?.status;
+            if (status === 401) {
+              redirectToLogin();
+              return false;
+            }
+            return failureCount < 2;
+          },
+          staleTime: FIVE_MINUTES,
           refetchOnWindowFocus: true,
           refetchOnReconnect: true,
         },

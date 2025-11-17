@@ -137,7 +137,7 @@ const DataTableHeader: React.FC<Props> = ({
                 : `/create/${params.app}/${params.model}`
             );
           }}
-          className="py-3 px-5 !rounded-full max-lg:w-full"
+          className="py-3 px-5 rounded-full! max-lg:w-full"
         >
           <FiPlus size={15} />
           <span className="w-full max-md:hidden">
@@ -161,7 +161,7 @@ const DataTableHeader: React.FC<Props> = ({
                 setRefreshData(true);
               }
             }}
-            className="py-3 px-5 !rounded-full max-lg:w-full"
+            className="py-3 px-5 rounded-full! max-lg:w-full"
           >
             <LuRefreshCcw size={15} />
             <span className="w-full max-md:hidden">Refraichir</span>

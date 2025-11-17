@@ -1,64 +1,88 @@
+"use client";
+
+import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { ApplicationType } from "@/types/application.type";
 import SVGComponent from "../atoms/displaySVG";
-import { useRouter } from "next/navigation";
+import { usePrefetchMenus } from "@/hooks/use-prefetch-menus";
+import { useNavigationStore } from "@/store/navigation-store";
 
-const ApplicationCard = (
-  props: ApplicationType & {
-    setCurrentApplication: (data: ApplicationType | null) => void;
-    loadingAppId: string | null;
-    setLoadingAppId: (uuid: string | null) => void;
-    isAppActive: boolean;
-    setMenus: (menus: any[]) => void;
-  }
-) => {
+type ApplicationCardProps = {
+  application: ApplicationType;
+};
+
+export default function ApplicationCard({ application }: ApplicationCardProps) {
   const router = useRouter();
+  const prefetchMenus = usePrefetchMenus(application.id);
+  const isActiveApp =
+    application.isActive && (application.menus ?? []).length > 0;
+  const {
+    currentApplicationId,
+    setCurrentApplicationId,
+    pendingApplicationId,
+    setPendingApplicationId,
+  } = useNavigationStore();
+
+  const isSelected = currentApplicationId === application.id;
+  const isNavigating = pendingApplicationId === application.id;
+
+  const primaryActionPath = useMemo(() => {
+    return (
+      application.menus?.[0]?.menuActions?.[0]?.action?.path ?? application.name
+    );
+  }, [application]);
+
+  const handleOpen = () => {
+    if (!isActiveApp) return;
+    setPendingApplicationId(application.id);
+    setCurrentApplicationId(application.id);
+    router.push(primaryActionPath);
+    setTimeout(() => setPendingApplicationId(null), 300);
+  };
+
   return (
-    <div
-      onClick={() => {
-        if (!props.isAppActive) return;
-        props.setLoadingAppId(props.id);
-        props.setCurrentApplication(props);
-        props.setMenus(props.menus);
-        setTimeout(() => {
-          props.setLoadingAppId(null);
-        }, 5000);
-        router.push(props.menus[0]?.menuActions[0]?.action.path || props.name);
-      }}
-      className={`group p-5 w-72 h-72 max-md:w-full rounded-lg cursor-pointer flex flex-col justify-start items-start gap-3 shadow-sm dark:shadow-none duration-300 relative overflow-hidden dark:border-none  transition-all ${
-        !props.isAppActive
-          ? "bg-gray-300 dark:bg-gray-700 text-foreground"
-          : "bg-background dark:bg-app-blue-600 hover:bg-app-green-500 hover:font-bold hover:text-background"
-      }`}
+    <button
+      onClick={handleOpen}
+      onMouseEnter={prefetchMenus}
+      onFocus={prefetchMenus}
+      className={`group relative w-full rounded-xl border p-5 text-left transition-all ${
+        isActiveApp
+          ? "hover:-translate-y-1 hover:border-primary hover:shadow-lg"
+          : "opacity-60 cursor-not-allowed"
+      } ${isSelected ? "border-primary shadow-lg" : "border-border"}`}
     >
       <div
-        className={`w-full !h-36 p-2 rounded-md z-10 flex items-center justify-center ${
-          props.isAppActive
-            ? "text-app-green bg-app-green-50 dark:bg-app-blue-50 dark:text-app-blue-500 dark:opacity-80 dark:group-hover:text-app-green-500"
-            : "text-gray-700  dark:bg-gray-500 bg-gray-200"
+        className={`mb-6 flex h-24 w-full items-center justify-center rounded-lg ${
+          isActiveApp
+            ? "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-background"
+            : "bg-muted text-muted-foreground"
         }`}
       >
-        <SVGComponent width="40" height="40" icon={props.icon} />
+        <SVGComponent width="40" height="40" icon={application.icon} />
       </div>
 
-      <div className="z-10 flex flex-col justify-end items-start gap-5 w-full text-center">
-        <strong className="hover:text-bold text-app-green group-hover:text-background z-10 w-full text-center">
-          {props.verbose?.toUpperCase() || props.name?.toUpperCase()}
-        </strong>
-        <span className="z-10 w-full text-center">
-          {props?.description &&
-            `${props.description[0].toUpperCase()}${props.description.slice(
-              1
-            )}`}
+      <div className="space-y-2">
+        <p className="text-lg font-semibold">
+          {application.verbose?.toUpperCase() ||
+            application.name?.toUpperCase()}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          {application.description}
+        </p>
+      </div>
+
+      <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
+        <span>{application.menus?.length ?? 0} menus</span>
+        <span className="font-medium text-primary">
+          {isActiveApp ? "Ouvrir" : "Indisponible"}
         </span>
       </div>
 
-      {props.loadingAppId == props.id && (
-        <div className="absolute inset-0 flex items-center justify-center bg-foreground/50 bg-opacity-50 rounded-lg z-20">
-          <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 animate-spin"></div>
+      {isNavigating && (
+        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-background/70 backdrop-blur-sm">
+          <span className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
       )}
-    </div>
+    </button>
   );
-};
-
-export default ApplicationCard;
+}

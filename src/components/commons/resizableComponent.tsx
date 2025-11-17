@@ -73,7 +73,7 @@ const ResizableComponent = ({
   return (
     <div
       ref={containerRef}
-      className="relative h-fit max-md:!w-full"
+      className="relative h-fit max-md:w-full!"
       style={{ width: shouldResize ? width : initialWidth }}
     >
       {shouldResize && (
@@ -83,7 +83,7 @@ const ResizableComponent = ({
           }`}
           onMouseDown={handleMouseDown}
         >
-            <GoGrabber size={25} className="text-foreground" />
+          <GoGrabber size={25} className="text-foreground" />
         </div>
       )}
       {children}

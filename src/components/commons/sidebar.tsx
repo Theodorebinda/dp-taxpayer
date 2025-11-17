@@ -1,195 +1,139 @@
 "use client";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import appLogo from "@/../public/logo/icon.png";
-import Image from "next/image";
-import HttpClient from "@/utils/http-client";
-import { sidebarState } from "../store/sidebarState";
-import { useStore } from "zustand";
-import Button from "./button";
-import { applictionsStore } from "../store/applications";
-import { currentMenuStore } from "../store/currentMenu";
-import { ApplicationType } from "@/types/application.type";
-import SVGComponent from "../atoms/displaySVG";
-import NavSection from "../atoms/navBarSection";
-import { LuX } from "react-icons/lu";
 
-const SidebarLoader = () => {
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { LuX } from "react-icons/lu";
+import appLogo from "@/../public/logo/icon.png";
+import { useApplications } from "@/hooks/use-applications";
+import { useApplicationMenus } from "@/hooks/use-application-menus";
+import { useNavigationStore } from "@/store/navigation-store";
+import { useUiStore } from "@/store/ui-store";
+import { ApplicationType, SideMenuType } from "@/types/application.type";
+import NavSection from "../atoms/navBarSection";
+import Button from "./button";
+import SVGComponent from "../atoms/displaySVG";
+import { usePrefetchMenus } from "@/hooks/use-prefetch-menus";
+
+const HIDDEN_PATHS = ["/auth/login"];
+
+const SidebarLoader = () => (
+  <div className="flex w-full flex-col gap-4 p-5">
+    {Array.from({ length: 6 }).map((_, index) => (
+      <div
+        key={index}
+        className="h-10 w-full rounded-md bg-muted animate-pulse"
+      />
+    ))}
+  </div>
+);
+
+type ApplicationPillProps = {
+  application: ApplicationType;
+  isSelected: boolean;
+  onSelect: (id: string) => void;
+};
+
+const ApplicationPill = ({
+  application,
+  isSelected,
+  onSelect,
+}: ApplicationPillProps) => {
+  const prefetchMenus = usePrefetchMenus(application.id);
+  const isDisabled =
+    !application.isActive || (application.menus ?? []).length === 0;
+
   return (
-    <div className="lg:w-[300px] w-screen animate-pulse z-10 flex flex-col p-5 gap-5">
-      {Array(8)
-        .fill(null)
-        .map((_, index) => (
-          <div
-            key={index}
-            className="h-10 bg-bg-secondary rounded-md w-full mx-auto"
-          ></div>
-        ))}
-    </div>
+    <button
+      key={application.id}
+      onMouseEnter={prefetchMenus}
+      onFocus={prefetchMenus}
+      onClick={() => onSelect(application.id)}
+      disabled={isDisabled}
+      className={`rounded-md p-3 transition ${
+        isDisabled
+          ? "cursor-not-allowed opacity-40"
+          : isSelected
+          ? "bg-primary/15 text-primary"
+          : "hover:bg-muted"
+      }`}
+    >
+      <SVGComponent icon={application.icon} height="20" width="20" />
+    </button>
   );
 };
 
 const Sidebar: React.FC = () => {
-  const path = usePathname();
-  const [error, setInnerError] = useState<
-    | {
-        code: number;
-        message: string;
-        [key: string]: any;
-      }
-    | undefined
-  >(undefined);
-  const [loading, setLoading] = useState(true);
-  const [fetchMenu, setFetchMenu] = useState(true);
-  const { isOpen, setIsOpen } = useStore(sidebarState);
-  const [sidebarWidth, setSidebarWidth] = useState<number | string>(400);
+  const pathname = usePathname();
   const [isResizing, setIsResizing] = useState(false);
+  const isSidebarOpen = useUiStore((state) => state.isSidebarOpen);
+  const setSidebarOpen = useUiStore((state) => state.setSidebarOpen);
+  const sidebarWidth = useUiStore((state) => state.sidebarWidth);
+  const setSidebarWidth = useUiStore((state) => state.setSidebarWidth);
+  const [isMobile, setIsMobile] = useState(false);
+  const { currentApplicationId, setCurrentApplicationId, setCurrentMenuId } =
+    useNavigationStore();
 
   const {
-    setApplications,
-    setIsLoading,
-    setError,
-    setCurrentApplication,
-    applications,
-    currentApplication,
-  } = useStore(applictionsStore);
-  const { menus, setMenus } = useStore(currentMenuStore);
-  const routeParams: {
-    application: string;
-    app: string;
-    model?: string;
-    id?: string;
-  } = useParams();
-  const router = useRouter();
+    data: applications = [],
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useApplications();
+
+  const {
+    data: menus = [],
+    isPending: menusPending,
+    isError: menusError,
+  } = useApplicationMenus(currentApplicationId);
+
+  const currentApplication = useMemo(() => {
+    return applications.find((app) => app.id === currentApplicationId) ?? null;
+  }, [applications, currentApplicationId]);
 
   useEffect(() => {
-    if (window) {
-      const handleResize = () => {
-        if (window?.innerWidth < 1024) {
-          setIsOpen(false);
-        } else {
-          setIsOpen(true);
-        }
-      };
+    if (!applications.length) return;
+    if (currentApplicationId) return;
+    setCurrentApplicationId(applications[0].id);
+  }, [applications, currentApplicationId, setCurrentApplicationId]);
 
-      handleResize();
-      window?.addEventListener("resize", handleResize);
-
-      return () => {
-        window?.removeEventListener("resize", handleResize);
-      };
+  useEffect(() => {
+    if (!menus?.length || menusPending) return;
+    const currentMenu = useNavigationStore.getState().currentMenuId;
+    if (!currentMenu) {
+      setCurrentMenuId(menus[0]?.id ?? null);
     }
-  }, [setIsOpen]);
+  }, [menus, menusPending, setCurrentMenuId]);
 
   useEffect(() => {
-    if (window && window?.innerWidth < 1024) {
-      setSidebarWidth("100%");
-    } else if (isOpen) setSidebarWidth(400);
-    else setSidebarWidth(100);
-  }, [isOpen]);
-
-  useEffect(() => {
-    const requester = async () => {
-      try {
-        setIsLoading(true);
-        setLoading(true);
-        const httpClient = new HttpClient();
-        const data:
-          | { code: number; message: string; data: ApplicationType[] }
-          | false = await httpClient.get("load/app");
-        if (!data) {
-          if (
-            httpClient.error?.code == 401 &&
-            ["/public/taxpayer/registration"].includes(path)
-          ) {
-            router.push("auth/login");
-          }
-          setError(httpClient.error as any);
-          setInnerError(httpClient.error as any);
-          return;
-        } else if (!data.data && httpClient.error !== null) {
-          setError(httpClient.error);
-          setInnerError(httpClient.error);
-        } else {
-          setError(undefined);
-          setInnerError(undefined);
-          setApplications(data.data);
-        }
-
-        let currentApp =
-          data?.data.find((app) => app.name == routeParams?.application) ||
-          null;
-        if (path.split("/").length > 3) {
-          currentApp =
-            data?.data.find((app) => {
-              const data = app.menus.filter(
-                (menu) =>
-                  menu.menuActions.filter((menuAction) => {
-                    return (
-                      menuAction.action.path.includes(path.split("/")[2]) &&
-                      menuAction.action.path.includes(path.split("/")[3])
-                    );
-                  }).length > 0
-              );
-              return data.length > 0;
-            }) || null;
-        }
-
-        setCurrentApplication(currentApp);
-        setMenus(currentApp?.menus ? currentApp.menus : []);
-      } catch (error: any) {
-        if (menus.length > 0) {
-          setError({
-            code: error.code || 500,
-            message: error.message || "une erreur s'est produite",
-          });
-
-          setInnerError({
-            code: error.code || 500,
-            message: error.message || "une erreur s'est produite",
-          });
-        }
-      } finally {
-        setLoading(false);
-        setFetchMenu(false);
-        setIsLoading(false);
-      }
+    if (typeof window === "undefined") return;
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      setSidebarOpen(!mobile);
     };
-    if (path == "/auth/login") setMenus([]);
-    if (fetchMenu && path !== "/auth/login" && !path.startsWith("/public"))
-      requester();
-  }, [
-    fetchMenu,
-    path,
-    menus.length,
-    routeParams.application,
-    routeParams?.app,
-    routeParams?.model,
-    router,
-    setApplications,
-    setMenus,
-    setCurrentApplication,
-    setError,
-    setIsLoading,
-  ]);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [setSidebarOpen]);
 
-  const handleMouseDown = () => {
+  const handleMouseDown = useCallback(() => {
     setIsResizing(true);
-  };
+  }, []);
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isResizing) return;
-    const newWidth = e.clientX;
-    if (newWidth > 100 && newWidth < 500) {
-      if (window && window?.innerWidth < 1024) {
-        setSidebarWidth("100%");
-      } else setSidebarWidth(newWidth);
-    }
-  };
+  const handleMouseMove = useCallback(
+    (event: MouseEvent) => {
+      if (!isResizing) return;
+      const nextWidth = Math.min(Math.max(event.clientX, 240), 480);
+      setSidebarWidth(nextWidth);
+    },
+    [isResizing, setSidebarWidth]
+  );
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsResizing(false);
-  };
+  }, []);
 
   useEffect(() => {
     if (isResizing) {
@@ -199,152 +143,107 @@ const Sidebar: React.FC = () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     }
-
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isResizing, handleMouseMove]);
+  }, [handleMouseMove, handleMouseUp, isResizing]);
 
-  if (["/auth/login"].includes(path)) {
-    return <div></div>;
+  if (HIDDEN_PATHS.includes(pathname)) {
+    return null;
   }
 
-  if (path == "/") return <span></span>;
+  if (pathname === "/") {
+    return <span />;
+  }
+
+  const shouldShowMenus = !isError && !menusError && menus.length > 0;
+  const computedWidth = isMobile ? "100%" : sidebarWidth;
 
   return (
     <>
-      <div
-        className={`max-lg:fixed z-40 bg-background max-lg:h-dvh h-screen overflow-hidden text-foreground shadow-md flex-col transition-all flex  ${
-          isOpen ? "" : "max-lg:hidden"
-        }`}
-        style={{
-          width:
-            applications.length > 0 && menus.length > 0
-              ? sidebarWidth
-              : "fit-content",
-        }}
+      <aside
+        className={`${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } fixed z-40 flex h-screen flex-col border-r bg-background text-foreground shadow-xl transition-transform duration-200 lg:static lg:translate-x-0`}
+        style={{ width: computedWidth }}
       >
-        <div className="flex items-center justify-between h-fit w-full max-lg:w-full">
-          <div className="flex items-center justify-start gap-5 p-5 ">
-            <span
-              onClick={() => {
-                router.push("/");
-              }}
-              className="p-3 cursor-pointer border border-bg-secondary rounded-lg w-16"
-            >
-              <Image
-                src={appLogo}
-                alt="digipublic logo"
-                width={70}
-                height={50}
-                className="!w-full"
-              />
-            </span>
-            {(typeof sidebarWidth == "string" || +sidebarWidth > 250) &&
-              currentApplication !== null && (
-                <span className="text-xl font-semibold">
-                  {currentApplication.verbose[0].toUpperCase() +
-                    currentApplication.verbose.slice(1)}
-                </span>
-              )}
-          </div>
-          <span
-            className="cursor-pointer lg:hidden max-lg:px-5"
-            onClick={() => setIsOpen(false)}
+        <div className="flex items-center justify-between border-b px-5 py-4">
+          <button
+            onClick={() => setCurrentApplicationId(null)}
+            className="rounded-lg border p-2"
           >
-            <LuX size={30} />
+            <Image
+              src={appLogo}
+              alt="digipublic logo"
+              width={48}
+              height={48}
+              className="w-12"
+            />
+          </button>
+          <span className="text-lg font-semibold">
+            {currentApplication?.verbose || currentApplication?.name || "Apps"}
           </span>
+          <button
+            className="lg:hidden"
+            onClick={() => setSidebarOpen(!isSidebarOpen)}
+          >
+            <LuX size={24} />
+          </button>
         </div>
 
-        <div
-          className={`flex h-full w-full overflow-y-auto overflow-x-hidden border-t border-bg-secondary justify-center ${
-            +sidebarWidth > 500 || +sidebarWidth < 150 ? "w-full" : "w-fit"
-          }`}
-        >
-          {applications && applications.length > 0 && (
-            <div
-              className={`flex flex-col p-5 gap-5 border-r border-bg-secondary items-center h-full justify-start ${
-                (applications.length > 0 && menus.length == 0) ||
-                +sidebarWidth <= 160
-                  ? "w-full"
-                  : false
-              }`}
-            >
-              {applications.map((app) => {
-                const isAppActive = app.isActive && app.menus.length > 0;
-                return (
-                  <button
-                    key={app.id}
-                    className={`p-3 rounded-md ${
-                      !isAppActive
-                        ? "text-gray-400"
-                        : currentApplication?.id == app.id
-                        ? "bg-[#04899630] text-primary"
-                        : "hover:bg-bg-secondary text-foreground"
-                    }`}
-                    onClick={() => {
-                      if (!app.isActive || app.menus.length === 0) return;
-                      setCurrentApplication(app);
-                      setMenus(app.menus);
-                      if (window && window?.innerWidth < 1024) {
-                        setSidebarWidth("100%");
-                      } else setSidebarWidth(400);
-                    }}
-                  >
-                    {/* <span className="block w-1 h-1 bg-green-500"></span> */}
-                    <SVGComponent icon={app.icon} height="20" width="20" />
-                  </button>
-                );
-              })}
-            </div>
-          )}
+        <div className="flex flex-1 overflow-hidden border-t">
+          <div className="flex w-20 flex-col gap-3 border-r p-4">
+            {isPending ? (
+              <SidebarLoader />
+            ) : (
+              applications.map((application) => (
+                <ApplicationPill
+                  key={application.id}
+                  application={application}
+                  isSelected={currentApplicationId === application.id}
+                  onSelect={setCurrentApplicationId}
+                />
+              ))
+            )}
+          </div>
 
-          {loading ? (
-            <SidebarLoader />
-          ) : error ? (
-            <div className="p-5 flex flex-col gap-5 items-center lg:w-[300px] w-screen ">
-              <span>
-                Nous n&apos;avons pas pu charger les menus. Veuillez ressayer
-              </span>
-              <code className="bg-bg-secondary p-5 rounded-lg w-full text-wrap">
-                {error.message}
-              </code>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setLoading(true);
-                  setFetchMenu(true);
-                }}
-                isLoading={loading}
-                className="p-3 !rounded-full"
-              >
-                refresh
-              </Button>
-            </div>
-          ) : currentApplication?.menus.length == 0 ? (
-            false
-          ) : (
-            (+sidebarWidth > 160 || typeof sidebarWidth == "string") && (
-              <div className="flex flex-col gap-5 py-5 w-full h-full z-30 max-lg:bg-bg-secondary">
-                <nav className="flex flex-col overflow-x-hidden overflow-y-auto w-full max-lg:gap-2">
-                  {currentApplication?.menus.map((menu) => (
-                    <NavSection {...menu} key={menu.name} />
-                  ))}
-                </nav>
+          <div className="flex-1 overflow-y-auto px-4 py-5">
+            {isPending || menusPending ? (
+              <SidebarLoader />
+            ) : isError ? (
+              <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Impossible de charger les applications.
+                </p>
+                <code className="rounded-md bg-muted px-3 py-2 text-xs">
+                  {(error as Error)?.message}
+                </code>
+                <Button onClick={() => refetch()} variant="outline">
+                  Réessayer
+                </Button>
               </div>
-            )
-          )}
+            ) : shouldShowMenus ? (
+              <nav className="flex flex-col gap-1">
+                {menus.map((menu: SideMenuType) => (
+                  <NavSection {...menu} key={menu.id} />
+                ))}
+              </nav>
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center text-center text-sm text-muted-foreground">
+                Aucun menu disponible pour cette application.
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </aside>
 
-      {(loading || !error) && (
+      {!isMobile && (
         <div
-          className="w-fit max-lg:hidden border-l border-bg-secondary px-1 flex items-center cursor-ew-resize text-foreground"
+          className="hidden cursor-ew-resize items-center px-1 text-muted-foreground lg:flex"
           onMouseDown={handleMouseDown}
         >
-          {/* <GoGrabber size={20} /> */}
-          <span className="bloc w-2 h-10 rounded-xl bg-app-blue-800 opacity-50"></span>
+          <span className="h-12 w-1 rounded-full bg-primary/40" />
         </div>
       )}
     </>

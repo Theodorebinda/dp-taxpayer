@@ -53,7 +53,7 @@ const FilterForm: React.FC<Props> = ({ active, fields, onSubmit }) => {
         type="button"
         onClick={() => setIsModalOpen(true)}
         disabled={!active}
-        className="py-3 px-5 !rounded-full max-lg:w-full"
+        className="py-3 px-5 rounded-full! max-lg:w-full"
       >
         <IoFilterOutline size={15} />
         <span className="max-md:hidden">Filtres</span>

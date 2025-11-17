@@ -25,6 +25,8 @@ export default function LoginPage() {
     }
   }
 
+  console.log(error);
+
   return (
     <MotionWrapper className="min-h-dvh grid place-items-center p-6">
       <div className="w-full max-w-sm border border-foreground/10 rounded-lg p-5 bg-background">

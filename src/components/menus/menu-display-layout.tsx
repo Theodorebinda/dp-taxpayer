@@ -1,9 +1,12 @@
-import { useStore } from "zustand";
+"use client";
+
 import SVGComponent from "../atoms/displaySVG";
-import { applictionsStore } from "../store/applications";
+import { useUiStore } from "@/store/ui-store";
 
 const DisplayLayoutMenu = () => {
-  const { displayLayout, setDisplayLayout } = useStore(applictionsStore);
+  const displayLayout = useUiStore((state) => state.displayLayout);
+  const setDisplayLayout = useUiStore((state) => state.setDisplayLayout);
+
   return (
     <div className="top-8 right-12 z-20 flex items-center gap-2 bg-background p-1 rounded-lg">
       <button

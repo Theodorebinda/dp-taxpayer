@@ -55,7 +55,7 @@ export function ExportToExcelModal<T>({
       <Button
         disabled={!active}
         onClick={() => setIsOpen(true)}
-        className="py-3 px-5 !rounded-full max-lg:w-full"
+        className="py-3 px-5 rounded-full! max-lg:w-full"
       >
         <LuDownload size={15} />{" "}
         <span className="max-md:hidden text-nowrap">Exporter en Excel</span>
