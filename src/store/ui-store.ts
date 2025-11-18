@@ -30,7 +30,7 @@ export const uiStore = createStore<UiStoreState>((set) => ({
       const next = !state.isSidebarOpen;
       return { isSidebarOpen: next, isOpen: next };
     }),
-  sidebarWidth: 360,
+  sidebarWidth: 320,
   setSidebarWidth: (sidebarWidth) => set({ sidebarWidth }),
   isOpen: true,
   setIsOpen: (isOpen) => set({ isOpen, isSidebarOpen: isOpen }),

@@ -49,7 +49,7 @@ const Sidebar: React.FC = () => {
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {
       if (!isResizing) return;
-      const nextWidth = Math.min(Math.max(event.clientX, 240), 480);
+      const nextWidth = Math.min(Math.max(event.clientX, 240), 460);
       setSidebarWidth(nextWidth);
     },
     [isResizing, setSidebarWidth]
@@ -154,7 +154,7 @@ const Sidebar: React.FC = () => {
       return (
         <div key={item.key} className="space-y-1">
           <button
-            className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition ${
+            className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left  transition ${
               isActive
                 ? "bg-primary/10 text-primary"
                 : "text-muted-foreground hover:bg-muted"
