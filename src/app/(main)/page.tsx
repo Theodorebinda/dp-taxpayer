@@ -20,9 +20,9 @@ export default function DigiPublicLanding() {
     const token =
       window.localStorage.getItem("nextauth.message") ||
       window.localStorage.getItem("dp-sk-moto-token");
-    // if (token) {
-    //   router.replace("/dashboard");
-    // }
+    if (token) {
+      router.replace("/dashboard");
+    }
   }, [router]);
 
   const heroHeadingClass = isDarkTheme ? "text-white" : "text-slate-900";
