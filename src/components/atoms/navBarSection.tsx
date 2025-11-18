@@ -10,6 +10,7 @@ import SVGComponent from "./displaySVG";
 import { sidebarState } from "../store/sidebarState";
 import { useStore } from "zustand";
 import { LuMinus, LuPlus } from "react-icons/lu";
+import LogoutButton from "@/components/ui/LogoutButton";
 
 interface SideBarContent extends SideMenuType {
   panding?: number;
@@ -24,6 +25,9 @@ const NavSection = ({
 }: SideBarContent) => {
   const [displaychildren, setDisplaychildren] = useState<boolean>(true);
   const { setIsOpen } = useStore(sidebarState);
+  const pathname = usePathname();
+  const isLogoutItem =
+    path === "/auth/logout" || path === "auth/logout" || path === "logout";
   const ChivronComponent = () => {
     return displaychildren ? (
       <IoChevronDownOutline />
@@ -38,7 +42,28 @@ const NavSection = ({
     menuActions &&
     menuActions.filter((action) => action.action !== null).length > 0;
 
-  const pathname = usePathname();
+  const linkClasses = `px-2.5 py-2 text-nowrap flex gap-2 cursor-pointer hover:font-bold max-lg:text-xl ${
+    !hasChildren && "max-lg:border-l-2 max-lg:border-foreground"
+  } justify-between ${
+    panding > 0 ? "hover:translate-x-1" : "hover:bg-bg-secondary"
+  } ${path == pathname && "text-primary !font-bold"} transition-all`;
+
+  if (isLogoutItem) {
+    return (
+      <LogoutButton
+        variant="menu"
+        hideIcon
+        className={linkClasses}
+        onBeforeLogout={() => {
+          if (typeof window !== "undefined" && window.innerWidth < 1024) {
+            setIsOpen(false);
+          }
+        }}
+      >
+        {translate(name, true)}
+      </LogoutButton>
+    );
+  }
   return (
     <>
       <Link
@@ -46,21 +71,13 @@ const NavSection = ({
         onClick={() => {
           if (menuActions && menuActions.length > 0)
             setDisplaychildren(!displaychildren);
-          else if (path !== null) {
-            if (path == "/auth/logout") {
-              localStorage.removeItem("dp-sk-moto-user");
-              localStorage.removeItem("dp-sk-moto-token");
-            }
-            if (window && window?.innerWidth < 1024) {
+          else if (path !== null && typeof window !== "undefined") {
+            if (window.innerWidth < 1024) {
               setIsOpen(false);
             }
           }
         }}
-        className={`px-2.5 py-2 text-nowrap flex gap-2 cursor-pointer hover:font-bold max-lg:text-xl ${
-          !hasChildren && "max-lg:border-l-2 max-lg:border-foreground"
-        } justify-between ${
-          panding > 0 ? "hover:translate-x-1" : "hover:bg-bg-secondary"
-        } ${path == pathname && "text-primary !font-bold"} transition-all`}
+        className={linkClasses}
       >
         <span className="flex justify-between w-full items-center gap-3">
           <span

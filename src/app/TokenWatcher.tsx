@@ -3,13 +3,7 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useToast } from "@/hooks/useToast";
-
-const PUBLIC_PATHS = new Set<string>([
-  "/",
-  "/auth/login",
-  "/auth/registration",
-  "/registration",
-]);
+import { isPublicPath } from "@/lib/auth/public-paths";
 
 function hasAccessToken(): boolean {
   if (typeof window === "undefined") return false;
@@ -24,13 +18,13 @@ function hasAccessToken(): boolean {
 export default function TokenWatcher() {
   const router = useRouter();
   const pathname = usePathname();
-  const { info, error } = useToast();
+  const { error } = useToast();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const tokenExists = hasAccessToken();
-    const isPublicRoute = PUBLIC_PATHS.has(pathname ?? "");
+    const isPublicRoute = isPublicPath(pathname ?? "/");
 
     if (tokenExists && isPublicRoute) {
       router.replace("/dashboard");
@@ -39,7 +33,7 @@ export default function TokenWatcher() {
 
     if (!tokenExists && !isPublicRoute) {
       error("Votre session a expiré. Merci de vous reconnecter.");
-      router.replace("/auth/login");
+      router.replace("/");
     }
   }, [pathname, router, error]);
 

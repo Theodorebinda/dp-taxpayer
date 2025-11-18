@@ -5,9 +5,9 @@ import { useStore } from "zustand";
 import { connectedUserStore } from "../store/connectedUser";
 import { FaUserGraduate } from "react-icons/fa";
 import Image from "next/image";
+import LogoutButton from "@/components/ui/LogoutButton";
 
 const USER_KEY = "dp-sk-moto-user";
-const TOKEN_KEY = "dp-sk-moto-token";
 
 const UserMenu = () => {
   const { user, setter } = useStore(connectedUserStore);
@@ -44,12 +44,6 @@ const UserMenu = () => {
       : user?.name;
 
   const organizationName = user?.agent?.organization?.name;
-
-  const handleLogout = () => {
-    localStorage.removeItem(USER_KEY);
-    localStorage.removeItem(TOKEN_KEY);
-    router.push("/auth/login");
-  };
 
   const handleChangePassword = () => {
     router.push("/change/auth/password");
@@ -90,11 +84,12 @@ const UserMenu = () => {
             )}
           </div>
           <ul className="py-2">
-            <li
-              className="px-4 py-2 hover:bg-red-100 text-red-500 cursor-pointer"
-              onClick={handleLogout}
-            >
-              Déconnexion
+            <li className="px-2">
+              <LogoutButton
+                variant="menu"
+                className="rounded-md text-base"
+                label="Déconnexion"
+              />
             </li>
             <li
               className="px-4 py-2 hover:bg-red-100 text-red-500 cursor-pointer"
