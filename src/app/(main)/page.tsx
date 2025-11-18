@@ -6,24 +6,22 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import AnimatedGradientBackground from "@/components/ui/MovingGradient";
+import { useSession } from "next-auth/react";
 import StickyVisualStory from "@/components/ui/StickyVisualStory";
 import GlobeSection from "./components/GlobeSection";
 import { storySections } from "@/lib/data/storieSectionData";
 
 export default function DigiPublicLanding() {
   const { resolvedTheme } = useTheme();
+  const { status } = useSession();
   const isDarkTheme = resolvedTheme === "dark";
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const token =
-      window.localStorage.getItem("nextauth.message") ||
-      window.localStorage.getItem("dp-sk-moto-token");
-    if (token) {
+    if (status === "authenticated") {
       router.replace("/dashboard");
     }
-  }, [router]);
+  }, [router, status]);
 
   const heroHeadingClass = isDarkTheme ? "text-white" : "text-slate-900";
   const heroDescriptionClass = isDarkTheme ? "text-white/80" : "text-slate-600";

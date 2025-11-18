@@ -2,11 +2,13 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function DashboardLandingRedirect() {
+  const { status } = useSession();
   const router = useRouter();
   useEffect(() => {
-    router.replace("/dashboard/overview");
-  }, [router]);
+    if (status === "authenticated") router.replace("/dashboard/overview");
+  }, [router, status]);
   return null;
 }

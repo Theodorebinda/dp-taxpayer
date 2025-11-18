@@ -1,17 +1,33 @@
 "use client";
-import { useRef, useState } from "react";
+
+import { useRef, useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import MotionWrapper from "@/components/ui/MotionWrapper";
 import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const search = useSearchParams();
+  const callbackUrl = search.get("callbackUrl") || "/dashboard";
+
   const { login } = useAuth();
+  const { status } = useSession();
+
   const { success, error: showError, info, dismiss } = useToast();
+
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const pendingToastId = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace(callbackUrl);
+    }
+  }, [status, router, callbackUrl]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -25,22 +41,21 @@ export default function LoginPage() {
 
     try {
       const res = await login({ identifier, password });
-      if (process.env.NODE_ENV !== "production") {
-        console.info("[LoginPage] login result", res);
-      }
+
       if (res.ok) {
         success(res.message || "Connexion réussie");
-        window.location.href = "/dashboard";
-      } else {
-        showError(res.error || "Identifiants invalides");
+        return;
       }
-    } catch (err) {
+
+      showError(res.error || "Identifiants invalides");
+    } catch (error: unknown) {
       const message =
-        (err as { message?: string })?.message || "Erreur de connexion";
-      showError(message);
-      if (process.env.NODE_ENV !== "production") {
-        console.error("[LoginPage] unexpected error", err);
-      }
+        error instanceof Error
+          ? error.message
+          : typeof error === "string"
+          ? error
+          : undefined;
+      showError(message || "Erreur de connexion");
     } finally {
       setSubmitting(false);
       if (pendingToastId.current) {

@@ -7,10 +7,8 @@ import { useAuth } from "@/hooks/useAuth";
 
 type LogoutButtonVariant = "primary" | "ghost" | "menu";
 
-type LogoutButtonProps = Omit<
-  ButtonHTMLAttributes<HTMLButtonElement>,
-  "onClick"
-> & {
+interface LogoutButtonProps
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> {
   label?: string;
   loadingLabel?: string;
   variant?: LogoutButtonVariant;
@@ -18,17 +16,16 @@ type LogoutButtonProps = Omit<
   hideIcon?: boolean;
   onLoggedOut?: () => void;
   onBeforeLogout?: ButtonHTMLAttributes<HTMLButtonElement>["onClick"];
-};
+}
 
 const baseButtonClass =
-  "inline-flex items-center gap-2 rounded-md text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center gap-2 rounded-md text-sm font-medium transition-colors disabled:opacity-60 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500";
 
 const variantStyles: Record<LogoutButtonVariant, string> = {
   primary:
-    "border border-destructive/30 bg-destructive/10 px-3 py-2 text-destructive hover:bg-destructive/20",
-  ghost:
-    "border border-transparent px-3 py-2 text-foreground hover:text-destructive hover:bg-foreground/5",
-  menu: "w-full justify-start border-0 px-4 py-2 text-red-500 hover:bg-red-50",
+    "border border-red-300 bg-red-50 text-red-600 px-3 py-2 hover:bg-red-100",
+  ghost: "px-3 py-2 text-foreground hover:text-red-600 hover:bg-red-50",
+  menu: "w-full justify-start px-4 py-2 text-red-500 hover:bg-red-50",
 };
 
 export default function LogoutButton({
@@ -51,7 +48,9 @@ export default function LogoutButton({
   ) {
     onBeforeLogout?.(event);
     if (event.defaultPrevented) return;
+
     if (disabled || logoutLoading) return;
+
     await logout();
     onLoggedOut?.();
   }
@@ -63,23 +62,22 @@ export default function LogoutButton({
   );
 
   const content = children ?? (logoutLoading ? loadingLabel : label);
-  const renderedContent =
-    typeof content === "string" || typeof content === "number" ? (
-      <span>{content}</span>
-    ) : (
-      content
-    );
 
   return (
     <button
       type="button"
       {...rest}
       onClick={handleClick}
+      aria-busy={logoutLoading}
       disabled={disabled || logoutLoading}
       className={clsx(baseButtonClass, variantStyles[variant], className)}
     >
       {!hideIcon && icon}
-      {renderedContent}
+      {typeof content === "string" || typeof content === "number" ? (
+        <span>{content}</span>
+      ) : (
+        content
+      )}
     </button>
   );
 }
