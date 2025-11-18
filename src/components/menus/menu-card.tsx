@@ -5,7 +5,6 @@ import { LuCircle, LuFolderOpen, LuLink } from "react-icons/lu";
 import SVGComponent from "../atoms/displaySVG";
 import { capitalizeWords } from "@/utils/utils";
 import { SideMenuType } from "@/types/application.type";
-import { useNavigationStore } from "@/store/navigation-store";
 import { useMarkMenuVisited } from "@/hooks/use-mark-menu-visited";
 
 type MenuCardProps = {
@@ -20,7 +19,6 @@ export default function MenuCard({
   applicationName,
 }: MenuCardProps) {
   const router = useRouter();
-  const { setCurrentMenuId } = useNavigationStore();
   const {
     mutate,
     isPending: isMutatingGlobal,
@@ -36,7 +34,6 @@ export default function MenuCard({
     if (!hasActions) return;
     const targetPath = menu.menuActions[0]?.action?.path;
     if (!targetPath) return;
-    setCurrentMenuId(menu.id);
     router.push(targetPath);
     mutate({ applicationId, menuId: menu.id });
   };

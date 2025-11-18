@@ -1,11 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ApplicationType } from "@/types/application.type";
 import SVGComponent from "../atoms/displaySVG";
-import { usePrefetchMenus } from "@/hooks/use-prefetch-menus";
-import { useNavigationStore } from "@/store/navigation-store";
 
 type ApplicationCardProps = {
   application: ApplicationType;
@@ -13,18 +11,9 @@ type ApplicationCardProps = {
 
 export default function ApplicationCard({ application }: ApplicationCardProps) {
   const router = useRouter();
-  const prefetchMenus = usePrefetchMenus(application.id);
   const isActiveApp =
     application.isActive && (application.menus ?? []).length > 0;
-  const {
-    currentApplicationId,
-    setCurrentApplicationId,
-    pendingApplicationId,
-    setPendingApplicationId,
-  } = useNavigationStore();
-
-  const isSelected = currentApplicationId === application.id;
-  const isNavigating = pendingApplicationId === application.id;
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const primaryActionPath = useMemo(() => {
     return (
@@ -33,23 +22,20 @@ export default function ApplicationCard({ application }: ApplicationCardProps) {
   }, [application]);
 
   const handleOpen = () => {
-    if (!isActiveApp) return;
-    setPendingApplicationId(application.id);
-    setCurrentApplicationId(application.id);
+    if (!isActiveApp || !primaryActionPath) return;
+    setIsNavigating(true);
     router.push(primaryActionPath);
-    setTimeout(() => setPendingApplicationId(null), 300);
+    setTimeout(() => setIsNavigating(false), 300);
   };
 
   return (
     <button
       onClick={handleOpen}
-      onMouseEnter={prefetchMenus}
-      onFocus={prefetchMenus}
       className={`group relative w-full rounded-xl border p-5 text-left transition-all ${
         isActiveApp
           ? "hover:-translate-y-1 hover:border-primary hover:shadow-lg"
           : "opacity-60 cursor-not-allowed"
-      } ${isSelected ? "border-primary shadow-lg" : "border-border"}`}
+      } ${isNavigating ? "border-primary shadow-lg" : "border-border"}`}
     >
       <div
         className={`mb-6 flex h-24 w-full items-center justify-center rounded-lg ${

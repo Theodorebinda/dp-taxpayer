@@ -1,68 +1,34 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import { LuX } from "react-icons/lu";
+import { LuChevronDown, LuMenu, LuX } from "react-icons/lu";
 import appLogo from "@/../public/logo/icon.png";
-import { usePrimaryApplication } from "@/hooks/use-primary-application";
-import { useApplicationMenus } from "@/hooks/use-application-menus";
-import { useNavigationStore } from "@/store/navigation-store";
 import { useUiStore } from "@/store/ui-store";
-import { SideMenuType } from "@/types/application.type";
-import NavSection from "../atoms/navBarSection";
-import Button from "./button";
+import { MenuItemType } from "@/types/menu";
+import {
+  findAllParent,
+  getMenuItemFromURL,
+  getMenuItems,
+} from "@/lib/menu/helpers";
+import * as RiIcons from "react-icons/ri";
+import { IconType } from "react-icons";
 
 const HIDDEN_PATHS = ["/auth/login"];
 
-const SidebarLoader = () => (
-  <div className="flex w-full flex-col gap-4 p-5">
-    {Array.from({ length: 6 }).map((_, index) => (
-      <div
-        key={index}
-        className="h-10 w-full rounded-md bg-muted animate-pulse"
-      />
-    ))}
-  </div>
-);
-
 const Sidebar: React.FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [isResizing, setIsResizing] = useState(false);
   const isSidebarOpen = useUiStore((state) => state.isSidebarOpen);
   const setSidebarOpen = useUiStore((state) => state.setSidebarOpen);
   const sidebarWidth = useUiStore((state) => state.sidebarWidth);
   const setSidebarWidth = useUiStore((state) => state.setSidebarWidth);
   const [isMobile, setIsMobile] = useState(false);
-  const { setCurrentApplicationId, setCurrentMenuId } = useNavigationStore();
-
-  const {
-    data: application,
-    isPending,
-    isError,
-    error,
-    refetch,
-  } = usePrimaryApplication();
-
-  const {
-    data: menus = [],
-    isPending: menusPending,
-    isError: menusError,
-  } = useApplicationMenus(application?.id);
-
-  useEffect(() => {
-    if (application) {
-      setCurrentApplicationId(application.id);
-    }
-  }, [application, setCurrentApplicationId]);
-
-  useEffect(() => {
-    if (!menus?.length || menusPending) return;
-    const currentMenu = useNavigationStore.getState().currentMenuId;
-    if (!currentMenu) {
-      setCurrentMenuId(menus[0]?.id ?? null);
-    }
-  }, [menus, menusPending, setCurrentMenuId]);
+  const menuItems = useMemo(() => getMenuItems(), []);
+  const [activeMenuItems, setActiveMenuItems] = useState<string[]>([]);
+  const [activeUrl, setActiveUrl] = useState<string>("");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -107,17 +73,125 @@ const Sidebar: React.FC = () => {
     };
   }, [handleMouseMove, handleMouseUp, isResizing]);
 
-  if (HIDDEN_PATHS.includes(pathname)) {
+  useEffect(() => {
+    const currentItem = pathname
+      ? getMenuItemFromURL(menuItems, pathname)
+      : null;
+    if (!currentItem) return;
+
+    const frame = requestAnimationFrame(() => {
+      const parents = findAllParent(menuItems, currentItem);
+      setActiveMenuItems(Array.from(new Set([...parents, currentItem.key])));
+      setActiveUrl(currentItem.url ?? "");
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [pathname, menuItems]);
+
+  const computedWidth = isMobile ? "100%" : sidebarWidth;
+
+  const toggleMenu = useCallback((item: MenuItemType) => {
+    if (!item.children || item.children.length === 0) return;
+    setActiveMenuItems((prev) =>
+      prev.includes(item.key)
+        ? prev.filter((key) => key !== item.key)
+        : [...prev, item.key]
+    );
+  }, []);
+
+  const handleNavigate = useCallback(
+    (item: MenuItemType) => {
+      if (item.url) {
+        router.push(item.url);
+        setActiveUrl(item.url);
+        if (isMobile) setSidebarOpen(false);
+      }
+    },
+    [router, isMobile, setSidebarOpen]
+  );
+
+  const renderIcon = (icon?: string) => {
+    if (!icon) {
+      const DefaultIcon = RiIcons.RiDashboard2Line;
+      return <DefaultIcon className="size-4" />;
+    }
+    const [prefix, name] = icon.split(":");
+    if (prefix === "ri") {
+      const pascal =
+        "Ri" +
+        name
+          .split("-")
+          .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
+          .join("");
+      const IconComponent =
+        (RiIcons as Record<string, IconType>)[pascal] ||
+        (RiIcons as Record<string, IconType>)[`${pascal}Line`];
+      if (IconComponent) {
+        return <IconComponent className="size-4" />;
+      }
+    }
+    const Fallback = RiIcons.RiDashboard2Line;
+    return <Fallback className="size-4" />;
+  };
+
+  const renderMenuItems = (items: MenuItemType[], depth = 0) =>
+    items.map((item) => {
+      if (item.isTitle) {
+        return (
+          <p
+            key={item.key}
+            className="mt-6 mb-2 text-xs font-semibold uppercase text-muted-foreground"
+          >
+            {item.label}
+          </p>
+        );
+      }
+
+      const hasChildren = !!item.children && item.children.length > 0;
+      const isOpen = activeMenuItems.includes(item.key);
+      const isActive = item.url && activeUrl === item.url;
+
+      return (
+        <div key={item.key} className="space-y-1">
+          <button
+            className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition ${
+              isActive
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-muted"
+            } ${item.isDisabled ? "cursor-not-allowed opacity-50" : ""}`}
+            onClick={() =>
+              hasChildren ? toggleMenu(item) : handleNavigate(item)
+            }
+            disabled={item.isDisabled}
+          >
+            <span className="flex items-center gap-3">
+              <span className="flex size-7 items-center justify-center rounded-md bg-muted">
+                {renderIcon(item.icon)}
+              </span>
+              <span>{item.label}</span>
+            </span>
+            {hasChildren && (
+              <LuChevronDown
+                className={`size-4 transition ${isOpen ? "rotate-180" : ""}`}
+              />
+            )}
+          </button>
+          {hasChildren && isOpen && (
+            <div className="space-y-1 pl-5">
+              {renderMenuItems(item.children!, depth + 1)}
+            </div>
+          )}
+        </div>
+      );
+    });
+
+  if (HIDDEN_PATHS.includes(pathname ?? "")) {
     return null;
   }
 
   if (pathname === "/") {
     return <span />;
   }
-
-  const computedWidth = isMobile ? "100%" : sidebarWidth;
-  const showError = isError || (!application && !isPending);
-  const showMenus = !showError && !menusError && menus.length > 0;
 
   return (
     <>
@@ -137,44 +211,28 @@ const Sidebar: React.FC = () => {
               className="w-12"
             />
           </button>
-          <span className="text-lg font-semibold">
-            {application?.verbose || application?.name || "Portail"}
-          </span>
-          <button
-            className="lg:hidden"
-            onClick={() => setSidebarOpen(!isSidebarOpen)}
-          >
-            <LuX size={24} />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              className="rounded-lg border p-2 lg:hidden"
+              onClick={() => setSidebarOpen(false)}
+              aria-label="Fermer la navigation"
+            >
+              <LuX size={20} />
+            </button>
+            <button
+              className="hidden rounded-lg border p-2 lg:inline-flex"
+              onClick={() => setSidebarOpen(!isSidebarOpen)}
+              aria-label="Basculer la navigation"
+            >
+              <LuMenu size={20} />
+            </button>
+          </div>
         </div>
-
         <div className="flex flex-1 overflow-hidden">
           <div className="flex-1 overflow-y-auto px-4 py-5">
-            {isPending || menusPending ? (
-              <SidebarLoader />
-            ) : showError ? (
-              <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Impossible de charger l&apos;application.
-                </p>
-                <code className="rounded-md bg-muted px-3 py-2 text-xs">
-                  {(error as Error)?.message}
-                </code>
-                <Button onClick={() => refetch()} variant="outline">
-                  Réessayer
-                </Button>
-              </div>
-            ) : showMenus ? (
-              <nav className="flex flex-col gap-1">
-                {menus.map((menu: SideMenuType) => (
-                  <NavSection {...menu} key={menu.id} />
-                ))}
-              </nav>
-            ) : (
-              <div className="flex h-full flex-col items-center justify-center text-center text-sm text-muted-foreground">
-                Aucun menu disponible pour cette application.
-              </div>
-            )}
+            <nav className="flex flex-col gap-1">
+              {renderMenuItems(menuItems)}
+            </nav>
           </div>
         </div>
       </aside>
