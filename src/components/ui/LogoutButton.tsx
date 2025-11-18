@@ -23,9 +23,9 @@ const baseButtonClass =
 
 const variantStyles: Record<LogoutButtonVariant, string> = {
   primary:
-    "border border-red-300 bg-red-50 text-red-600 px-3 py-2 hover:bg-red-100",
-  ghost: "px-3 py-2 text-foreground hover:text-red-600 hover:bg-red-50",
-  menu: "w-full justify-start px-4 py-2 text-red-500 hover:bg-red-50",
+    "border border-red-300 bg-red-50 text-red-600 px-3 py-2 hover:bg-primary/10",
+  ghost: "px-3 py-2 text-foreground hover:text-primary hover:bg-primary/10",
+  menu: "w-full justify-start px-4 py-2 text-primary hover:bg-primary/10",
 };
 
 export default function LogoutButton({

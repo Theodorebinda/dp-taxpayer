@@ -2,7 +2,7 @@
 
 export default function PaymentsPage() {
   return (
-    <section className="flex flex-col gap-3 p-6">
+    <section className="flex flex-col gap-3 p-0 md:p-6">
       <p className="text-sm uppercase text-muted-foreground">Opérations</p>
       <h1 className="text-3xl font-semibold">Paiements</h1>
       <p className="text-sm text-muted-foreground">

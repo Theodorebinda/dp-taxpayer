@@ -49,7 +49,7 @@ const Sidebar: React.FC = () => {
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {
       if (!isResizing) return;
-      const nextWidth = Math.min(Math.max(event.clientX, 240), 460);
+      const nextWidth = Math.min(Math.max(event.clientX, 240), 450);
       setSidebarWidth(nextWidth);
     },
     [isResizing, setSidebarWidth]
@@ -197,12 +197,12 @@ const Sidebar: React.FC = () => {
     <>
       <aside
         className={`${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed z-40 flex h-screen flex-col border-r bg-background text-foreground shadow-xl transition-transform duration-200 lg:static lg:translate-x-0`}
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full "
+        } fixed z-40 flex h-screen flex-col  bg-background text-foreground shadow-xl transition-transform duration-200 lg:static lg:translate-x-0 `}
         style={{ width: computedWidth }}
       >
-        <div className="flex items-center justify-between border-b px-5 py-4">
-          <button className="rounded-lg border p-2">
+        <div className="flex items-center justify-between border-b border-border/30  border-gray-300 dark:border-gray-700 px-5 py-4  ">
+          <button className="rounded-lg border border-border/30 p-2">
             <Image
               src={appLogo}
               alt="digipublic logo"
@@ -213,14 +213,14 @@ const Sidebar: React.FC = () => {
           </button>
           <div className="flex items-center gap-3">
             <button
-              className="rounded-lg border p-2 lg:hidden"
+              className="rounded-lg border border-border/30 p-2 lg:hidden"
               onClick={() => setSidebarOpen(false)}
               aria-label="Fermer la navigation"
             >
               <LuX size={20} />
             </button>
             <button
-              className="hidden rounded-lg border p-2 lg:inline-flex"
+              className="hidden rounded-lg border border-border/30 p-2 lg:inline-flex"
               onClick={() => setSidebarOpen(!isSidebarOpen)}
               aria-label="Basculer la navigation"
             >
@@ -228,9 +228,9 @@ const Sidebar: React.FC = () => {
             </button>
           </div>
         </div>
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden ">
           <div className="flex-1 overflow-y-auto px-4 py-5">
-            <nav className="flex flex-col gap-1">
+            <nav className="flex flex-col gap-1 ">
               {renderMenuItems(menuItems)}
             </nav>
           </div>

@@ -8,7 +8,7 @@ export const MENU_ITEMS: MenuItemType[] = [
   },
   {
     key: "overview",
-    label: "Vue d'ensemble",
+    label: "Tableau de Bord",
     icon: "ri:dashboard-2-line",
     url: "/dashboard/overview",
   },

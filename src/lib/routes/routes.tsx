@@ -21,7 +21,7 @@ export type DashboardRoute = {
 export const dashboardRoutes: DashboardRoute[] = [
   {
     id: "home",
-    label: "Vue d'ensemble",
+    label: "Tableau de Bord",
     segment: "overview",
     icon: LayoutDashboard,
     component: null,
