@@ -198,7 +198,7 @@ const Sidebar: React.FC = () => {
       <aside
         className={`${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full "
-        } fixed z-40 flex h-screen flex-col  bg-background text-foreground shadow-xl transition-transform duration-200 lg:static lg:translate-x-0 `}
+        } fixed z-40 flex  flex-col  bg-background text-foreground shadow-xl transition-transform duration-200 lg:static lg:translate-x-0 `}
         style={{ width: computedWidth }}
       >
         <div className="flex items-center justify-between border-b border-border/30  border-gray-300 dark:border-gray-700 px-5 py-4  ">
