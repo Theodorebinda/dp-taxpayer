@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { isPublicPath, PUBLIC_PATH_PATTERNS } from "@/lib/auth/public-paths";
+import { isPublicPath } from "@/lib/auth/public-paths";
 
 const AUTH_PAGES = [
   "/auth/login",

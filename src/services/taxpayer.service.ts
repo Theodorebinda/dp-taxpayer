@@ -1,6 +1,7 @@
 import { apiClient } from "@/lib/api/client";
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
 import { ApiInputType } from "@/types/types";
+import type { TaxpayerAccount } from "@/types/taxpayer-account.type";
 
 type ApiWrapper<T> = {
   code: number;
@@ -87,4 +88,26 @@ export async function registerTaxpayer(
   if (!res) return false;
   const data = unwrapData<Record<string, unknown>>(res);
   return { data };
+}
+
+/**
+ * Récupère les informations complètes d'un contribuable par son ID
+ * @param id - ID du contribuable
+ * @param accessToken - Token d'accès NextAuth (optionnel, pour appels serveur)
+ * @returns Les données du contribuable ou false en cas d'erreur
+ */
+export async function getTaxpayerById(
+  id: string,
+  accessToken?: string
+): Promise<TaxpayerAccount | false> {
+  const res = await apiClient.get<TaxpayerAccount>(
+    API_ENDPOINTS.TAXPAYER_ACCOUNT(id),
+    undefined,
+    accessToken
+  );
+  if (!res) return false;
+  // res est maintenant de type { code, message, data: TaxpayerAccount, ... } (pas false)
+  const accountData = res.data;
+  if (!accountData) return false;
+  return accountData;
 }
