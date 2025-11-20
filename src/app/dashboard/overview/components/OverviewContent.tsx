@@ -4,6 +4,8 @@ import { quickActions } from "./quickActionSection";
 import type { TaxpayerAccount } from "@/types/taxpayer-account.type";
 import { useTaxpayer } from "@/hooks/useTaxpayer";
 import Loader from "@/components/atoms/loader";
+import { Button } from "@/components/ui";
+import Link from "next/link";
 
 type OverviewContentProps = {
   initialData: TaxpayerAccount | null;
@@ -26,8 +28,6 @@ export default function OverviewContent({
   if (isLoading && !initialData) {
     return <Loader />;
   }
-
-  console.log({ taxpayerData });
 
   if (isError || (!taxpayerData && !isLoading)) {
     return (
@@ -79,15 +79,21 @@ export default function OverviewContent({
           }`}
         >
           <div className="flex flex-col gap-6">
-            <div>
-              <div className="flex flex-col gap-1 border-b border-border/40 border-gray-300 dark:border-gray-700 pb-4">
+            <div className="flex flex-col gap-1 border-b border-border/40 border-gray-300 dark:border-gray-700 pb-4">
+              <div className="flex items-center justify-between">
                 <h4 className="text-xl font-semibold text-foreground">
                   Information du contribuable
                 </h4>
-                <p className="text-xs text-muted-foreground/70">
-                  Identifiants principaux et synthèse des déclarations
-                </p>
+                <Link href={`/dashboard/profil/${taxpayerId}`}>
+                  <Button className="text-sm" variant="outline" size="small">
+                    Voir plus
+                  </Button>
+                </Link>
               </div>
+
+              <p className="text-xs text-muted-foreground/70">
+                Identifiants principaux et synthèse des déclarations
+              </p>
             </div>
 
             {hasTaxpayerInfo && taxpayerData ? (
