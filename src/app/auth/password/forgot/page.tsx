@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import banner from "@/../public/images/banner.webp";
 import logo from "@/../public/logo/logo-inline.png";
+import logoMobile from "@/../public/logo/icon.png";
 import ThemeToggleButton from "@/components/atoms/themeToggleButton";
 import { useToast } from "@/hooks/useToast";
 import { useRequestPasswordReset } from "@/hooks/usePasswordReset";
@@ -11,6 +12,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
 import { createZodResolver } from "@/lib/forms/zod-resolver";
+import { Home } from "lucide-react";
+import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
 
 const ForgotPasswordSchema = z.object({
   email: z
@@ -62,6 +65,13 @@ export default function ForgotPasswordPage() {
 
   return (
     <main className="relative flex min-h-screen w-full items-center bg-background lg:gap-5 max-lg:flex-col-reverse">
+      <Link
+        href="/"
+        className="absolute left-5 top-6 z-30 inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-background/80 px-3 py-1.5 text-sm md:text-base font-medium text-foreground shadow-sm backdrop-blur transition hover:border-primary/50 hover:text-primary"
+      >
+        <Home className="size-4 md:size-7" />
+        Accueil
+      </Link>
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30 dark:opacity-40"
         style={{ backgroundImage: `url(${banner.src})` }}
@@ -74,15 +84,27 @@ export default function ForgotPasswordPage() {
             className="mx-auto flex w-full max-w-md flex-col gap-6"
           >
             <div className="flex w-full flex-col gap-5">
-              <div className="flex w-full items-start justify-between">
+              <div className="flex w-full items-center justify-between">
                 <Image
                   src={logo}
                   alt="digipublic logo"
                   width={120}
                   height={48}
-                  className="h-12 w-auto"
+                  className="h-12 w-auto hidden md:block"
                 />
-                <ThemeToggleButton />
+                <Image
+                  src={logoMobile}
+                  alt="digipublic logo"
+                  width={120}
+                  height={48}
+                  className="h-12 w-auto block md:hidden"
+                />
+                <div className="hidden md:block">
+                  <ThemeToggleButton />
+                </div>
+                <div className="block md:hidden">
+                  <ThemeSwitcher />
+                </div>
               </div>
               <div className="space-y-2">
                 <p className="text-sm uppercase tracking-wide text-primary">
