@@ -79,13 +79,15 @@ export default function OverviewContent({
           }`}
         >
           <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-1 border-b border-border/40 border-gray-300 dark:border-gray-700 pb-4">
-              <h4 className="text-xl font-semibold text-foreground">
-                Information du contribuable
-              </h4>
-              <p className="text-xs text-muted-foreground/70">
-                Identifiants principaux et synthèse des déclarations
-              </p>
+            <div>
+              <div className="flex flex-col gap-1 border-b border-border/40 border-gray-300 dark:border-gray-700 pb-4">
+                <h4 className="text-xl font-semibold text-foreground">
+                  Information du contribuable
+                </h4>
+                <p className="text-xs text-muted-foreground/70">
+                  Identifiants principaux et synthèse des déclarations
+                </p>
+              </div>
             </div>
 
             {hasTaxpayerInfo && taxpayerData ? (
