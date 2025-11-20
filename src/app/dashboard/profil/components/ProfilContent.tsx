@@ -105,10 +105,11 @@ export default function ProfilContent({
           </Button>
         </div>
         <div>
-          <p className="text-sm uppercase text-muted-foreground">Profil</p>
-          <h1 className="text-3xl font-semibold">Profil Assujetti</h1>
+          <h1 className="text-3xl font-semibold">
+            {taxpayerData.fullName || "N/A"}
+          </h1>
           <p className="text-sm text-muted-foreground">
-            Informations détaillées du contribuable
+            Vos informations détaillées
           </p>
         </div>
       </div>

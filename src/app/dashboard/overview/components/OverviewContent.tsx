@@ -84,7 +84,7 @@ export default function OverviewContent({
                 <h4 className="text-xl font-semibold text-foreground">
                   Information du contribuable
                 </h4>
-                <Link href={`/dashboard/profil/${taxpayerId}`}>
+                <Link href={`/dashboard/profil`}>
                   <Button className="text-sm" variant="outline" size="small">
                     Voir plus
                   </Button>
@@ -232,7 +232,7 @@ export default function OverviewContent({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          <div className=" gap-4  flex flex-wrap justify-start items-start">
             {quickActions.map((action, index) => {
               const Icon = action.icon;
               const isDisabled = Boolean(action.disabled);
@@ -248,7 +248,7 @@ export default function OverviewContent({
               return (
                 <button
                   key={index}
-                  className={`flex h-full flex-col rounded-lg border hover:border/70 p-6 text-left shadow-sm transition ${
+                  className={`flex w-70 h-full flex-col rounded-lg border hover:border/70 p-6 text-left shadow-sm transition ${
                     isDisabled
                       ? "cursor-not-allowed border-dashed border-border/40 text-muted-foreground opacity-70"
                       : `${borderColor} hover:${borderColor} hover:shadow-md`

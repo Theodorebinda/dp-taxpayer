@@ -1,23 +1,20 @@
 "use client";
-import { useStore } from "zustand";
-import { sidebarState, useUiStore } from "../store/sidebarState";
-import { IoMenu } from "react-icons/io5";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
+import { useUiStore } from "../store/sidebarState";
 import ThemeToggleButton from "../atoms/themeToggleButton";
 import UserMenu from "../atoms/userMenu";
-import DP from "@/../public/logo/logo-inline.png";
-import { connectedUserStore } from "../store/connectedUser";
-import SVGComponent from "../atoms/displaySVG";
 import { greeting } from "@/utils/utils";
 import { LuMenu } from "react-icons/lu";
 import { Bell, LogOut } from "lucide-react";
 import LogoutButton from "../ui/LogoutButton";
+import { useSession } from "next-auth/react";
 
 const TopBanner = () => {
-  const { user } = useStore(connectedUserStore);
+  const { data: session } = useSession();
   const setSidebarOpen = useUiStore((state) => state.setSidebarOpen);
+
+  const userName = (session?.user as { name?: string } | undefined)?.name;
+
+  console.log({ session });
 
   return (
     <div className={`flex justify-center w-full items-center`}>
@@ -35,6 +32,14 @@ const TopBanner = () => {
         </div>
 
         <div className="flex justify-end items-center gap-3">
+          <div className="hidden md:block">
+            <span className="text-sm text-muted-foreground">{greeting()}</span>
+            {userName && (
+              <span className="text-sm text-muted-foreground ml-1">
+                {userName}
+              </span>
+            )}
+          </div>
           <div className="">
             <ThemeToggleButton />
           </div>
@@ -58,11 +63,7 @@ const TopBanner = () => {
                 />
               </div>
               <div className="block md:hidden">
-                <LogoutButton
-                  variant="ghost"
-                  // label="Déconnexion"
-                  startIcon={<LogOut className="size-6" />}
-                />
+                <LogOut className="size-6" />
               </div>
             </div>
           </div>
