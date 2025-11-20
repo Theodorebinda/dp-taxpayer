@@ -29,7 +29,7 @@ const variantStyles: Record<LogoutButtonVariant, string> = {
 };
 
 export default function LogoutButton({
-  label = "Se déconnecter",
+  label = "",
   loadingLabel = "Déconnexion...",
   variant = "primary",
   className,

@@ -58,7 +58,11 @@ const TopBanner = () => {
                 />
               </div>
               <div className="block md:hidden">
-                <LogOut className="size-6" />
+                <LogoutButton
+                  variant="ghost"
+                  // label="Déconnexion"
+                  startIcon={<LogOut className="size-6" />}
+                />
               </div>
             </div>
           </div>
