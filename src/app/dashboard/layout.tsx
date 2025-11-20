@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import Sidebar from "@/components/commons/sidebar";
 import { dashboardRoutes } from "../../lib/routes/routes";
 import TopBanner from "@/components/commons/topBanner";
+import { Loader } from "@/components/ui";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -63,7 +64,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
 
 export default function DashboardLayout(props: DashboardLayoutProps) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<Loader />}>
       <DashboardLayoutInner {...props} />
     </Suspense>
   );

@@ -35,10 +35,10 @@ export const MENU_ITEMS: MenuItemType[] = [
     ],
   },
   {
-    key: "users",
-    label: "Utilisateurs",
+    key: "profil",
+    label: "Profil",
     icon: "ri:group-line",
-    url: "/dashboard/users",
+    url: "/dashboard/profil",
   },
   {
     key: "settings",
