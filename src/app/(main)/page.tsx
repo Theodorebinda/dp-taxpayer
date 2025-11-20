@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -13,8 +13,14 @@ import { storySections } from "@/lib/data/storieSectionData";
 
 export default function DigiPublicLanding() {
   const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
   const { status } = useSession();
-  const isDarkTheme = resolvedTheme === "dark";
+  const isDarkTheme = mounted ? resolvedTheme === "dark" : false;
   const router = useRouter();
 
   useEffect(() => {

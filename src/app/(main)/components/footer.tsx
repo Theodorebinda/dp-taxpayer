@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -18,7 +18,12 @@ import { useTheme } from "next-themes";
 
 export default function FooterComponent() {
   const { resolvedTheme } = useTheme();
-  const isDarkTheme = resolvedTheme === "dark";
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+  const isDarkTheme = mounted ? resolvedTheme === "dark" : false;
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
 
@@ -88,7 +93,7 @@ export default function FooterComponent() {
                       height={40}
                     />
                   </div>
-                  <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                  <span className="text-xl font-bold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                     DigiPublic
                   </span>
                 </motion.div>
@@ -177,7 +182,7 @@ export default function FooterComponent() {
                     <li key={link.name}>
                       <Link
                         href={link.href}
-                        className={`${mutedTextClass} hover:text-[var(--primary)] dark:hover:text-white transition-colors group flex items-center gap-1`}
+                        className={`${mutedTextClass} hover:text-primary dark:hover:text-white transition-colors group flex items-center gap-1`}
                       >
                         <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                         {link.name}
@@ -227,19 +232,19 @@ export default function FooterComponent() {
             >
               <Link
                 href="/privacy"
-                className="hover:text-[var(--primary)] dark:hover:text-white transition-colors"
+                className="hover:text-primary dark:hover:text-white transition-colors"
               >
                 Confidentialité
               </Link>
               <Link
                 href="/terms"
-                className="hover:text-[var(--primary)] dark:hover:text-white transition-colors"
+                className="hover:text-primary dark:hover:text-white transition-colors"
               >
                 Conditions
               </Link>
               <Link
                 href="/sitemap"
-                className="hover:text-[var(--primary)] dark:hover:text-white transition-colors"
+                className="hover:text-primary dark:hover:text-white transition-colors"
               >
                 Plan du site
               </Link>
