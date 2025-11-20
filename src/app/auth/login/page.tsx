@@ -171,7 +171,7 @@ function LoginPageInner() {
         </div>
 
         <div className="relative flex h-full w-full items-center bg-background/85 px-10 py-10 max-lg:h-fit max-lg:py-12">
-          <div className="relative z-10 mx-auto flex max-w-lg flex-col items-start justify-center gap-8">
+          <div className="relative z-10 mx-auto  max-w-lg flex-col items-start justify-center gap-8 hidden md:flex">
             <Image
               src={logo}
               alt="digipublic logo blanc"
