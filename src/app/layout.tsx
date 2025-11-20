@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      suppressHydrationWarning
+      // suppressHydrationWarning
       className="dark:bg-(--bg-secondary)/70"
     >
       <body className={`${poppins.variable} antialiased`}>

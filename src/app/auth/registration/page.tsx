@@ -1,4 +1,5 @@
 "use client";
+import NextLink from "next/link";
 import StepSidebar from "./components/StepSidebar";
 import StepForm from "./components/StepForm";
 import StepNavigation from "./components/StepNavigation";
@@ -6,6 +7,7 @@ import { useSignupSteps } from "./components/useSignupSteps";
 import Loader from "@/components/atoms/loader";
 import banner from "@/../public/images/banner.webp";
 import { ErrorDisplay } from "@/components/public/declaration/errorDisplay";
+import { Home, LogIn } from "lucide-react";
 
 export default function DigiPublicSignupForm() {
   const {
@@ -45,6 +47,15 @@ export default function DigiPublicSignupForm() {
 
   return (
     <main className="w-full relative flex items-center lg:gap-5 h-screen bg-background max-lg:flex-col-reverse">
+      <div className="absolute left-5 top-5 z-30 flex flex-wrap items-center gap-3">
+        <NextLink
+          href="/"
+          className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-background/80 px-3 py-1.5  font-medium text-foreground shadow-sm backdrop-blur transition hover:border-primary/50 hover:text-primary"
+        >
+          <Home className="size-7" />
+          Accueil
+        </NextLink>
+      </div>
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${banner.src})` }}
@@ -67,6 +78,12 @@ export default function DigiPublicSignupForm() {
               onSubmit={submit}
             />
           </div>
+          <NextLink
+            href="/auth/login"
+            className="inline-flex items-center gap-2 rounded-full  px-3 my-1.5 text-sm font-medium text-foreground  transition hover:text-primary"
+          >
+            J&apos;ai déjà un compte
+          </NextLink>
         </div>
       </div>
 

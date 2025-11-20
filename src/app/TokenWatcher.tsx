@@ -14,7 +14,9 @@ export default function TokenWatcher() {
     if (status === "authenticated") return;
 
     if (status === "unauthenticated") {
-      info("Votre session a expiré.");
+      info("Votre session a expiré, veuillez vous reconnecter.", {
+        id: "token-expired",
+      });
       queryClient.clear(); // reset client-side cache
     }
   }, [status, session, info, queryClient]);

@@ -6,6 +6,8 @@ const PUBLIC_PATH_PATTERNS: RegExp[] = [
   /^\/maintenance(\/.*)?$/,
   /^\/auth\/login$/,
   /^\/auth\/registration(\/.*)?$/,
+  /^\/auth\/password\/forgot$/,
+  /^\/auth\/reset-password$/,
   /^\/marketing(\/.*)?$/,
   /^\/public(\/.*)?$/,
   /^\/api(\/.*)?$/,

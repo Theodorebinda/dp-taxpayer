@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useMemo } from "react";
+import { ReactNode, Suspense, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import Sidebar from "@/components/commons/sidebar";
@@ -15,7 +15,7 @@ function getDefaultSegment(): string {
   return dashboardRoutes[0]?.segment ?? "overview";
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+function DashboardLayoutInner({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -58,5 +58,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {children}
       </main>
     </div>
+  );
+}
+
+export default function DashboardLayout(props: DashboardLayoutProps) {
+  return (
+    <Suspense fallback={null}>
+      <DashboardLayoutInner {...props} />
+    </Suspense>
   );
 }
