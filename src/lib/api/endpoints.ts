@@ -16,4 +16,6 @@ export const API_ENDPOINTS = {
   VIEWS: (id: string | number) => `/views/${id}`,
   OPERATIONS: "/operations",
   TAXPAYER_ACCOUNT: (id: string) => `/read/taxpayer/${id}/account`,
+  DECLARATION_FORM: (type: string) => `/declarations/${type}/form`,
+  CREATE_DECLARATION: (type: string) => `/declarations/${type}`,
 } as const;

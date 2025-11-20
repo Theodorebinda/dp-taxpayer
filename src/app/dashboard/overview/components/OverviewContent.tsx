@@ -16,11 +16,7 @@ export default function OverviewContent({
   initialData,
   taxpayerId,
 }: OverviewContentProps) {
-  const {
-    data: taxpayer,
-    isLoading,
-    isError,
-  } = useTaxpayer("6c16a45c-e2d6-4d32-bd7d-ac819804b387"); //TODO
+  const { data: taxpayer, isLoading, isError } = useTaxpayer(taxpayerId);
 
   const taxpayerData =
     taxpayer && typeof taxpayer === "object" ? taxpayer : initialData;
@@ -245,13 +241,17 @@ export default function OverviewContent({
               const borderColor = isDisabled
                 ? "border-border/40"
                 : action.accentBorder;
-              return (
+
+              const href =
+                action.href ||
+                (action.type ? `/dashboard/create?type=${action.type}` : "#");
+
+              const buttonContent = (
                 <button
-                  key={index}
                   className={`flex w-70 h-full flex-col rounded-lg border hover:border/70 p-6 text-left shadow-sm transition ${
                     isDisabled
                       ? "cursor-not-allowed border-dashed border-border/40 text-muted-foreground opacity-70"
-                      : `${borderColor} hover:${borderColor} hover:shadow-md`
+                      : `${borderColor} hover:${borderColor} hover:shadow-md cursor-pointer`
                   }`}
                   disabled={isDisabled}
                 >
@@ -263,6 +263,16 @@ export default function OverviewContent({
                     {action.subtitle}
                   </p>
                 </button>
+              );
+
+              if (isDisabled) {
+                return <div key={index}>{buttonContent}</div>;
+              }
+
+              return (
+                <Link key={index} href={href} className="contents">
+                  {buttonContent}
+                </Link>
               );
             })}
           </div>

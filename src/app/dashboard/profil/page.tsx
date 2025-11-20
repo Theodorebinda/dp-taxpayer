@@ -19,11 +19,9 @@ export default async function ProfilPage() {
   // Extraction du token d'accès
   const accessToken = (session as unknown as { accessToken?: string })
     ?.accessToken;
+  const taxpayerId = session.user?.taxpayerId ?? session.user?.id;
 
-  // Extraction de l'ID utilisateur depuis la session
-  const userId = (session.user as { id?: string })?.id;
-
-  if (!userId || !accessToken) {
+  if (!taxpayerId || !accessToken) {
     return (
       <section className="flex flex-col gap-3 p-0 md:p-6">
         <div className="rounded-lg border border-yellow-200 bg-yellow-50 px-6 py-4 text-yellow-600 dark:border-yellow-900/60 dark:bg-yellow-950/40">
@@ -60,5 +58,5 @@ export default async function ProfilPage() {
 
   // Passer les données au composant client
   // Le composant client peut utiliser useTaxpayer pour le refresh automatique
-  return <ProfilContent initialData={taxpayerData} taxpayerId={userId} />;
+  return <ProfilContent initialData={taxpayerData} taxpayerId={taxpayerId} />;
 }

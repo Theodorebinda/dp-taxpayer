@@ -22,6 +22,10 @@ export type BackendLoginUser = {
   mobile?: string | null;
   photo?: string | null;
   role?: unknown[];
+  taxPayer?: {
+    id?: string | null;
+    [k: string]: unknown;
+  } | null;
   [k: string]: unknown;
 };
 

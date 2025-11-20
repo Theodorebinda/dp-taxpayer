@@ -4,7 +4,7 @@ import ThemeToggleButton from "../atoms/themeToggleButton";
 import UserMenu from "../atoms/userMenu";
 import { greeting } from "@/utils/utils";
 import { LuMenu } from "react-icons/lu";
-import { Bell, LogOut } from "lucide-react";
+import { Bell, LogOut, User2 } from "lucide-react";
 import LogoutButton from "../ui/LogoutButton";
 import { useSession } from "next-auth/react";
 
@@ -30,12 +30,13 @@ const TopBanner = () => {
         </div>
 
         <div className="flex justify-end items-center gap-3">
-          <div className="hidden md:block">
-            <span className="text-sm text-muted-foreground">{greeting()}</span>
+          <div className="hidden md:flex justify-end items-center gap-4">
+            <span className=" text-muted-foreground">{greeting()}</span>
             {userName && (
-              <span className="text-sm text-muted-foreground ml-1">
-                {userName}
-              </span>
+              <div className="flex items-center bg-primary/10 rounded-full px-2 py-1 font-medium">
+                <User2 className="size-4 text-primary" />
+                <span className="text-primary ml-1">{userName}</span>
+              </div>
             )}
           </div>
           <div className="">
