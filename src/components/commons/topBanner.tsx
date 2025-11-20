@@ -14,8 +14,6 @@ const TopBanner = () => {
 
   const userName = (session?.user as { name?: string } | undefined)?.name;
 
-  console.log({ session });
-
   return (
     <div className={`flex justify-center w-full items-center`}>
       <div
