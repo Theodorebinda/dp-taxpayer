@@ -53,8 +53,8 @@ export async function middleware(req: NextRequest) {
   const isAuthPage = AUTH_PAGES.some((p) => pathname.startsWith(p));
 
   if (isAuthPage) {
-    // Redirection vers dashboard
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    // Redirection vers list
+    return NextResponse.redirect(new URL("/list", req.url));
   }
 
   console.log("MIDDLEWARE PATH:", pathname);

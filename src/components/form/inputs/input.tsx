@@ -92,6 +92,18 @@ const Input: React.FC<InputType> = (props) => {
         {props.doc && <FieldDoc content={props.doc} />}
       </label>
       <InputPerType {...props} />
+      {(() => {
+        const errorMessage = (props as InputType & { errorMessage?: string })
+          .errorMessage;
+        return (
+          errorMessage &&
+          typeof errorMessage === "string" && (
+            <p className="mt-1 text-xs text-red-500" role="alert">
+              {errorMessage}
+            </p>
+          )
+        );
+      })()}
     </div>
   );
 };

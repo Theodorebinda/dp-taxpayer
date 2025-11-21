@@ -1,22 +1,20 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth-options";
-import { getDeclarationFormFields } from "@/services/declaration.service";
-import CreateContent from "./components/CreateContent";
+import { getRecipeFormFields } from "@/services/recipe.service";
 import { redirect } from "next/navigation";
-import type { DeclarationType } from "@/types/declaration-types";
-import { DECLARATION_TYPES } from "@/types/declaration-types";
+import CreateContent from "./components/CreateContent";
 
 type CreatePageProps = {
-  searchParams: Promise<{ type?: string }>;
+  params: Promise<{ recipeId: string }>;
 };
 
 /**
- * Page centralisée pour créer différents types de déclarations
+ * Page centralisée pour créer des déclarations basées sur une recipe
  * Server Component qui récupère les champs de formulaire depuis l'API
  */
-export default async function CreatePage({ searchParams }: CreatePageProps) {
-  const params = await searchParams;
-  const typeParam = params.type;
+export default async function CreatePage({ params }: CreatePageProps) {
+  const routeParams = await params;
+  const recipeId = routeParams.recipeId;
 
   // Récupération de la session côté serveur
   const session = await getServerSession(authOptions);
@@ -29,7 +27,7 @@ export default async function CreatePage({ searchParams }: CreatePageProps) {
   const accessToken = (session as unknown as { accessToken?: string })
     ?.accessToken;
 
-  if (!accessToken) {
+  if (!accessToken && !session.user.taxpayerId) {
     return (
       <section className="flex flex-col gap-3 p-0 md:p-6">
         <div className="rounded-lg border border-yellow-200 bg-yellow-50 px-6 py-4 text-yellow-600 dark:border-yellow-900/60 dark:bg-yellow-950/40">
@@ -43,29 +41,23 @@ export default async function CreatePage({ searchParams }: CreatePageProps) {
     );
   }
 
-  // Vérifier que le type est valide
-  if (!typeParam || !(typeParam in DECLARATION_TYPES)) {
+  // Vérifier que l'ID de recipe est valide
+  if (!recipeId) {
     return (
       <section className="flex flex-col gap-3 p-0 md:p-6">
         <div className="rounded-lg border border-red-200 bg-red-50 px-6 py-4 text-red-600 dark:border-red-900/60 dark:bg-red-950/40">
-          <p className="font-semibold">Type de déclaration invalide</p>
+          <p className="font-semibold">Recipe invalide</p>
           <p className="text-sm">
-            Le type de déclaration &quot;{typeParam}&quot; n&apos;est pas
-            reconnu. Veuillez sélectionner un type valide.
+            L&apos;identifiant de la recipe n&apos;est pas valide. Veuillez
+            sélectionner une recipe valide.
           </p>
         </div>
       </section>
     );
   }
 
-  const declarationType = typeParam as DeclarationType;
-  const config = DECLARATION_TYPES[declarationType];
-
   // Fetch initial côté serveur pour récupérer les champs de formulaire
-  const formFields = await getDeclarationFormFields(
-    declarationType,
-    accessToken
-  );
+  const formFields = await getRecipeFormFields(recipeId, accessToken);
 
   // Si les champs ne sont pas trouvés
   if (!formFields) {
@@ -83,11 +75,5 @@ export default async function CreatePage({ searchParams }: CreatePageProps) {
   }
 
   // Passer les données au composant client
-  return (
-    <CreateContent
-      type={declarationType}
-      config={config}
-      initialFields={formFields}
-    />
-  );
+  return <CreateContent recipeId={recipeId} initialFields={formFields} />;
 }

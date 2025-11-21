@@ -8,7 +8,7 @@ export default function DashboardLandingRedirect() {
   const { status } = useSession();
   const router = useRouter();
   useEffect(() => {
-    if (status === "authenticated") router.replace("/dashboard/overview");
+    if (status === "authenticated") router.replace("/list/overview");
   }, [router, status]);
   return null;
 }

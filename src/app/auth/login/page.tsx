@@ -17,7 +17,7 @@ import Loader from "@/components/atoms/loader";
 function LoginPageInner() {
   const router = useRouter();
   const search = useSearchParams();
-  const callbackUrl = search.get("callbackUrl") || "/dashboard";
+  const callbackUrl = search.get("callbackUrl") || "/list";
 
   const { login } = useAuth();
   const { status } = useSession();

@@ -89,7 +89,7 @@ export default function ProfilContent({
       {/* Header */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/overview">
+          <Link href="/list/overview">
             <Button variant="outline" size="small">
               <ArrowLeft className="size-4" />
               Retour

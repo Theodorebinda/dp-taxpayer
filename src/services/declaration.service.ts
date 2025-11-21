@@ -112,3 +112,57 @@ export async function createDeclaration(
       : undefined;
   return { data, message };
 }
+
+/**
+ * Met à jour une déclaration existante
+ * @param type - Type de déclaration
+ * @param id - ID de la déclaration
+ * @param payload - Données du formulaire
+ * @param accessToken - Token d'accès NextAuth (optionnel, pour appels serveur)
+ * @returns Les données mises à jour ou false en cas d'erreur
+ */
+export async function updateDeclaration(
+  type: DeclarationType,
+  id: string | number,
+  payload: Record<string, unknown>,
+  accessToken?: string
+): Promise<{ data: Record<string, unknown>; message?: string } | false> {
+  const res = await apiClient.patch<Record<string, unknown>>(
+    API_ENDPOINTS.UPDATE_DECLARATION(type, id),
+    payload,
+    undefined,
+    accessToken
+  );
+  if (!res) return false;
+  const data = unwrapData<Record<string, unknown>>(res);
+  const message =
+    typeof res.message === "string" && res.message.trim().length > 0
+      ? res.message
+      : undefined;
+  return { data, message };
+}
+
+/**
+ * Récupère une déclaration existante
+ * @param type - Type de déclaration
+ * @param id - ID de la déclaration
+ * @param accessToken - Token d'accès NextAuth (optionnel, pour appels serveur)
+ * @returns Les données de la déclaration ou false en cas d'erreur
+ */
+export async function getDeclaration(
+  type: DeclarationType,
+  id: string | number,
+  accessToken?: string
+): Promise<
+  { data: Record<string, unknown>; form?: Record<string, unknown> } | false
+> {
+  const res = await apiClient.get<Record<string, unknown>>(
+    API_ENDPOINTS.GET_DECLARATION(type, id),
+    undefined,
+    accessToken
+  );
+  if (!res) return false;
+  const data = unwrapData<Record<string, unknown>>(res);
+  const form = extractForm(res);
+  return { data, form: form || undefined };
+}

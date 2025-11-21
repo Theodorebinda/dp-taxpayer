@@ -1,8 +1,11 @@
 "use client";
 
-import { quickActions } from "./quickActionSection";
+import { useMemo } from "react";
+import { mapRecipesToActions } from "./recipeToActionMapper";
 import type { TaxpayerAccount } from "@/types/taxpayer-account.type";
+import type { DeclarableRecipe } from "@/types/recipe.type";
 import { useTaxpayer } from "@/hooks/useTaxpayer";
+import { useDeclarableRecipes } from "@/hooks/useRecipe";
 import Loader from "@/components/atoms/loader";
 import { Button } from "@/components/ui";
 import Link from "next/link";
@@ -10,18 +13,32 @@ import Link from "next/link";
 type OverviewContentProps = {
   initialData: TaxpayerAccount | null;
   taxpayerId: string;
+  initialRecipes: DeclarableRecipe[];
 };
 
 export default function OverviewContent({
   initialData,
   taxpayerId,
+  initialRecipes,
 }: OverviewContentProps) {
   const { data: taxpayer, isLoading, isError } = useTaxpayer(taxpayerId);
+  const { data: recipesData, isLoading: isLoadingRecipes } =
+    useDeclarableRecipes();
 
   const taxpayerData =
     taxpayer && typeof taxpayer === "object" ? taxpayer : initialData;
 
-  if (isLoading && !initialData) {
+  // Utiliser les recipes du hook ou les initiales
+  const recipes =
+    recipesData && Array.isArray(recipesData) ? recipesData : initialRecipes;
+
+  // Mapper les recipes en actions rapides
+  const quickActions = useMemo(() => mapRecipesToActions(recipes), [recipes]);
+
+  if (
+    (isLoading && !initialData) ||
+    (isLoadingRecipes && initialRecipes.length === 0)
+  ) {
     return <Loader />;
   }
 
@@ -80,7 +97,7 @@ export default function OverviewContent({
                 <h4 className="text-xl font-semibold text-foreground">
                   Information du contribuable
                 </h4>
-                <Link href={`/dashboard/profil`}>
+                <Link href={`/list/profil`}>
                   <Button className="text-sm" variant="outline" size="small">
                     Voir plus
                   </Button>
@@ -244,7 +261,7 @@ export default function OverviewContent({
 
               const href =
                 action.href ||
-                (action.type ? `/dashboard/create?type=${action.type}` : "#");
+                (action.recipeId ? `/list/create/${action.recipeId}` : "#");
 
               const buttonContent = (
                 <button

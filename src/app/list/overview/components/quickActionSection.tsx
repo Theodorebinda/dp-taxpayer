@@ -78,7 +78,7 @@ export const quickActions: QuickAction[] = [
     accentText: "text-[#7e22ce]",
     accentBorder: "border-[#a855f7]/40",
     type: "document",
-    href: "/dashboard/documents",
+    href: "/list/documents",
   },
   {
     title: "Bientôt disponible",
@@ -96,6 +96,6 @@ export const quickActions: QuickAction[] = [
     accentBg: "bg-gradient-to-br from-[#cffafe] to-[#e0f2fe]",
     accentText: "text-[#0f766e]",
     accentBorder: "border-[#0d9488]/40",
-    href: "/dashboard/payments",
+    href: "/list/payments",
   },
 ];

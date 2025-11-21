@@ -13,7 +13,7 @@ type LoginResult =
 export function useAuth() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const callbackUrl = searchParams.get("callbackUrl") || "/list";
 
   const { data: session, status, update } = useSession();
 

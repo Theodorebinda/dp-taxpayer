@@ -18,4 +18,12 @@ export const API_ENDPOINTS = {
   TAXPAYER_ACCOUNT: (id: string) => `/read/taxpayer/${id}/account`,
   DECLARATION_FORM: (type: string) => `/declarations/${type}/form`,
   CREATE_DECLARATION: (type: string) => `/declarations/${type}`,
+  UPDATE_DECLARATION: (type: string, id: string | number) =>
+    `/declarations/${type}/${id}`,
+  GET_DECLARATION: (type: string, id: string | number) =>
+    `/declarations/${type}/${id}`,
+  DECLARABLE_RECIPES: "/search/recipe/recipe/declarable",
+  RECIPE_FORM: (recipeId: string) => `/list/recipe/recipe/${recipeId}/forms`,
+  CREATE_RECIPE_DECLARATION: (recipeId: string) =>
+    `/list/recipe/recipe/${recipeId}/declarations`,
 } as const;

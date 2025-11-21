@@ -25,7 +25,7 @@ export default function DigiPublicLanding() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.replace("/dashboard");
+      router.replace("/list");
     }
   }, [router, status]);
 

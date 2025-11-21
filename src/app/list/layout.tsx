@@ -22,17 +22,45 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
 
   const activeSegment = useMemo(() => {
     const parts = pathname?.split("/") ?? [];
-    const dashboardIndex = parts.indexOf("dashboard");
-    return parts[dashboardIndex + 1] ?? getDefaultSegment();
+    const dashboardIndex = parts.indexOf("list");
+    const segment = parts[dashboardIndex + 1];
+
+    // Pour les routes /list/create/[recipeId], retourner "create"
+    if (segment === "create") {
+      return "create";
+    }
+
+    return segment ?? getDefaultSegment();
   }, [pathname]);
 
-  if (!pathname?.includes("/dashboard")) {
+  if (!pathname?.includes("/list")) {
     return null;
   }
 
-  if (!activeSegment) {
-    router.replace(`/dashboard/${getDefaultSegment()}`);
-    return null;
+  // Ne pas rediriger si on est sur une route valide
+  // Les routes dynamiques comme /list/create/[recipeId] sont gérées par Next.js
+  const parts = pathname?.split("/") ?? [];
+  const dashboardIndex = parts.indexOf("list");
+  const segment = parts[dashboardIndex + 1];
+
+  // Routes valides : overview, profil, settings, operations, create
+  const validSegments = [
+    "overview",
+    "profil",
+    "settings",
+    "operations",
+    "create",
+  ];
+
+  // Ne rediriger que si le segment n'est pas valide ET qu'on n'est pas sur une route dynamique
+  if (segment && !validSegments.includes(segment)) {
+    // Vérifier si c'est une route dynamique (ex: /list/create/[recipeId])
+    if (pathname.includes("/create/") || pathname.includes("/operations/")) {
+      // Laisser Next.js gérer la route dynamique
+    } else {
+      router.replace(`/list/${getDefaultSegment()}`);
+      return null;
+    }
   }
 
   return (
