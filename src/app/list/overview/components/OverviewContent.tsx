@@ -35,6 +35,8 @@ export default function OverviewContent({
   // Mapper les recipes en actions rapides
   const quickActions = useMemo(() => mapRecipesToActions(recipes), [recipes]);
 
+  console.log("quickActions", quickActions);
+
   if (
     (isLoading && !initialData) ||
     (isLoadingRecipes && initialRecipes.length === 0)
@@ -245,7 +247,7 @@ export default function OverviewContent({
             </p>
           </div>
 
-          <div className=" gap-4  flex flex-wrap justify-start items-start">
+          <div className=" gap-4  flex flex-wrap md:justify-start justify-center items-start">
             {quickActions.map((action, index) => {
               const Icon = action.icon;
               const isDisabled = Boolean(action.disabled);
@@ -272,13 +274,22 @@ export default function OverviewContent({
                   }`}
                   disabled={isDisabled}
                 >
-                  <Icon className={`mb-4 size-8 ${iconColor}`} />
-                  <p className={`text-lg font-semibold ${titleColor}`}>
-                    {action.title}
-                  </p>
-                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                    {action.subtitle}
-                  </p>
+                  <div className="flex space-between items-start w-full">
+                    <div className="flex flex-col gap-1 w-full">
+                      <Icon className={`mb-4 size-8 ${iconColor}`} />
+                      <span className={`text-lg font-semibold ${titleColor}`}>
+                        {action.title}
+                      </span>
+                      <span className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                        {action.subtitle}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                        {action?.recipeType || ""}
+                      </span>
+                    </div>
+                  </div>
                 </button>
               );
 

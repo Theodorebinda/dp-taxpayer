@@ -22,6 +22,7 @@ type RecipeAction = {
   disabled?: boolean;
   recipeId: string;
   href?: string;
+  recipeType?: string | null;
 };
 
 // Mapping des types de recipes vers des icônes et couleurs
@@ -94,8 +95,7 @@ export function mapRecipesToActions(
 ): RecipeAction[] {
   const recipeActions: RecipeAction[] = recipes.map((recipe) => {
     const type = recipe.recipeType || "default";
-    const config =
-      recipeTypeConfig[type] || recipeTypeConfig.default;
+    const config = recipeTypeConfig[type] || recipeTypeConfig.default;
 
     // Utiliser la description ou générer un sous-titre
     const subtitle =
@@ -106,16 +106,17 @@ export function mapRecipesToActions(
     return {
       id: recipe.id,
       title: recipe.name,
-      subtitle: subtitle.length > 80 ? `${subtitle.substring(0, 80)}...` : subtitle,
+      subtitle:
+        subtitle.length > 80 ? `${subtitle.substring(0, 80)}...` : subtitle,
       icon: config.icon,
       accentBg: config.accentBg,
       accentText: config.accentText,
       accentBorder: config.accentBorder,
       recipeId: recipe.id,
+      recipeType: recipe.recipeType,
     };
   });
 
   // Combiner les recipes avec les actions statiques
   return [...recipeActions, ...staticActions];
 }
-

@@ -53,7 +53,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
   return (
     <div className="flex h-screen bg-(--dp-bg) dark:bg-app-blue-900 text-foreground overflow-hidden">
       <Sidebar />
-      <main className="flex flex-1 flex-col overflow-y-auto p-4 lg:p-8 md:max-w-7xl mx-auto min-w-0">
+      <main className="flex flex-1 flex-col overflow-y-auto hide-scrollbar p-4 lg:p-8 md:max-w-7xl mx-auto min-w-0">
         <div className="flex md:px-6 flex-col justify-start md:flex-row md:justify-between md:items-center  w-full">
           <div className=" hidden w-full md:w-1/2 md:block">
             <label
@@ -83,8 +83,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
             />
           </label>
         </div>
-
-        {children}
+        <div className="py-4"> {children}</div>
       </main>
     </div>
   );

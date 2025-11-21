@@ -229,7 +229,7 @@ const Sidebar: React.FC = () => {
           </div>
         </div>
         <div className="flex flex-1 overflow-hidden shrink min-h-0">
-          <div className="flex-1 overflow-y-auto px-4 py-5">
+          <div className="flex-1 overflow-y-auto hide-scrollbar px-4 py-5">
             <nav className="flex flex-col gap-1">
               {renderMenuItems(menuItems)}
             </nav>

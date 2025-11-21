@@ -189,6 +189,16 @@ body *::-webkit-scrollbar {
   display: none;
 }
 
+/* Classe utilitaire pour masquer les scrollbars tout en gardant le défilement */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
 .layout-shell {
   width: min(100%, var(--layout-max-width));
   margin-inline: auto;
