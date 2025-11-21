@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, Suspense, useMemo } from "react";
+import { ReactNode, Suspense } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import Sidebar from "@/components/commons/sidebar";
@@ -19,19 +19,6 @@ function getDefaultSegment(): string {
 function DashboardLayoutInner({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
-
-  const activeSegment = useMemo(() => {
-    const parts = pathname?.split("/") ?? [];
-    const dashboardIndex = parts.indexOf("list");
-    const segment = parts[dashboardIndex + 1];
-
-    // Pour les routes /list/create/[recipeId], retourner "create"
-    if (segment === "create") {
-      return "create";
-    }
-
-    return segment ?? getDefaultSegment();
-  }, [pathname]);
 
   if (!pathname?.includes("/list")) {
     return null;
@@ -64,9 +51,9 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-(--dp-bg) dark:bg-app-blue-900 text-foreground">
+    <div className="flex h-screen bg-(--dp-bg) dark:bg-app-blue-900 text-foreground overflow-hidden">
       <Sidebar />
-      <main className="flex flex-1 flex-col overflow-y-auto p-4 lg:p-8 md:max-w-7xl mx-auto">
+      <main className="flex flex-1 flex-col overflow-y-auto p-4 lg:p-8 md:max-w-7xl mx-auto min-w-0">
         <div className="flex md:px-6 flex-col justify-start md:flex-row md:justify-between md:items-center  w-full">
           <div className=" hidden w-full md:w-1/2 md:block">
             <label

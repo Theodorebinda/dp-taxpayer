@@ -198,10 +198,10 @@ const Sidebar: React.FC = () => {
       <aside
         className={`${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full "
-        } fixed z-40 flex  flex-col  bg-background text-foreground shadow-xl transition-transform duration-200 lg:static lg:translate-x-0 `}
+        } fixed z-40 flex h-screen flex-col bg-background text-foreground shadow-xl transition-transform duration-200 lg:static lg:translate-x-0`}
         style={{ width: computedWidth }}
       >
-        <div className="flex items-center justify-between border-b border-border/30  border-gray-300 dark:border-gray-700 px-5 py-4  ">
+        <div className="flex items-center justify-between border-b border-border/30 border-gray-300 dark:border-gray-700 px-5 py-4 shrink-0">
           <button className="rounded-lg border border-border/30 p-2">
             <Image
               src={appLogo}
@@ -228,9 +228,9 @@ const Sidebar: React.FC = () => {
             </button>
           </div>
         </div>
-        <div className="flex flex-1 overflow-hidden ">
+        <div className="flex flex-1 overflow-hidden shrink min-h-0">
           <div className="flex-1 overflow-y-auto px-4 py-5">
-            <nav className="flex flex-col gap-1 ">
+            <nav className="flex flex-col gap-1">
               {renderMenuItems(menuItems)}
             </nav>
           </div>
