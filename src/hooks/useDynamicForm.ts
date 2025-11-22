@@ -5,7 +5,6 @@ import { useMemo } from "react";
 import { generateZodSchema } from "@/lib/forms/zod-schema-generator";
 import { createZodResolver } from "@/lib/forms/zod-resolver";
 import type { ApiInputType, DisplayIf } from "@/types/types";
-import { useDynamicFormStore } from "@/store/dynamic-form.store";
 
 /**
  * Évalue les conditions displayIf pour déterminer si un champ doit être affiché
@@ -47,8 +46,6 @@ export function useDynamicForm(
   fields: ApiInputType[],
   initialValues?: Record<string, unknown>
 ) {
-  const { setFormFields } = useDynamicFormStore();
-
   // S'assurer que fields est toujours un tableau
   const safeFields = useMemo(() => {
     return Array.isArray(fields) ? fields : [];
@@ -88,6 +85,5 @@ export function useDynamicForm(
     zodSchema,
     visibleFields,
     watchedValues,
-    setFormFields,
   };
 }

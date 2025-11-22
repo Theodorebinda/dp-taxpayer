@@ -1,30 +1,37 @@
+/**
+ * Store Zustand simplifié pour FormEngine 2.0
+ * Stocke uniquement l'état UI (mode édition, navigation, etc.)
+ *
+ * ⚠️ Ne stocke PAS les valeurs du formulaire (gérées par useDynamicForm)
+ * ⚠️ Ne stocke PAS les champs (gérés par TanStack Query)
+ */
+
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import type { ApiInputType } from "@/types/types";
-import type { DeclarationType } from "@/types/declaration-types";
 
 interface DynamicFormState {
-  // État du formulaire
-  formType: DeclarationType | null;
-  formFields: ApiInputType[];
-  initialValues: Record<string, unknown>;
+  // État UI uniquement
   isEditMode: boolean;
   editId: string | null;
 
+  // Navigation (pour multi-steps si nécessaire)
+  currentStep?: number;
+  maxSteps?: number;
+
   // Actions
-  setFormType: (type: DeclarationType | null) => void;
-  setFormFields: (fields: ApiInputType[]) => void;
-  setInitialValues: (values: Record<string, unknown>) => void;
   setEditMode: (isEdit: boolean, id?: string | null) => void;
+  setStep: (step: number) => void;
   reset: () => void;
 }
 
-const initialState = {
-  formType: null,
-  formFields: [],
-  initialValues: {},
+const initialState: Omit<
+  DynamicFormState,
+  "setEditMode" | "setStep" | "reset"
+> = {
   isEditMode: false,
   editId: null,
+  currentStep: undefined,
+  maxSteps: undefined,
 };
 
 export const useDynamicFormStore = create<DynamicFormState>()(
@@ -32,14 +39,14 @@ export const useDynamicFormStore = create<DynamicFormState>()(
     (set) => ({
       ...initialState,
 
-      setFormType: (type) => set({ formType: type }),
-
-      setFormFields: (fields) => set({ formFields: fields }),
-
-      setInitialValues: (values) => set({ initialValues: values }),
-
       setEditMode: (isEdit, id = null) =>
         set({ isEditMode: isEdit, editId: id }),
+
+      setStep: (step) =>
+        set((state) => ({
+          currentStep: step,
+          maxSteps: state.maxSteps ? Math.max(state.maxSteps, step) : step,
+        })),
 
       reset: () => set(initialState),
     }),

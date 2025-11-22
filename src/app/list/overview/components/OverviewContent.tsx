@@ -285,7 +285,7 @@ export default function OverviewContent({
                       </span>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                      <span className="text-sm text-gray-600 dark:text-gray-300 font-bold">
                         {action?.recipeType || ""}
                       </span>
                     </div>

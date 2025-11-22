@@ -1,6 +1,5 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth-options";
-import { getRecipeFormFields } from "@/services/recipe.service";
 import { redirect } from "next/navigation";
 import CreateContent from "./components/CreateContent";
 
@@ -10,7 +9,8 @@ type CreatePageProps = {
 
 /**
  * Page centralisée pour créer des déclarations basées sur une recipe
- * Server Component qui récupère les champs de formulaire depuis l'API
+ * Server Component qui gère l'authentification et la validation du recipeId
+ * Les données du formulaire sont récupérées côté client via TanStack Query
  */
 export default async function CreatePage({ params }: CreatePageProps) {
   const routeParams = await params;
@@ -56,24 +56,7 @@ export default async function CreatePage({ params }: CreatePageProps) {
     );
   }
 
-  // Fetch initial côté serveur pour récupérer les champs de formulaire
-  const formFields = await getRecipeFormFields(recipeId, accessToken);
-
-  // Si les champs ne sont pas trouvés
-  if (!formFields) {
-    return (
-      <section className="flex flex-col gap-3 p-0 md:p-6">
-        <div className="rounded-lg border border-red-200 bg-red-50 px-6 py-4 text-red-600 dark:border-red-900/60 dark:bg-red-950/40">
-          <p className="font-semibold">Erreur de chargement</p>
-          <p className="text-sm">
-            Impossible de charger le formulaire. Veuillez réessayer plus tard ou
-            contacter le support.
-          </p>
-        </div>
-      </section>
-    );
-  }
-
-  // Passer les données au composant client
-  return <CreateContent recipeId={recipeId} initialFields={formFields} />;
+  // Les données sont maintenant récupérées côté client via TanStack Query
+  // On passe seulement le recipeId au composant client
+  return <CreateContent recipeId={recipeId} />;
 }

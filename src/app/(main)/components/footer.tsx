@@ -153,18 +153,18 @@ export default function FooterComponent() {
             <div className="space-y-3">
               <div className={`flex items-center gap-3 ${mutedTextClass}`}>
                 <Phone className="w-5 h-5 text-blue-400" />
-                <span>+33 1 23 45 67 89</span>
+                <span>+243 99 123 45 67</span>
               </div>
               <div className={`flex items-center gap-3 ${mutedTextClass}`}>
                 <Mail className="w-5 h-5 text-blue-400" />
-                <span>contact@digipublic.fr</span>
+                <span>contact@digipublic.cd</span>
               </div>
               <div className={`flex items-start gap-3 ${mutedTextClass}`}>
                 <MapPin className="w-5 h-5 text-blue-400 mt-0.5" />
                 <span>
-                  123 Avenue de la République
+                  123 Rue de la République
                   <br />
-                  75011 Paris, France
+                  75011 Kinshasa, Congo
                 </span>
               </div>
             </div>
