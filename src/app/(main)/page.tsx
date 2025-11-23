@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 import StickyVisualStory from "@/components/ui/StickyVisualStory";
 import GlobeSection from "./components/GlobeSection";
 import { storySections } from "@/lib/data/storieSectionData";
+import Image from "next/image";
 
 export default function DigiPublicLanding() {
   const { resolvedTheme } = useTheme();
@@ -67,9 +68,9 @@ export default function DigiPublicLanding() {
                 initial={{ y: 16, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.7 }}
-                className={`text-5xl md:text-7xl font-extrabold leading-tight max-w-2xl ${heroHeadingClass}`}
+                className={`text-5xl md:text-6xl font-extrabold leading-tight max-w-2xl ${heroHeadingClass}`}
               >
-                La plateforme moderne pour vos démarches fiscales
+                La fiscalité simplifiée, pensée pour vous donner de l’avance.
               </motion.h1>
 
               <motion.p
@@ -79,7 +80,7 @@ export default function DigiPublicLanding() {
                 className={`mt-6 text-lg md:text-xl max-w-xl ${heroDescriptionClass}`}
               >
                 Inscription, déclaration et suivi centralisés — un portail
-                simple, sécurisé et pensé pour les contribuables et les agents.
+                simple, sécurisé et pensé pour les contribuables.
               </motion.p>
 
               <motion.div
@@ -122,34 +123,16 @@ export default function DigiPublicLanding() {
                 className="relative w-[360px] h-[700px] md:w-[420px] md:h-[820px]"
               >
                 <div
-                  className={`absolute -left-12 -top-12 w-[480px] h-[340px] rounded-bubble ${mockupBubbleClass}`}
+                  className={`absolute hidden md:block -left-12 -top-12 w-[480px] h-[340px] rounded-bubble ${mockupBubbleClass}`}
                 />
 
-                <div
-                  aria-hidden
-                  className="absolute inset-0 m-auto w-[320px] h-[640px] md:w-[360px] md:h-[720px] rounded-3xl shadow-2xl flex flex-col overflow-hidden bg-linear-to-b from-white/90 to-white/70"
-                  style={{ border: "10px solid rgba(255,255,255,0.15)" }}
-                >
-                  <div className="h-12 bg-neutral-100/60 flex items-center px-4">
-                    <div className="w-14 h-8 rounded-lg bg-neutral-200/60" />
-                  </div>
-                  <div className="flex-1 p-4">
-                    <div className="h-12 rounded-lg bg-(--dp-soft) mb-4" />
-                    <div
-                      className="h-44 rounded-lg"
-                      style={{ backgroundColor: "rgba(4,137,150,0.08)" }}
-                    />
-                    <div className="grid grid-cols-3 gap-3 mt-4">
-                      <div className="h-28 rounded-lg bg-white/70" />
-                      <div className="h-28 rounded-lg bg-white/70" />
-                      <div className="h-28 rounded-lg bg-white/70" />
-                    </div>
-                  </div>
-                  <div className="h-18 bg-neutral-100/60 flex items-center px-4">
-                    <div className="w-24 h-8 rounded-lg bg-var(--primary)" />
-                  </div>
-                </div>
-
+                <Image
+                  src="/images/removebg-preview.png"
+                  alt="smartphone mockup"
+                  width={320}
+                  height={700}
+                  className="absolute inset-0 m-auto w-[320px] h-[700px] md:w-[360px] md:h-[720px] object-cover rounded-3xl scale-100 md:scale-130"
+                />
                 <div className="absolute right-[10px] bottom-[-20px] w-[140px] h-[300px] rounded-2xl bg-white/85 shadow-lg rotate-6" />
                 <div className="absolute right-[-32px] bottom-[40px] w-[120px] h-[240px] rounded-2xl bg-white/85 shadow-lg rotate-10" />
               </motion.div>
