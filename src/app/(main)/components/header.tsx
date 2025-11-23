@@ -78,7 +78,7 @@ export default function Header() {
     : { type: "spring", stiffness: 420, damping: 32, mass: 0.4 };
 
   return (
-    <header className="relative z-50">
+    <header className="relative z-50 hidden lg:block">
       {/* ========== GRAND HEADER QUI DÉFILE (normal flow) ========= */}
       <div className="w-full backdrop-blur-xl" style={navSurfaceStyle}>
         <div className="layout-shell py-6 flex items-center justify-between">
@@ -104,7 +104,7 @@ export default function Header() {
             />
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-8">
             <a href="#features" className={clsx(linkBaseClass, linkColorClass)}>
               Fonctionnalités
             </a>
@@ -124,7 +124,7 @@ export default function Header() {
             <Link
               href="/auth/login"
               className={clsx(
-                "hidden md:inline px-3 py-2 font-medium",
+                "hidden lg:inline px-3 py-2 font-medium",
                 linkColorClass
               )}
             >
@@ -149,7 +149,7 @@ export default function Header() {
       >
         <div className="layout-shell pointer-events-auto">
           <div
-            className="mt-2 mb-2 py-3 rounded-xl border shadow-lg px-2 md:px-4"
+            className="mt-2 mb-2 py-3 rounded-xl border shadow-lg px-2 lg:px-4"
             style={miniNavStyle}
           >
             <div className="flex items-center justify-between">
@@ -174,7 +174,7 @@ export default function Header() {
                   priority
                 />
               </Link>
-              <div className="hidden md:flex items-center gap-6">
+              <div className="hidden lg:flex items-center gap-6">
                 <a
                   href="#features"
                   className={clsx(linkBaseClass, linkColorClass)}
@@ -197,7 +197,7 @@ export default function Header() {
                 <Link
                   href="/auth/login"
                   className={clsx(
-                    "hidden md:inline px-3 py-2 font-medium",
+                    "hidden lg:inline px-3 py-2 font-medium",
                     linkColorClass
                   )}
                 >
