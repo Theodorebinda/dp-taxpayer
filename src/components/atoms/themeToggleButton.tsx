@@ -1,47 +1,44 @@
 "use client";
 import { Moon, Sun } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-
-const THEME_KEY = "theme";
-
-function resolveInitialTheme(): boolean {
-  if (typeof window === "undefined" || typeof document === "undefined")
-    return false;
-  const savedTheme = window.localStorage.getItem(THEME_KEY);
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const shouldUseDark = savedTheme === "dark" || (!savedTheme && prefersDark);
-  document.documentElement.classList.toggle("dark", shouldUseDark);
-  return shouldUseDark;
-}
+import { useTheme } from "next-themes";
+import { useThemeMounted } from "@/hooks/useThemeMounted";
 
 const ThemeToggleButton = () => {
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(resolveInitialTheme);
   const pathname = usePathname();
+  const { resolvedTheme, setTheme } = useTheme();
+  const { isMounted } = useThemeMounted();
 
   const toggleTheme = () => {
-    const html = document.documentElement;
-    const newTheme = html.classList.contains("dark") ? "light" : "dark";
-    html.classList.toggle("dark");
-    localStorage.setItem(THEME_KEY, newTheme);
-    setIsDarkMode(newTheme === "dark");
+    if (!isMounted) return;
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
+
+  const isDarkMode = isMounted && resolvedTheme === "dark";
+
+  // Utiliser une valeur par défaut pour éviter l'hydratation mismatch
+  // Si le thème n'est pas encore monté, utiliser une valeur conservatrice (light)
+  const translateClass = !isMounted
+    ? "translate-x-0"
+    : isDarkMode
+    ? pathname.startsWith("/auth")
+      ? "translate-x-9"
+      : "translate-x-4"
+    : "translate-x-0";
 
   return (
     <div
-      className="w-14 h-8 flex items-center rounded-full p-1 cursor-pointer  duration-300 bg-primary/90 text-white"
+      className="w-14 h-8 flex items-center rounded-full p-1 cursor-pointer duration-300 bg-primary/90 text-white"
       onClick={toggleTheme}
     >
       <div
-        className={`w-7 h-7 bg-foreground rounded-full shadow-md transform p-1 transition-transform duration-300 flex items-center justify-center ${
-          isDarkMode
-            ? pathname.startsWith("/auth")
-              ? "translate-x-9"
-              : "translate-x-4"
-            : "translate-x-0"
-        }`}
+        className={`w-7 h-7 bg-foreground rounded-full shadow-md transform p-1 transition-transform duration-300 flex items-center justify-center ${translateClass}`}
       >
-        {isDarkMode ? <Sun /> : <Moon />}
+        {isDarkMode ? (
+          <Sun className="w-5 h-5" />
+        ) : (
+          <Moon className="w-5 h-5" />
+        )}
       </div>
     </div>
   );
