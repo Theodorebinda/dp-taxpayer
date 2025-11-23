@@ -1,40 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import AnimatedGradientBackground from "./MovingGradient";
-
-type BadgeProps = {
-  label: string;
-  isDark: boolean;
-};
+import { Badge } from "./Badge-ui";
+import { FaFileExcel } from "react-icons/fa";
 
 type HeroSectionProps = {
   isDarkTheme: boolean;
 };
-
-function Badge({ label, isDark }: BadgeProps) {
-  return (
-    <span
-      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-sm ${
-        isDark
-          ? "bg-white/12 text-white/95 border-white/10"
-          : "bg-white/90 text-slate-700 border-white/60"
-      }`}
-    >
-      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden>
-        <circle
-          cx="5"
-          cy="5"
-          r="5"
-          fill={isDark ? "white" : "var(--primary,#2563eb)"}
-        />
-      </svg>
-      {label}
-    </span>
-  );
-}
 
 export default function HeroSection({ isDarkTheme }: HeroSectionProps) {
   const heroHeadingClass = isDarkTheme ? "text-text" : "text-app-blue-900";
@@ -111,9 +86,15 @@ export default function HeroSection({ isDarkTheme }: HeroSectionProps) {
             <div
               className={`mt-8 flex flex-wrap gap-4 text-sm ${badgesRowClass}`}
             >
-              <Badge label="Sécurisé" isDark={isDarkTheme} />
-              <Badge label="Piloté par API" isDark={isDarkTheme} />
-              <Badge label="Import CSV / Excel" isDark={isDarkTheme} />
+              <Badge
+                label="Sécurisé"
+                icon={<ShieldCheck className="w-4 h-4" />}
+              />
+              <Badge label="Piloté par API" />
+              <Badge
+                label="Import CSV / Excel"
+                icon={<FaFileExcel className="w-4 h-4" />}
+              />
             </div>
           </div>
 
