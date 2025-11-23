@@ -1,6 +1,6 @@
 "use client";
 
-import DPGlobe from "../../../components/ui/Globe";
+// import DPGlobe from "../../../components/ui/Globe";
 import { motion } from "framer-motion";
 
 export default function GlobeSection() {
@@ -42,7 +42,7 @@ export default function GlobeSection() {
           transition={{ duration: 1 }}
           className="w-full lg:w-1/2 h-[100%] md:h-[100%]"
         >
-          <DPGlobe />
+          {/* <DPGlobe /> */}
         </motion.div>
       </div>
     </section>

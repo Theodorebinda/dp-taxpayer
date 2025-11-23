@@ -37,7 +37,7 @@ function Badge({ label, isDark }: BadgeProps) {
 }
 
 export default function HeroSection({ isDarkTheme }: HeroSectionProps) {
-  const heroHeadingClass = isDarkTheme ? "text-white" : "text-slate-900";
+  const heroHeadingClass = isDarkTheme ? "text-text" : "text-app-blue-900";
   const heroDescriptionClass = isDarkTheme ? "text-white/80" : "text-slate-600";
   const badgesRowClass = isDarkTheme ? "text-white/90" : "text-slate-700";
 
@@ -71,7 +71,7 @@ export default function HeroSection({ isDarkTheme }: HeroSectionProps) {
               initial={{ y: 16, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7 }}
-              className={`text-5xl md:text-6xl font-extrabold leading-tight max-w-2xl ${heroHeadingClass}`}
+              className={`text-5xl md:text-6xl font-extrabold text-app-blue-500 dark:text-text leading-tight max-w-2xl ${heroHeadingClass}`}
             >
               La fiscalité simplifiée, pensée pour vous donner de l&apos;avance.
             </motion.h1>
@@ -93,7 +93,7 @@ export default function HeroSection({ isDarkTheme }: HeroSectionProps) {
               className="mt-8 flex gap-4"
             >
               <a href="/auth/login" className={primaryCtaClass}>
-                Commencer maintenant
+                Demarrer ma declaration
                 <ArrowRight size={18} />
               </a>
               <a
@@ -104,7 +104,7 @@ export default function HeroSection({ isDarkTheme }: HeroSectionProps) {
                     : "border-slate-300 text-slate-700 hover:bg-white"
                 }`}
               >
-                En savoir plus
+                Decouvrir les services
               </a>
             </motion.div>
 
@@ -134,7 +134,7 @@ export default function HeroSection({ isDarkTheme }: HeroSectionProps) {
                 alt="smartphone mockup"
                 width={320}
                 height={700}
-                className="absolute inset-0 m-auto w-[320px] h-[700px] md:w-[360px] md:h-[720px] object-cover rounded-3xl scale-100 md:scale-130 hover:scale-140 transition-all duration-300"
+                className="absolute inset-0 m-auto w-[320px] h-[700px] md:w-[360px] md:h-[720px] object-cover rounded-3xl scale-100 md:scale-130 md:hover:scale-140 transition-all duration-300"
               />
               <div className="absolute right-[10px] bottom-[-20px] w-[140px] h-[300px] rounded-2xl bg-white/85 shadow-lg rotate-6" />
               <div className="absolute right-[-32px] bottom-[40px] w-[120px] h-[240px] rounded-2xl bg-white/85 shadow-lg rotate-10" />

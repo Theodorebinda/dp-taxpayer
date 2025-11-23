@@ -12,7 +12,8 @@ export default function AnimatedGradientBackground({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   const prefersDark = mounted && resolvedTheme === "dark";
@@ -20,19 +21,22 @@ export default function AnimatedGradientBackground({
 
   const gradientStyle = useMemo(() => {
     if (!mounted) return undefined;
-    const primaryGlow = "color-mix(in srgb, var(--primary) 28%, transparent)";
-    const depthGlow = prefersDark
-      ? "color-mix(in srgb, var(--app-blue-800) 24%, transparent)"
-      : "color-mix(in srgb, var(--app-blue) 18%, transparent)";
+    // Utiliser les couleurs de la charte de l'application
+    const primaryGlow = prefersDark
+      ? "color-mix(in srgb, var(--primary) 32%, transparent)"
+      : "color-mix(in srgb, var(--primary) 24%, transparent)";
+    const accentGlow = prefersDark
+      ? "color-mix(in srgb, var(--app-green-500) 20%, transparent)"
+      : "color-mix(in srgb, var(--app-green-400) 18%, transparent)";
 
     return prefersDark
       ? `
           radial-gradient(620px at 32% 18%, ${primaryGlow}, transparent 70%),
-          radial-gradient(840px at 78% 72%, ${depthGlow}, transparent 80%)
+          radial-gradient(840px at 78% 72%, ${accentGlow}, transparent 80%)
         `
       : `
           radial-gradient(720px at 22% 22%, ${primaryGlow}, transparent 72%),
-          radial-gradient(900px at 82% 64%, ${depthGlow}, transparent 82%)
+          radial-gradient(900px at 82% 64%, ${accentGlow}, transparent 82%)
         `;
   }, [mounted, prefersDark]);
 
@@ -52,7 +56,7 @@ export default function AnimatedGradientBackground({
 
       {/* Animated gradient layer */}
       <div
-        className={`absolute inset-0 ${gradientClass} animate-premiumGradient`}
+        className={`absolute inset-0 ${gradientClass} animate-premiumGradient pointer-events-none`}
         style={{
           background: gradientStyle,
           mixBlendMode: prefersDark ? "screen" : "multiply",
@@ -61,10 +65,10 @@ export default function AnimatedGradientBackground({
       />
 
       <div
-        className="pointer-events-none absolute inset-x-0 top-10 mx-auto h-64 w-3/4 blur-[140px] opacity-50"
+        className="pointer-events-none absolute inset-x-0 top-10 mx-auto h-64 w-3/4 blur-[140px] opacity-40"
         style={{
           background:
-            "radial-gradient(50% 50% at 50% 50%, color-mix(in srgb, var(--primary) 20%, transparent), transparent)",
+            "radial-gradient(50% 50% at 50% 50%, color-mix(in srgb, var(--primary) 25%, transparent), transparent)",
         }}
       />
 

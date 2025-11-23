@@ -28,16 +28,14 @@ export default function DigiPublicLanding() {
   }, [router, status]);
 
   return (
-    <div
-      className="  text-neutral-700 "
-      style={{ backgroundColor: "var(--dp-soft) dark:var(--app-blue-900)" }}
-    >
+    <div className="text-neutral-700 bg-(--dp-bg) dark:bg-background">
       <HeroSection isDarkTheme={isDarkTheme} />
 
-      {/* STORY SECTION */}
-      <section className="max-w-7xl layout-shell mx-auto px-6 md:px-10 py-16">
+      {/* Section StickyVisualStory avec son propre background */}
+      <section className="relative bg-(--dp-bg) dark:bg-background">
         <StickyVisualStory sections={storySections} />
       </section>
+
       <section>
         <GlobeSection />
       </section>

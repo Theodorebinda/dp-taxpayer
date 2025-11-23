@@ -88,11 +88,14 @@ export default function StickyVisualStory({
   };
 
   return (
-    <div ref={containerRef} className="relative">
+    <div
+      ref={containerRef}
+      className="relative max-w-7xl layout-shell mx-auto px-6 md:px-10 py-16  "
+    >
       <div className="grid grid-cols-1 lg:grid-cols-2   items-start">
         {/* Colonne gauche - sections défilantes */}
         <div
-          className="flex flex-col"
+          className="hidden lg:flex flex-col"
           style={{
             minHeight: `${STICKY_HEIGHT}px`,
             alignSelf: "flex-start",
@@ -118,13 +121,27 @@ export default function StickyVisualStory({
                 transition={{ duration: 0.4 }}
                 className="w-full max-w-xl"
               >
-                <div className="text-sm font-semibold text-blue-600 mb-4">
-                  {String(index + 1).padStart(2, "0")}
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-sm font-semibold text-app-blue-900 dark:text-primary">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-semibold bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:text-primary dark:border-primary/30">
+                    <svg
+                      width="8"
+                      height="8"
+                      viewBox="0 0 8 8"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <circle cx="4" cy="4" r="3" fill="currentColor" />
+                    </svg>
+                    PRO
+                  </span>
                 </div>
-                <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary dark:text-text   mb-6">
                   {section.title}
                 </h3>
-                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                <p className="text-lg text-app-blue-900 dark:text-app-blue-50 leading-relaxed">
                   {section.description}
                 </p>
               </motion.div>
@@ -134,14 +151,14 @@ export default function StickyVisualStory({
 
         {/* Colonne droite - image sticky */}
         <div
-          className="hidden lg:block sticky"
+          className="hidden lg:block sticky "
           style={{ top: stickyTop, alignSelf: "flex-start" }}
         >
           <div
             className="relative w-full max-w-md mx-auto"
             style={{ minHeight: `${STICKY_HEIGHT}px` }}
           >
-            <div className="aspect-[4/5] relative rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-2xl">
+            <div className="aspect-4/5 relative rounded-2xl overflow-hidden bg-transparent ">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={sections[activeIndex]?.id}
@@ -160,7 +177,7 @@ export default function StickyVisualStory({
                       ""
                     }
                     fill
-                    className="object-cover"
+                    className="object-cover bg-transparent"
                     sizes="(max-width: 768px) 100vw, 400px"
                     priority={activeIndex === 0}
                   />
@@ -174,13 +191,27 @@ export default function StickyVisualStory({
         <div className="lg:hidden space-y-8 col-span-1">
           {sections.map((section, index) => (
             <div key={section.id} className="space-y-6">
-              <div className="text-sm font-semibold text-blue-600">
-                {String(index + 1).padStart(2, "0")}
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-semibold text-blue-600 dark:text-primary">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-semibold bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:text-primary dark:border-primary/30">
+                  <svg
+                    width="8"
+                    height="8"
+                    viewBox="0 0 8 8"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <circle cx="4" cy="4" r="3" fill="currentColor" />
+                  </svg>
+                  PRO
+                </span>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {section.title}
               </h3>
-              <div className="aspect-[4/3] relative rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800">
+              <div className="aspect-4/3 relative rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800">
                 <Image
                   src={section.image}
                   alt={section.imageAlt || section.title}
