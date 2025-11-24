@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useThemeMounted } from "@/hooks/useThemeMounted";
 
-const ThemeToggleButton = () => {
+const ThemeToggleButton = ({ className }: { className?: string }) => {
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
   const { isMounted } = useThemeMounted();
@@ -28,7 +28,7 @@ const ThemeToggleButton = () => {
 
   return (
     <div
-      className="w-14 h-8 flex items-center rounded-full p-1 cursor-pointer duration-300 bg-primary/90 text-white"
+      className={`w-12 h-8 flex items-center rounded-full p-1 cursor-pointer duration-300 bg-primary/90 text-white ${className}`}
       onClick={toggleTheme}
     >
       <div

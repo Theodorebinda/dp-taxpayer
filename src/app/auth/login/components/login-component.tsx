@@ -12,6 +12,7 @@ import ThemeToggleButton from "@/components/atoms/themeToggleButton";
 import banner from "@/../public/images/login.jpg";
 import logo from "@/../public/logo/logo-inline.png";
 import { CircleX, CheckCircle, ShieldCheck, Eye, EyeOff } from "lucide-react";
+import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
 
 export default function LoginComponent() {
   const router = useRouter();
@@ -101,7 +102,7 @@ export default function LoginComponent() {
   return (
     <MotionWrapper>
       <main className="relative flex h-screen w-full items-center bg-background lg:gap-5 max-lg:flex-col justify-between">
-        <div className="absolute left-5  right-5 top-5  lg:left-30 z-30 flex w-full/2 px-5 justify-between items-center gap-8 md:justify-start">
+        <div className="absolute md:left-5 px-2 md:mx-0   top-5  lg:left-30 z-30 flex w-full md:w-90 md:px-5 justify-between items-center gap-8 md:justify-start">
           <Link
             href="/"
             className="inline-flex  items-center gap-2 rounded-full   py-1.5 font-medium text-foreground  w-60 h-12 transition hover:text-primary"
@@ -111,29 +112,34 @@ export default function LoginComponent() {
               alt="digipublic logo"
               width={120}
               height={40}
-              className="h-10 w-auto"
+              className="h-6 md:h-10 w-auto"
             />
           </Link>
-          <ThemeToggleButton />
+          <div className="md:hidden">
+            <ThemeSwitcher />
+          </div>
+          <div className="hidden md:block">
+            <ThemeToggleButton className="w-18" />
+          </div>
         </div>
 
         <div
-          className="absolute max-w-full inset-0 bg-cover bg-center bg-no-repeat dark:opacity-80 "
+          className="absolute max-w-full inset-0 bg-cover bg-center bg-no-repeat dark:opacity-40 "
           style={{ backgroundImage: `url(${banner.src})` }}
           aria-hidden
         />
 
         {/* Gradient overlay: très opaque à gauche pour le formulaire, transparent à droite */}
         <div
-          className="absolute inset-0 z-1 bg-linear-to-r from-background from-10% via-background/20 via-55% to-transparent"
+          className="absolute inset-0 z-1 bg-background/50 md:bg-linear-to-r md:from-background md:from-25% via-background/40 via-55% md:to-transparent"
           aria-hidden
         />
 
-        <div className="relative z-10 flex w-full   p-5 items-center pl-10 lg:pl-40 max-lg:h-full  max-lg:justify-start  ">
-          <div className="w-full max-w-2xl  justify-center items-center ">
+        <div className="relative z-10 flex w-full  items-center md:pl-10 lg:pl-40 max-lg:h-full  md:max-lg:justify-start max-lg:justify-center  backdrop-blur-sm md:backdrop-blur-none p-2 md:p-0  ">
+          <div className="w-full max-w-2xl flex flex-col justify-center md:justify-start  items-center ">
             <form
               onSubmit={onSubmit}
-              className=" flex w-full max-w-lg flex-col items-center justify-start gap-6"
+              className=" flex w-full max-w-lg flex-col items-center md:justify-start justify-center gap-6"
             >
               <div className="flex w-full flex-col gap-8">
                 <div className="flex flex-col gap-2">
@@ -144,7 +150,7 @@ export default function LoginComponent() {
                     Déclarez, payez et suivez vos taxes sans stress
                   </p>
                 </div>
-                <div className="space-y-1">
+                <div className="md:flex hidden space-y-1">
                   <p className="text-sm uppercase tracking-wide text-primary">
                     Portail DigiPublic
                   </p>
@@ -157,7 +163,7 @@ export default function LoginComponent() {
               </div>
 
               <div className="flex w-full flex-col gap-4">
-                <label className="text-sm font-medium text-foreground">
+                <label className=" font-medium text-foreground">
                   Identifiant
                   <input
                     className="mt-1 w-full rounded-lg border border-foreground/20 bg-background px-3 py-4 text-sm shadow-sm outline-none transition focus:border-primary/40 focus:ring-2 focus:ring-primary/20"
@@ -168,7 +174,7 @@ export default function LoginComponent() {
                   />
                 </label>
 
-                <label className="text-sm font-medium text-foreground">
+                <label className=" font-medium text-foreground">
                   Mot de passe
                   <div className="relative mt-1">
                     <input
@@ -205,7 +211,7 @@ export default function LoginComponent() {
                 >
                   {submitting ? "Connexion..." : "Se connecter"}
                 </button>
-                <div className="flex flex-col gap-2">
+                <div className="md:flex hidden flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4" />
                     <span>Sécurité du mot de passe</span>

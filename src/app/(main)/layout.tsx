@@ -15,7 +15,7 @@ export default function MainPublicLayout({
       <div className="min-h-screen text-neutral-900 flex flex-col">
         <MobileHeader />
         <Header />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 ">{children}</main>
         <FooterComponent />
       </div>
     </ThemeSync>
