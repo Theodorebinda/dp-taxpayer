@@ -1,4 +1,5 @@
 import TextInput from "../inputs/textInput";
+import PasswordInput from "../inputs/passwordInput";
 import SelectInput from "../inputs/selectInput";
 import MultiSelectInput from "../inputs/multiSelectInput";
 import BooleanInput from "../inputs/booleanInput";
@@ -48,6 +49,9 @@ export const InputPerType = ({ depth = 0, ...props }: InputType) => {
 
     case "text_area":
       return <TextAreaInput {...props} />;
+
+    case "password":
+      return <PasswordInput {...props} />;
 
     case "json":
 

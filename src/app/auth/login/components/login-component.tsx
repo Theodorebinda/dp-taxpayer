@@ -100,18 +100,18 @@ export default function LoginComponent() {
 
   return (
     <MotionWrapper>
-      <main className="relative flex h-screen w-full items-center bg-background lg:gap-5 max-lg:flex-col-reverse">
-        <div className="absolute left-5 top-10 z-30 flex items-center gap-3">
+      <main className="relative flex md:h-screen w-full items-center bg-background lg:gap-5 max-lg:flex-col-reverse">
+        <div className="absolute left-5 top-10 z-30 flex items-center gap-8 justify-between md:justify-start">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-full bg-background/80 px-3 py-1.5 font-medium text-foreground transition hover:text-primary"
+            className="inline-flex  items-center gap-2 rounded-full  px-3 py-1.5 font-medium text-foreground  md:w-60 w-full h-12 transition hover:text-primary"
           >
             <Image
               src={logo}
               alt="digipublic logo"
-              width={100}
+              width={120}
               height={40}
-              className="h-12 w-auto"
+              className="h-10 w-auto"
             />
           </Link>
           <ThemeToggleButton />
@@ -125,12 +125,12 @@ export default function LoginComponent() {
 
         {/* Gradient overlay: très opaque à gauche pour le formulaire, transparent à droite */}
         <div
-          className="absolute inset-0 z-1 bg-linear-to-r from-background from-30% via-background/60 via-55% to-transparent"
+          className="absolute inset-0 z-1 bg-linear-to-r from-background md:from-30% lg:from-30% from-0% via-background/60 via-55% to-transparent"
           aria-hidden
         />
 
         <div className="relative z-10 flex w-full items-start justify-start p-5 lg:items-center lg:pl-30 lg:pr-0 max-lg:h-full max-lg:justify-center max-lg:bg-background/90">
-          <div className="w-full max-w-2xl   p-5  backdrop-blur-sm lg:p-10">
+          <div className="w-full max-w-2xl   p-5  md:backdrop-blur-sm lg:p-10">
             <form
               onSubmit={onSubmit}
               className=" flex w-full max-w-lg flex-col items-center justify-start gap-6"
@@ -201,7 +201,7 @@ export default function LoginComponent() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="mt-4 w-full rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground transition disabled:opacity-60"
+                  className="mt-4 w-full rounded-lg bg-primary py-3  font-semibold text-white transition disabled:opacity-60"
                 >
                   {submitting ? "Connexion..." : "Se connecter"}
                 </button>
