@@ -100,11 +100,11 @@ export default function LoginComponent() {
 
   return (
     <MotionWrapper>
-      <main className="relative flex md:h-screen w-full items-center bg-background lg:gap-5 max-lg:flex-col-reverse">
-        <div className="absolute left-5 top-10 z-30 flex items-center gap-8 justify-between md:justify-start">
+      <main className="relative flex h-screen w-full items-center bg-background lg:gap-5 max-lg:flex-col justify-between">
+        <div className="absolute left-5  right-5 top-5  lg:left-30 z-30 flex w-full/2 px-5 justify-between items-center gap-8 md:justify-start">
           <Link
             href="/"
-            className="inline-flex  items-center gap-2 rounded-full  px-3 py-1.5 font-medium text-foreground  md:w-60 w-full h-12 transition hover:text-primary"
+            className="inline-flex  items-center gap-2 rounded-full   py-1.5 font-medium text-foreground  w-60 h-12 transition hover:text-primary"
           >
             <Image
               src={logo}
@@ -118,19 +118,19 @@ export default function LoginComponent() {
         </div>
 
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat dark:opacity-40"
+          className="absolute max-w-full inset-0 bg-cover bg-center bg-no-repeat dark:opacity-80 "
           style={{ backgroundImage: `url(${banner.src})` }}
           aria-hidden
         />
 
         {/* Gradient overlay: très opaque à gauche pour le formulaire, transparent à droite */}
         <div
-          className="absolute inset-0 z-1 bg-linear-to-r from-background md:from-30% lg:from-30% from-0% via-background/60 via-55% to-transparent"
+          className="absolute inset-0 z-1 bg-linear-to-r from-background from-10% via-background/20 via-55% to-transparent"
           aria-hidden
         />
 
-        <div className="relative z-10 flex w-full items-start justify-start p-5 lg:items-center lg:pl-30 lg:pr-0 max-lg:h-full max-lg:justify-center max-lg:bg-background/90">
-          <div className="w-full max-w-2xl   p-5  md:backdrop-blur-sm lg:p-10">
+        <div className="relative z-10 flex w-full   p-5 items-center pl-10 lg:pl-40 max-lg:h-full  max-lg:justify-start  ">
+          <div className="w-full max-w-2xl  justify-center items-center ">
             <form
               onSubmit={onSubmit}
               className=" flex w-full max-w-lg flex-col items-center justify-start gap-6"
