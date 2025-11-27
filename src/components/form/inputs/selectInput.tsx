@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { InputType, InputOption } from "@/types/types";
 import translate from "@/components/store/dictionary";
 
@@ -8,12 +8,25 @@ interface SearchableSelectInputProps extends InputType {
 
 // Normalisation récursive
 const normalizeOptions = (opts: InputOption[]): InputOption[] =>
-  opts.map((opt) => ({
-    ...opt,
-    label: opt.label ?? opt.value,
-    value: opt.value,
-    children: opt.children ? normalizeOptions(opt.children) : undefined,
-  }));
+  opts.map((opt) => {
+    // 1 — si primitive
+    if (typeof opt === "string" || typeof opt === "number") {
+      return {
+        label: String(opt),
+        value: String(opt),
+      };
+    }
+
+    // 2 — si objet sans value
+    const value = opt.value ?? opt.label ?? null;
+
+    return {
+      ...opt,
+      label: opt.label ?? value,
+      value: value,
+      children: opt.children ? normalizeOptions(opt.children) : undefined,
+    };
+  });
 
 // Aplatir arbre => tableau simple
 const flattenOptions = (opts: InputOption[]): InputOption[] =>
@@ -88,33 +101,49 @@ const SelectInput: React.FC<
   ...props
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isInputDirty, setIsInputDirty] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState<InputOption[]>([]);
+  const isMultiSelect = type === "multi_select";
+
+  // Normalisation + flatten (memoized)
+  const normalized = useMemo<InputOption[]>(
+    () => normalizeOptions(options),
+    [options]
+  );
+  const flat = useMemo<InputOption[]>(
+    () => flattenOptions(normalized),
+    [normalized]
+  );
+
+  const selectedOptions = useMemo(() => {
+    if (isMultiSelect && Array.isArray(value)) {
+      return flat.filter((opt) =>
+        (value as any)?.includes(JSON.stringify(opt.value))
+      );
+    }
+
+    if (!isMultiSelect && value) {
+      const selected = flat.find((opt) => opt.value === value);
+      return selected ? [selected] : [];
+    }
+
+    return [];
+  }, [flat, isMultiSelect, value]);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const isMultiSelect = type === "multi_select";
 
-  // Normalisation + flatten
-  const normalized = normalizeOptions(options);
-  const flat = flattenOptions(normalized);
+  const singleSelectDisplayValue = useMemo(() => {
+    if (isMultiSelect) return "";
+    const selected = selectedOptions[0];
+    return selected ? translate(String(selected.label), true) : "";
+  }, [isMultiSelect, selectedOptions]);
 
-  // Initialiser selectedOptions
-  useEffect(() => {
-    if (isMultiSelect && Array.isArray(value)) {
-      setSelectedOptions(
-        flat.filter((opt) =>
-          (value as any)?.includes(JSON.stringify(opt.value))
-        )
-      );
-    } else if (!isMultiSelect && value) {
-      const selected = flat.find((opt) => opt.value === value);
-      if (selected) {
-        setSelectedOptions([selected]);
-        setSearchTerm(translate(String(selected.label), true));
-      }
-    }
-  }, [value, options]);
+  const inputDisplayValue = isMultiSelect
+    ? searchTerm
+    : isInputDirty
+    ? searchTerm
+    : singleSelectDisplayValue;
 
   // Click extérieur → fermer
   useEffect(() => {
@@ -129,6 +158,7 @@ const SelectInput: React.FC<
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;
     setSearchTerm(term);
+    if (!isMultiSelect) setIsInputDirty(true);
     setIsOpen(true);
     setValue(isMultiSelect ? [] : "");
     onSearch?.(term);
@@ -158,27 +188,26 @@ const SelectInput: React.FC<
         ? selectedOptions.filter((o) => o.value !== option.value)
         : [...selectedOptions, option];
 
-      setSelectedOptions(updated);
       setValue(updated.map((o) => o.value));
       setSearchTerm("");
+      setIsInputDirty(false);
     } else {
-      setSelectedOptions([option]);
       setValue(option.value as any);
       setSearchTerm(translate(String(option.label), true));
+      setIsInputDirty(false);
       setIsOpen(false);
     }
   };
 
   const handleRemoveOption = (opt: InputOption) => {
     const updated = selectedOptions.filter((o) => o.value !== opt.value);
-    setSelectedOptions(updated);
     setValue(updated.map((o) => o.value));
   };
 
   const handleClear = () => {
-    setSelectedOptions([]);
     setValue(isMultiSelect ? [] : "");
     setSearchTerm("");
+    setIsInputDirty(false);
     inputRef.current?.focus();
   };
 
@@ -190,7 +219,7 @@ const SelectInput: React.FC<
           ref={inputRef}
           id={id}
           name={property}
-          value={searchTerm}
+          value={inputDisplayValue}
           onChange={handleSearchChange}
           onFocus={() => setIsOpen(true)}
           placeholder={

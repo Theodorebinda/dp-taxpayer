@@ -38,6 +38,8 @@ export async function fetchRecipeFormDefinition(
     accessToken
   );
 
+  console.log("res", res);
+
   if (!res) return null;
 
   // Retourner la réponse brute - normalisation dans l'adapter

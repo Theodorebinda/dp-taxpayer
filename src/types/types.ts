@@ -33,7 +33,8 @@ export type ApiInputType = {
     | "password"
     | "text_area"
     | "json"
-    | "code";
+    | "code"
+    | "address";
   placeholder?: string;
   options?: Array<InputOption>;
   optionsTags?: {
