@@ -2,7 +2,6 @@
  * Composant CreateContent refactoré avec FormEngine 2.0
  * Utilise :
  * - TanStack Query pour toutes les données
- * - Moteur de validation custom (pas Zod)
  * - Composants DynamicField
  * - Support complet du mode édition
  */
@@ -10,6 +9,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui";
@@ -33,6 +33,13 @@ export default function CreateContent({ recipeId }: CreateContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { success, error: showError } = useToast();
+  const { data: session } = useSession();
+
+  const connectedUserId =
+    (session as { user?: { taxpayerId?: string | null; id?: string | null } })
+      ?.user?.taxpayerId ??
+    session?.user?.id ??
+    null;
 
   // Store pour l'état UI (mode édition, etc.)
   const { isEditMode, editId, setEditMode } = useDynamicFormStore();
@@ -81,19 +88,24 @@ export default function CreateContent({ recipeId }: CreateContentProps) {
     initialValues: formInitialValues,
     validateOnChange: true,
     onSubmit: async (payload) => {
+      const payloadWithUser =
+        connectedUserId != null
+          ? { ...payload, taxPayerId: connectedUserId }
+          : payload;
+
       if (isEdit && editIdParam) {
         // Mode édition
         const result = await updateMutation.mutateAsync({
           recipeId,
           declarationId: editIdParam,
-          payload,
+          payload: payloadWithUser,
         });
         success(result.message || "Déclaration mise à jour avec succès !");
       } else {
         // Mode création
         const result = await submitMutation.mutateAsync({
           recipeId,
-          payload,
+          payload: payloadWithUser,
         });
         success(result.message || "Déclaration créée avec succès !");
       }
@@ -190,7 +202,7 @@ export default function CreateContent({ recipeId }: CreateContentProps) {
       </div>
 
       {/* Formulaire */}
-      <div className="rounded-xl border bg-background p-6 shadow-sm">
+      <div className="rounded-xl bg-background p-6 shadow-sm">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           {/* Champs du formulaire */}
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-5">

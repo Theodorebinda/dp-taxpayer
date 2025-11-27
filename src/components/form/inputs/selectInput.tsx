@@ -56,9 +56,11 @@ const DropDown = ({
     <>
       <button
         onClick={() => handleOptionClick(option)}
-        className={`px-3 py-2 cursor-pointer text-sm hover:bg-foreground/10 w-full text-left ${
-          isSelected ? "bg-primary/10 text-primary font-medium" : ""
-        }`}
+        className={`
+  px-3 py-2.5 text-sm w-full text-left cursor-pointer
+  hover:bg-neutral-100
+  ${isSelected ? "bg-primary/10 text-primary font-medium" : "text-neutral-800"}
+`}
       >
         {isMultiSelect && (
           <input
@@ -227,15 +229,28 @@ const SelectInput: React.FC<
               ? `${selectedOptions.length} sélectionné(s)`
               : "Rechercher..."
           }
-          className="w-full text-sm rounded border px-3 py-2 pr-8"
+          className="
+    w-full min-w-52 text-sm
+    rounded-md border border-neutral-300 dark:border-primary/80
+     px-3.5 py-3.5 pr-10
+     font-light
+    focus:ring-2 focus:ring-primary/40 
+    focus:border-primary 
+    transition-all
+  "
           required={!isOptional && !selectedOptions.length}
         />
 
+        {/* Bouton clear */}
         {(searchTerm || selectedOptions.length > 0) && (
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-2 top-1/2 -translate-y-1/2"
+            className="
+      absolute right-3 top-1/2 -translate-y-1/2
+      text-neutral-400 hover:text-neutral-600
+      transition
+    "
           >
             ✕
           </button>
@@ -244,14 +259,24 @@ const SelectInput: React.FC<
 
       {/* Tags */}
       {isMultiSelect && selectedOptions.length > 0 && (
-        <div className="flex flex-wrap gap-1 mt-2">
+        <div className="flex flex-wrap gap-2 mt-2">
           {selectedOptions.map((o) => (
             <span
               key={JSON.stringify(o.value)}
-              className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary/10 text-primary rounded"
+              className="
+        inline-flex items-center gap-2
+        px-2.5 py-1.5
+        text-xs rounded-md
+        bg-primary/10 text-primary
+      "
             >
               {translate(String(o.label), true)}
-              <button onClick={() => handleRemoveOption(o)}>✕</button>
+              <button
+                onClick={() => handleRemoveOption(o)}
+                className="text-primary/70 hover:text-primary"
+              >
+                ✕
+              </button>
             </span>
           ))}
         </div>
@@ -259,7 +284,13 @@ const SelectInput: React.FC<
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-background border rounded shadow max-h-60 overflow-y-auto">
+        <div
+          className="
+    absolute z-50 w-full mt-1 rounded-md 
+    border border-neutral-200 bg-white
+    shadow-lg max-h-60 overflow-y-auto
+  "
+        >
           {searchLoading
             ? "chargement..."
             : filtered.map((opt, i) => (

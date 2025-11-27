@@ -52,9 +52,9 @@ const TextInput: React.FC<InputType> = ({
 
   const formatDateValue = (val: any) => {
     if (!val) return "";
-    if (typeof val === "string") return val.slice(0, 10); // cas ISO string
+    if (typeof val === "string") return val.slice(0, 10);
     if (val instanceof Date && !Number.isNaN(val.getTime())) {
-      return val.toISOString().slice(0, 10); // yyyy-MM-dd
+      return val.toISOString().slice(0, 10);
     }
     return "";
   };
@@ -69,25 +69,30 @@ const TextInput: React.FC<InputType> = ({
 
   if (multiple) {
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
         {inputs.map((input, index) => (
           <div key={`${id}-${index}`} className="relative">
             <input
-              className="w-full min-w-52 text-sm rounded border border-foreground invalid:border-red-500 bg-gray px-3 py-2 font-light bg-background text-foreground focus:border-background focus-visible:outline-none"
+              className="
+                w-full min-w-52 text-sm rounded-md border border-neutral-300 
+                 px-3.5 py font-light text-neutral-900
+                focus:ring-2 focus:ring-primary/40 focus:border-primary 
+                transition-all
+              "
               type={type === "password" && isPasswordVisible ? "text" : type}
               name={`${property}-${index}`}
               placeholder={placeholder}
-              // value={input}
               disabled={props.isReadOnly}
               value={type === "date" ? formatDateValue(input) : input}
               onChange={(e) => handleChange(e, index)}
               required={!isOptional && index === 0}
             />
+
             {type === "password" && (
               <button
                 type="button"
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                className="absolute inset-y-0 right-10 flex items-center text-sm text-primary focus:outline-none"
+                className="absolute inset-y-0 right-10 flex items-center text-neutral-500 hover:text-neutral-700"
               >
                 {isPasswordVisible ? (
                   <IoMdEyeOff size={20} />
@@ -96,19 +101,24 @@ const TextInput: React.FC<InputType> = ({
                 )}
               </button>
             )}
+
             <button
               type="button"
               onClick={() => removeInput(index)}
-              className="absolute inset-y-0 right-4 flex items-center text-sm text-red-500 focus:outline-none"
+              className="
+                absolute inset-y-0 right-3 flex items-center text-red-500
+                hover:text-red-600 transition
+              "
             >
               <IoMdRemove size={20} />
             </button>
           </div>
         ))}
+
         <button
           type="button"
           onClick={addInput}
-          className="text-sm text-primary flex items-center gap-2 focus:outline-none"
+          className="text-sm text-primary flex items-center gap-2 hover:opacity-80"
         >
           <IoMdAdd size={20} /> Ajouter
         </button>
@@ -116,11 +126,15 @@ const TextInput: React.FC<InputType> = ({
     );
   }
 
-  // Pour les cas non multiples, on gère la valeur simple
   return (
     <div className="relative">
       <input
-        className="w-full min-w-52 text-sm rounded border border-gray-400 bg-gray px-3 py-2 font-light bg-background text-foreground focus-visible:outline-none"
+        className="
+          w-full min-w-52 text-sm rounded-md border border-neutral-300 
+           px-3.5 py-3 font-light text-neutral-900
+          focus:ring-2 focus:ring-primary/40 focus:border-primary 
+          transition-all
+        "
         type={type === "password" && isPasswordVisible ? "text" : type}
         name={property}
         placeholder={placeholder}
@@ -132,11 +146,12 @@ const TextInput: React.FC<InputType> = ({
         onChange={(e) => handleChange(e, 0)}
         required={!isOptional}
       />
+
       {type === "password" && (
         <button
           type="button"
           onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-          className="absolute inset-y-0 right-4 flex items-center text-sm text-primary focus:outline-none"
+          className="absolute inset-y-0 right-3 flex items-center text-neutral-500 hover:text-neutral-700"
         >
           {isPasswordVisible ? <IoMdEyeOff size={20} /> : <IoMdEye size={20} />}
         </button>
