@@ -169,7 +169,6 @@ export const authOptions: NextAuthOptions = {
           accessToken: result.access_token,
           accessTokenExpires:
             jwtExpiry ?? fallbackExpiry ?? now + DEFAULT_ACCESS_TOKEN_TTL,
-          profile: backendUser,
         };
 
         return user as unknown as import("next-auth").User;
@@ -198,13 +197,11 @@ export const authOptions: NextAuthOptions = {
           accessTokenExpires?: number;
           taxpayerId?: string | null;
           roles?: string[];
-          profile?: unknown;
         };
         token.accessToken = u.accessToken;
         token.accessTokenExpires = u.accessTokenExpires;
         token.taxpayerId = u.taxpayerId ?? null;
         token.roles = u.roles ?? [];
-        token.userProfile = u.profile;
         return token;
       }
 

@@ -202,7 +202,7 @@ export default function CreateContent({ recipeId }: CreateContentProps) {
       </div>
 
       {/* Formulaire */}
-      <div className="rounded-xl bg-background p-6 shadow-sm">
+      <div className="rounded-xl border bg-background p-6 shadow-sm">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           {/* Champs du formulaire */}
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-5">

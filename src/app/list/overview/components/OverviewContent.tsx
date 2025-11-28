@@ -35,7 +35,7 @@ export default function OverviewContent({
   // Mapper les recipes en actions rapides
   const quickActions = useMemo(() => mapRecipesToActions(recipes), [recipes]);
 
-  console.log("quickActions", quickActions);
+  // console.log("quickActions", quickActions);
 
   if (
     (isLoading && !initialData) ||

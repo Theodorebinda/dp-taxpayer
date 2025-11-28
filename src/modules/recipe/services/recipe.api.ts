@@ -38,7 +38,7 @@ export async function fetchRecipeFormDefinition(
     accessToken
   );
 
-  console.log("res", res);
+  // console.log("res", res);
 
   if (!res) return null;
 
@@ -69,7 +69,6 @@ export async function fetchRecipeInitialValues(
 
 /**
  * Soumet un formulaire (création)
- * Route: /create/operation/operation/declaration
  */
 export async function submitRecipeForm(
   recipeId: string,
@@ -88,6 +87,8 @@ export async function submitRecipeForm(
     undefined,
     accessToken
   );
+
+  console.log("res", res);
 
   if (!res) return null;
 

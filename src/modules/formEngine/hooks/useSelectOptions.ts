@@ -98,14 +98,14 @@ export function useSelectOptions(
         RemoteOptionsResponse | InputOption[] | null
       >(endpointWithQuery, undefined, accessToken);
 
-      if (process.env.NODE_ENV !== "production") {
-        console.debug(
-          "[useSelectOptions] fetch",
-          field?.property,
-          endpointWithQuery,
-          response
-        );
-      }
+      // if (process.env.NODE_ENV !== "production") {
+      //   console.debug(
+      //     "[useSelectOptions] fetch",
+      //     field?.property,
+      //     endpointWithQuery,
+      //     response
+      //   );
+      // }
 
       return extractOptions(response ?? []);
     },

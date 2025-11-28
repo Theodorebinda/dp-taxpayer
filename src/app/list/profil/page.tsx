@@ -36,10 +36,7 @@ export default async function ProfilPage() {
   }
 
   // Fetch initial côté serveur avec l'ID de l'utilisateur connecté
-  const taxpayerData = await getTaxpayerById(
-    "6c16a45c-e2d6-4d32-bd7d-ac819804b387",
-    accessToken
-  );
+  const taxpayerData = await getTaxpayerById(taxpayerId, accessToken);
 
   // Si les données ne sont pas trouvées
   if (!taxpayerData) {

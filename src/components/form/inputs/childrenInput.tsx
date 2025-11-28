@@ -1,8 +1,6 @@
 // src/components/Input/IconInput.tsx
 import React, { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { InputType, InputOption } from "@/types/types";
-import SelectInput from "./selectInput";
+import { InputType } from "@/types/types";
 import { useStore } from "zustand";
 import { formValueStore } from "@/components/store/form_value.store";
 import { getNestedValue, resizeArray } from "@/components/table/utils/utils";
