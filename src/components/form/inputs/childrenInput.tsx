@@ -124,7 +124,7 @@ const ChildrenInput: React.FC<InputType & { depth: number }> = (props) => {
 
   return (
     <div
-      className={`rounded-lg ${
+      className={`rounded-lg shadow-sm ${
         bgColors[depth % bgColors.length]
       } p-5 flex flex-col gap-5 items-start w-full 
         ${depth < 2 && props.style?.childrenColumns && "lg:grid"}

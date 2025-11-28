@@ -130,8 +130,8 @@ const TextInput: React.FC<InputType> = ({
     <div className="relative">
       <input
         className="
-          w-full min-w-52 text-sm rounded-md border border-neutral-300 
-           px-3.5 py-3 font-light text-neutral-900
+          w-full min-w-52 text-sm rounded-md border border-neutral-300 dark:border-primary/90
+           px-3.5 py-3 font-light text-neutral-900 dark:text-neutral-400
           focus:ring-2 focus:ring-primary/40 focus:border-primary 
           transition-all
         "

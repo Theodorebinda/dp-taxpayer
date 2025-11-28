@@ -287,7 +287,7 @@ const SelectInput: React.FC<
         <div
           className="
     absolute z-50 w-full mt-1 rounded-md 
-    border border-neutral-200 bg-white
+    border border-neutral-200 bg-white 
     shadow-lg max-h-60 overflow-y-auto
   "
         >

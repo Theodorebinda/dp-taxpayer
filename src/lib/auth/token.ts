@@ -48,13 +48,19 @@ export async function decryptRefreshToken(
 export async function setRefreshTokenCookie(refreshToken: string) {
   const store = await cookies();
   const encrypted = await encryptRefreshToken(refreshToken);
-  store.set(REFRESH_TOKEN_COOKIE_NAME, encrypted, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: REFRESH_MAX_AGE_SECONDS,
-  });
+  try {
+    store.set(REFRESH_TOKEN_COOKIE_NAME, encrypted, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: REFRESH_MAX_AGE_SECONDS,
+    });
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("setRefreshTokenCookie: unable to mutate cookies", error);
+    }
+  }
 }
 
 export async function getRefreshTokenFromCookie(): Promise<string | null> {
@@ -66,7 +72,13 @@ export async function getRefreshTokenFromCookie(): Promise<string | null> {
 
 export async function clearRefreshTokenCookie() {
   const store = await cookies();
-  store.delete(REFRESH_TOKEN_COOKIE_NAME);
+  try {
+    store.delete(REFRESH_TOKEN_COOKIE_NAME);
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("clearRefreshTokenCookie: unable to mutate cookies", error);
+    }
+  }
 }
 
 export const refreshTokenCookie = {

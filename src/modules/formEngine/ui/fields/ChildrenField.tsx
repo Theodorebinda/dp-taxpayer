@@ -92,7 +92,7 @@ export function ChildrenField({
             return (
               <div
                 key={`${field.property}-${index}`}
-                className="rounded-lg border border-border bg-background p-4 space-y-4"
+                className="rounded-lg bg-background shadow-xl p-4 space-y-4"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-sm font-medium">
