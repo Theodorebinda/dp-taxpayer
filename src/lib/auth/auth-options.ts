@@ -16,7 +16,7 @@ import {
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 
-const DEFAULT_ACCESS_TOKEN_TTL = 60 * 60; // 1h fallback
+const DEFAULT_ACCESS_TOKEN_TTL = 60 * 60 * 24 * 2; // 1h fallback
 
 // -----------------------------------------------------------------------------
 // HELPERS

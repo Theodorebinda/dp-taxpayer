@@ -3,6 +3,7 @@ import type {
   DeclarableRecipe,
   DeclarableRecipesResponse,
 } from "@/types/recipe.type";
+import type { OperationView } from "@/types/operation-view.type";
 import type { ApiInputType } from "@/types/types";
 
 // Type pour FormStep (structure retournée par l'API)
@@ -238,4 +239,20 @@ export async function createRecipeDeclaration(
       ? res.message
       : undefined;
   return { data, message };
+}
+
+export async function fetchDeclaration(
+  id: string,
+  accessToken?: string
+): Promise<OperationView | null> {
+  const res = await apiClient.get<Record<string, unknown>>(
+    `/view/core/possession/${id}`,
+    undefined,
+    accessToken
+  );
+
+  console.log({ res });
+
+  if (!res) return null;
+  return unwrapData<OperationView>(res);
 }

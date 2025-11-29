@@ -107,12 +107,19 @@ export default function CreateContent({ recipeId }: CreateContentProps) {
           recipeId,
           payload: payloadWithUser,
         });
+        sessionStorage.setItem("fresh-operation", JSON.stringify(result.data));
         success(result.message || "Déclaration créée avec succès !");
+
+        const newId = result?.data?.id;
+        if (newId) {
+          router.push(`/list/create/[recipeId]/result`);
+        } else {
+          router.push("/list/overview");
+        }
       }
 
       // Rediriger après succès
       setTimeout(() => {
-        router.push("/list/overview");
         form.reset();
         setEditMode(false, null);
       }, 1500);
@@ -202,7 +209,7 @@ export default function CreateContent({ recipeId }: CreateContentProps) {
       </div>
 
       {/* Formulaire */}
-      <div className="rounded-xl border bg-background p-6 shadow-sm">
+      <div className="rounded-xl  bg-background/90 p-6 shadow-sm">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           {/* Champs du formulaire */}
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-5">
