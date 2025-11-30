@@ -14,6 +14,7 @@ import {
 } from "@/lib/menu/helpers";
 import * as RiIcons from "react-icons/ri";
 import { IconType } from "react-icons";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 const HIDDEN_PATHS = ["/auth/login"];
 
@@ -89,6 +90,19 @@ const Sidebar: React.FC = () => {
   }, [pathname, menuItems]);
 
   const computedWidth = isMobile ? "100%" : sidebarWidth;
+  const sidebarStyle = isMobile
+    ? { width: computedWidth }
+    : {
+        width: isSidebarOpen ? sidebarWidth : 0,
+        minWidth: isSidebarOpen ? sidebarWidth : 0,
+      };
+  const mobileTranslateClass = isSidebarOpen
+    ? "translate-x-0"
+    : "-translate-x-full";
+  const desktopVisibilityClass =
+    !isMobile && !isSidebarOpen
+      ? "opacity-0 pointer-events-none"
+      : "opacity-100";
 
   const toggleMenu = useCallback((item: MenuItemType) => {
     if (!item.children || item.children.length === 0) return;
@@ -197,9 +211,9 @@ const Sidebar: React.FC = () => {
     <>
       <aside
         className={`${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full "
-        } fixed z-40 flex h-screen flex-col bg-background text-foreground shadow-xl transition-transform duration-200 lg:static lg:translate-x-0`}
-        style={{ width: computedWidth }}
+          isMobile ? mobileTranslateClass : ""
+        } fixed z-40 flex h-screen flex-col bg-background text-foreground shadow-xl transition-[transform,opacity,width] duration-300 ease-in-out lg:static lg:translate-x-0 ${desktopVisibilityClass}`}
+        style={{ ...sidebarStyle, overflow: "hidden" }}
       >
         <div className="flex items-center justify-between border-b border-border/30 border-gray-300 dark:border-gray-700 px-5 py-4 shrink-0">
           <button className="rounded-lg border border-border/30 p-2">
@@ -224,7 +238,8 @@ const Sidebar: React.FC = () => {
               onClick={() => setSidebarOpen(!isSidebarOpen)}
               aria-label="Basculer la navigation"
             >
-              <LuMenu size={20} />
+              {/* <LuMenu size={20} /> */}
+              <ArrowRight size={20} className="rotate-180" />
             </button>
           </div>
         </div>
@@ -239,7 +254,9 @@ const Sidebar: React.FC = () => {
 
       {!isMobile && (
         <div
-          className="hidden cursor-ew-resize items-center px-1 text-muted-foreground lg:flex"
+          className={`hidden cursor-ew-resize items-center px-1 text-muted-foreground lg:flex transition-opacity duration-200 ${
+            isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
           onMouseDown={handleMouseDown}
         >
           <span className="h-12 w-1 rounded-full bg-primary/40" />
