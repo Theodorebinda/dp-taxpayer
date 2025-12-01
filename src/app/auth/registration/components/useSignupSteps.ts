@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { signupSteps } from "./steps.config";
 import { ApiInputType } from "@/types/types";
 import { useApiMutation, useApiQuery } from "@/hooks/useApi";
@@ -30,12 +31,14 @@ type UseSignupStepsReturn = {
   isLoading: boolean;
   isError: boolean;
   error: unknown;
+  isSubmitting: boolean;
 };
 
 export function useSignupSteps(): UseSignupStepsReturn {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<SignupFormData>({});
-  const { success } = useToast();
+  const { success, error: showError } = useToast();
+  const router = useRouter();
   const hydratedFormRef = useRef<string | null>(null);
   const shownMessageRef = useRef<string | null>(null);
 
@@ -107,13 +110,36 @@ export function useSignupSteps(): UseSignupStepsReturn {
   const mutation = useApiMutation<
     Record<string, unknown>,
     { data: Record<string, unknown> }
-  >(async (payload) => {
-    const response = await registerTaxpayer(payload);
-    if (!response) throw new Error("Soumission échouée");
-    return response;
-  });
+  >(
+    async (payload) => {
+      const response = await registerTaxpayer(payload);
+      console.log("response registration", response);
+      if (!response) throw new Error("Soumission échouée");
+      return response;
+    },
+    {
+      onSuccess: (data) => {
+        const message =
+          (data as { message?: string })?.message ||
+          "Compte créé avec succès ! Vous pouvez maintenant vous connecter.";
+        success(message);
+        // Rediriger vers la page de connexion après un court délai
+        setTimeout(() => {
+          router.push("/auth/login");
+        }, 1500);
+      },
+      onError: (err) => {
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Une erreur s'est produite lors de la création du compte. Veuillez réessayer.";
+        showError(message);
+      },
+    }
+  );
 
   const submit = () => {
+    // console.log("formData", formData);
     mutation.mutate(formData);
   };
 
@@ -130,5 +156,6 @@ export function useSignupSteps(): UseSignupStepsReturn {
     isLoading,
     isError,
     error,
+    isSubmitting: mutation.isPending,
   };
 }

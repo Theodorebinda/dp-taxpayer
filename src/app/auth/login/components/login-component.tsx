@@ -11,7 +11,7 @@ import MotionWrapper from "@/components/ui/MotionWrapper";
 import ThemeToggleButton from "@/components/atoms/themeToggleButton";
 import banner from "@/../public/images/login.jpg";
 import logo from "@/../public/logo/logo-inline.png";
-import { CircleX, CheckCircle, ShieldCheck, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import ThemeSwitcher from "@/components/ui/ThemeSwitcher";
 
 export default function LoginComponent() {
@@ -30,33 +30,6 @@ export default function LoginComponent() {
   const [submitting, setSubmitting] = useState(false);
   const pendingToastId = useRef<string | undefined>(undefined);
 
-  // Validation du mot de passe
-  const passwordValidation = {
-    minLength: password.length >= 8,
-    hasUpperCase: /[A-Z]/.test(password),
-    hasLowerCase: /[a-z]/.test(password),
-    hasNumber: /[0-9]/.test(password),
-    hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-  };
-
-  // Calcul de la force du mot de passe
-  const getPasswordStrength = () => {
-    if (password.length === 0) return null;
-
-    const criteriaCount =
-      Object.values(passwordValidation).filter(Boolean).length;
-
-    if (criteriaCount <= 2) {
-      return { level: "Faible", color: "text-red-500" };
-    } else if (criteriaCount <= 4) {
-      return { level: "Moyen", color: "text-yellow-500" };
-    } else {
-      return { level: "Fort", color: "text-green-500" };
-    }
-  };
-
-  const passwordStrength = getPasswordStrength();
-
   useEffect(() => {
     if (status === "authenticated") {
       router.replace(callbackUrl);
@@ -67,6 +40,8 @@ export default function LoginComponent() {
     e.preventDefault();
     setSubmitting(true);
 
+    console.log({ identifier, password });
+
     if (!pendingToastId.current) {
       pendingToastId.current = info("Connexion en cours...", {
         id: "login-status",
@@ -75,6 +50,8 @@ export default function LoginComponent() {
 
     try {
       const res = await login({ identifier, password });
+
+      console.log({ res });
 
       if (res.ok) {
         success(res.message || "Connexion réussie");
@@ -211,61 +188,6 @@ export default function LoginComponent() {
                 >
                   {submitting ? "Connexion..." : "Se connecter"}
                 </button>
-                <div className="md:flex hidden flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>Sécurité du mot de passe</span>
-                    {passwordStrength && (
-                      <span
-                        className={`underline font-medium ${passwordStrength.color}`}
-                      >
-                        {passwordStrength.level}
-                      </span>
-                    )}
-                  </div>
-                  <ul className="list-item list-inside text-sm text-muted-foreground">
-                    <li className="flex justify-start items-center gap-2">
-                      {passwordValidation.minLength ? (
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <CircleX className="w-4 h-4 text-red-500" />
-                      )}
-                      <span>Contient au moins 8 caractères</span>
-                    </li>
-                    <li className="flex justify-start items-center gap-2">
-                      {passwordValidation.hasUpperCase ? (
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <CircleX className="w-4 h-4 text-red-500" />
-                      )}
-                      <span>Contient au moins une lettre majuscule</span>
-                    </li>
-                    <li className="flex justify-start items-center gap-2">
-                      {passwordValidation.hasLowerCase ? (
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <CircleX className="w-4 h-4 text-red-500" />
-                      )}
-                      <span>Contient au moins une lettre minuscule</span>
-                    </li>
-                    <li className="flex justify-start items-center gap-2">
-                      {passwordValidation.hasNumber ? (
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <CircleX className="w-4 h-4 text-red-500" />
-                      )}
-                      <span>Contient au moins un chiffre</span>
-                    </li>
-                    <li className="flex justify-start items-center gap-2">
-                      {passwordValidation.hasSpecialChar ? (
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <CircleX className="w-4 h-4 text-red-500" />
-                      )}
-                      <span>Contient au moins un caractère spécial</span>
-                    </li>
-                  </ul>
-                </div>
 
                 <div className="flex flex-wrap justify-between gap-3 mt-4 text-sm text-muted-foreground">
                   <Link

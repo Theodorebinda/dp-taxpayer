@@ -7,7 +7,7 @@ import { useSignupSteps } from "./components/useSignupSteps";
 import Loader from "@/components/atoms/loader";
 import banner from "@/../public/images/banner.webp";
 import { ErrorDisplay } from "@/components/public/declaration/errorDisplay";
-import { Home, LogIn } from "lucide-react";
+import { Home } from "lucide-react";
 
 export default function DigiPublicSignupForm() {
   const {
@@ -23,6 +23,7 @@ export default function DigiPublicSignupForm() {
     isLoading,
     isError,
     error,
+    isSubmitting,
   } = useSignupSteps();
 
   if (isLoading) return <Loader />;
@@ -73,6 +74,7 @@ export default function DigiPublicSignupForm() {
               currentStep={currentStep}
               stepsCount={steps.length}
               canProceed={isStepValid()}
+              isSubmitting={isSubmitting}
               onPrevious={goPrevious}
               onNext={goNext}
               onSubmit={submit}

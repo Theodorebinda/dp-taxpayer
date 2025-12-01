@@ -14,6 +14,7 @@ export default function StepForm({
   formData,
   onChange,
 }: StepFormProps) {
+  // console.log("formData", formData);
   return (
     <div className="space-y-6">
       {fields.map((field) => (

@@ -62,6 +62,8 @@ export async function getRegistrationFields(): Promise<
   const res = await apiClient.get<ApiInputType[] | { data: ApiInputType[] }>(
     API_ENDPOINTS.TAXPAYER_REGISTRATION
   );
+
+  // console.log("res", res);
   if (!res) return false;
 
   const payload = unwrapData<ApiInputType[]>(res) ?? [];
@@ -85,6 +87,7 @@ export async function registerTaxpayer(
     API_ENDPOINTS.TAXPAYER_REGISTRATION,
     payload
   );
+  console.log({ res });
   if (!res) return false;
   const data = unwrapData<Record<string, unknown>>(res);
   return { data };

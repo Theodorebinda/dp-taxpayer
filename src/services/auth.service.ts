@@ -69,6 +69,7 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
     API_ENDPOINTS.AUTH_LOGIN,
     body
   );
+
   if (!res)
     throw new Error("Échec de connexion, veuillez vérifier vos identifiants");
   return res as unknown as LoginResponse;
