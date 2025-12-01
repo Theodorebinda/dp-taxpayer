@@ -5,6 +5,7 @@ import { isPublicPath } from "@/lib/auth/public-paths";
 const AUTH_PAGES = [
   "/auth/login",
   "/auth/registration",
+  "/auth/otp",
   "/login",
   "/register",
   "/registration",

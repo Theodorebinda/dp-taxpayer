@@ -58,7 +58,63 @@ export default function LoginComponent() {
         return;
       }
 
-      showError(res.error || "Identifiants invalides");
+      // Si OTP est requis, rediriger vers la page OTP
+      if (res.requiresOtp && res.otpData) {
+        console.log("OTP requis détecté, données OTP:", res.otpData);
+        // Vérifier que c'est bien le type avec redirectToOpt: true
+        const redirectToOpt = res.otpData.redirectToOpt;
+        const hasToken = "token" in res.otpData;
+        const hasOtpMethod = "otpMethod" in res.otpData;
+
+        console.log("redirectToOpt:", redirectToOpt);
+        console.log("hasToken:", hasToken);
+        console.log("hasOtpMethod:", hasOtpMethod);
+
+        const isOtpRequired =
+          redirectToOpt === true ||
+          (typeof redirectToOpt !== "undefined" &&
+            String(redirectToOpt) === "true");
+
+        if (isOtpRequired && hasToken && hasOtpMethod) {
+          // Type guard: si redirectToOpt est true, alors c'est le type avec token et otpMethod
+          const otpData = res.otpData as {
+            code: number;
+            message: string;
+            redirectToOpt: true;
+            otpMethod: { name: string; value: string }[];
+            token: string;
+          };
+
+          const otpToken = otpData.token;
+          const otpMethods = otpData.otpMethod;
+          console.log("Redirection vers /auth/otp avec token:", otpToken);
+          // Stocker les données OTP dans sessionStorage pour la page OTP
+          sessionStorage.setItem(
+            "otp_data",
+            JSON.stringify({
+              token: otpToken,
+              methods: otpMethods,
+            })
+          );
+
+          // Utiliser replace au lieu de push pour éviter les problèmes de navigation
+          // et s'assurer que la redirection se fait immédiatement
+          router.replace("/auth/otp");
+          return;
+        } else {
+          console.error("Données OTP incomplètes:", {
+            redirectToOpt,
+            hasToken,
+            hasOtpMethod,
+            otpData: res.otpData,
+          });
+        }
+      }
+
+      // Ne pas afficher d'erreur si OTP est requis (c'est normal)
+      if (!res.requiresOtp) {
+        showError(res.error || "Identifiants invalides");
+      }
     } catch (error: unknown) {
       const message =
         error instanceof Error

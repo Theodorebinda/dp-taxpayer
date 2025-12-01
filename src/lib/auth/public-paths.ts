@@ -6,6 +6,7 @@ const PUBLIC_PATH_PATTERNS: RegExp[] = [
   /^\/maintenance(\/.*)?$/,
   /^\/auth\/login$/,
   /^\/auth\/registration(\/.*)?$/,
+  /^\/auth\/otp(\/.*)?$/, // Page OTP pour la vérification en deux étapes
   /^\/auth\/password\/forgot$/,
   /^\/auth\/reset-password$/,
   /^\/marketing(\/.*)?$/,

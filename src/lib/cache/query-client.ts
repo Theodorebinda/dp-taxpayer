@@ -31,6 +31,12 @@ export function getQueryClient() {
         },
         mutations: {
           retry: 1,
+          // Intercepter les erreurs
+          onError: (error) => {
+            if ((error as { isHandled?: boolean })?.isHandled) {
+              return;
+            }
+          },
         },
       },
     });

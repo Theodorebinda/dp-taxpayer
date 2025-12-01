@@ -10,6 +10,7 @@ import {
 
 import {
   login as loginApi,
+  verifyOtp as verifyOtpApi,
   type BackendLoginUser,
 } from "@/services/auth.service";
 
@@ -122,10 +123,18 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.identifier || !credentials?.password) return null;
 
+        console.log({ credentials });
+
         const result = await loginApi({
           identifier: credentials.identifier,
           password: credentials.password,
         });
+
+        // Si redirectToOpt est true, retourner null pour forcer la redirection vers la page OTP
+        // Le token OTP sera géré côté client via useAuth
+        if (result.redirectToOpt === true) {
+          return null;
+        }
 
         // Store refresh token
         if (result.refresh_token) {
@@ -172,6 +181,70 @@ export const authOptions: NextAuthOptions = {
         };
 
         return user as unknown as import("next-auth").User;
+      },
+    }),
+    Credentials({
+      id: "otp",
+      name: "OTP",
+      credentials: {
+        token: { label: "Token OTP", type: "text" },
+        code: { label: "Code OTP", type: "text" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.token || !credentials?.code) return null;
+
+        try {
+          const result = await verifyOtpApi({
+            token: credentials.token,
+            code: credentials.code,
+          });
+
+          // Store refresh token
+          if (result.refresh_token) {
+            await setRefreshTokenCookie(result.refresh_token);
+          } else {
+            await clearRefreshTokenCookie();
+          }
+
+          const backendUser = (result.data ?? {}) as BackendLoginUser;
+
+          const now = Math.floor(Date.now() / 1000);
+          const jwtExpiry = getJwtExpiry(result.access_token);
+          const fallbackExpiry =
+            typeof result.expiresIn === "number"
+              ? now + result.expiresIn
+              : undefined;
+
+          // Extract taxpayerId from data.taxPayer.id
+          const taxpayerId = backendUser.taxPayer?.id ?? null;
+
+          // Build Unified User Object
+          const user = {
+            id: backendUser.id ?? "unknown",
+            name: backendUser.name ?? backendUser.mail ?? backendUser.id,
+            email: backendUser.mail ?? null,
+            roles: Array.isArray(backendUser.role)
+              ? backendUser.role
+                  .map((r) =>
+                    typeof r === "string"
+                      ? r
+                      : typeof r === "object" && r && "name" in r && r.name
+                      ? String(r.name)
+                      : undefined
+                  )
+                  .filter((r): r is string => typeof r === "string")
+              : [],
+            taxpayerId,
+            accessToken: result.access_token,
+            accessTokenExpires:
+              jwtExpiry ?? fallbackExpiry ?? now + DEFAULT_ACCESS_TOKEN_TTL,
+          };
+
+          return user as unknown as import("next-auth").User;
+        } catch (error) {
+          console.error("OTP verification error:", error);
+          return null;
+        }
       },
     }),
   ],

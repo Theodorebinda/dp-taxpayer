@@ -38,15 +38,28 @@ export type LoginPayload = {
   version?: string;
 };
 
-export type LoginResponse = {
-  code: number;
-  message: string;
-  redirectToOpt?: boolean;
-  data: BackendLoginUser;
-  access_token: string;
-  refresh_token?: string | null;
-  expiresIn?: number;
+export type OtpMethod = {
+  name: string;
+  value: string;
 };
+
+export type LoginResponse =
+  | {
+      code: number;
+      message: string;
+      redirectToOpt: false;
+      data: BackendLoginUser;
+      access_token: string;
+      refresh_token?: string | null;
+      expiresIn?: number;
+    }
+  | {
+      code: number;
+      message: string;
+      redirectToOpt: true;
+      otpMethod: OtpMethod[];
+      token: string;
+    };
 
 type RefreshResponse = {
   access_token?: string;
@@ -70,9 +83,37 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
     body
   );
 
+  console.log("login response", res);
+
   if (!res)
     throw new Error("Échec de connexion, veuillez vérifier vos identifiants");
-  return res as unknown as LoginResponse;
+
+  // La réponse peut être directement la structure ou wrappée
+  // Vérifier si redirectToOpt existe directement dans la réponse
+  const response = res as unknown as
+    | LoginResponse
+    | {
+        data?: LoginResponse;
+        redirectToOpt?: boolean;
+        token?: string;
+        otpMethod?: OtpMethod[];
+      };
+
+  // Si la réponse a redirectToOpt directement, c'est le bon format
+  if ("redirectToOpt" in response && response.redirectToOpt === true) {
+    return response as LoginResponse;
+  }
+
+  // Sinon, vérifier si elle est wrappée dans data
+  if ("data" in response && response.data) {
+    const unwrapped = response.data as LoginResponse;
+    if ("redirectToOpt" in unwrapped) {
+      return unwrapped;
+    }
+  }
+
+  // Par défaut, retourner la réponse telle quelle
+  return response as LoginResponse;
 }
 
 function extractAccessToken(
@@ -127,4 +168,117 @@ export async function me(
   );
   if (!res) throw new Error("Impossible de charger le profil");
   return (res.data as unknown as Record<string, unknown>) ?? {};
+}
+
+// -----------------------------------------------------------------------------
+// OTP SERVICES
+// -----------------------------------------------------------------------------
+
+export type SendOtpPayload = {
+  token: string;
+  method: string; // "email" | "sms"
+};
+
+export type SendOtpResponse = {
+  code: number;
+  message: string;
+  data?: unknown;
+};
+
+export async function sendOtp(
+  payload: SendOtpPayload
+): Promise<SendOtpResponse> {
+  const endpoint = API_ENDPOINTS.AUTH_OTP_SEND(payload.method);
+  console.log("sendOtp - endpoint:", endpoint);
+  console.log("sendOtp - payload:", payload);
+  console.log("sendOtp - token:", payload.token);
+
+  const res = await apiClient.get<SendOtpResponse>(
+    endpoint,
+    undefined,
+    payload.token
+  );
+
+  console.log("sendOtp - response:", res);
+  console.log("sendOtp - response type:", typeof res);
+  console.log("sendOtp - response is false:", res === false);
+
+  if (!res) {
+    // Extraire l'erreur du client API de manière plus robuste
+    const clientError = (
+      apiClient as unknown as {
+        error?: {
+          code?: number;
+          message?: string;
+          error?: { errorMessage?: string; details?: unknown };
+        };
+      }
+    )?.error;
+
+    // Construire un message d'erreur clair et informatif pour l'utilisateur
+    let errorMessage =
+      "Impossible d'envoyer le code de vérification. Veuillez réessayer.";
+
+    if (clientError) {
+      // Prioriser le message de l'erreur principale
+      if (clientError.message) {
+        errorMessage = clientError.message;
+      } else if (clientError.error?.errorMessage) {
+        errorMessage = clientError.error.errorMessage;
+      }
+    } else {
+      // console.error("sendOtp - Aucune réponse de l'API");
+    }
+
+    const error = new Error(errorMessage);
+    // Ajouter des métadonnées utiles pour le débogage (non affichées à l'utilisateur)
+    (error as { code?: number; details?: unknown }).code = clientError?.code;
+    (error as { code?: number; details?: unknown }).details = clientError;
+
+    throw error;
+  }
+  return res;
+}
+
+export type VerifyOtpPayload = {
+  token: string;
+  code: string;
+};
+
+export type VerifyOtpResponse = {
+  code: number;
+  message: string;
+  redirectToOpt: false;
+  data: BackendLoginUser;
+  access_token: string;
+  refresh_token?: string | null;
+  expiresIn?: number;
+};
+
+function unwrapOtpData<T>(res: unknown): T {
+  if (res && typeof res === "object") {
+    const r = res as Partial<{ data?: unknown }> & { data?: unknown };
+    if (typeof r.data !== "undefined") {
+      // data peut contenir { data: T }
+      const inner = r.data as { data?: unknown };
+      if (inner && typeof inner === "object" && "data" in inner) {
+        return (inner as { data: T }).data as T;
+      }
+      return r.data as T;
+    }
+  }
+  return res as T;
+}
+
+export async function verifyOtp(
+  payload: VerifyOtpPayload
+): Promise<VerifyOtpResponse> {
+  const res = await apiClient.post<VerifyOtpResponse>(
+    API_ENDPOINTS.AUTH_OTP_VALIDATION,
+    payload
+  );
+  if (!res) throw new Error("Code OTP invalide");
+  // Extraire les données de la réponse wrappée
+  const data = unwrapOtpData<VerifyOtpResponse>(res);
+  return data;
 }

@@ -8,6 +8,8 @@ export const API_ENDPOINTS = {
   AUTH_PASSWORD_UPDATE: "/change/auth/password",
   AUTH_VALIDATE_RESET_TOKEN: (token: string) =>
     `/auth/reset-token-validation/${token}`,
+  AUTH_OTP_SEND: (method: string) => `/auth/otp?method=${method}`,
+  AUTH_OTP_VALIDATION: "/auth/otp/validation",
   APPLICATIONS: "/load/app",
   APPLICATION_MENUS: (applicationId: string) =>
     `/applications/${applicationId}/menu`,
