@@ -1,7 +1,6 @@
 "use client";
 import { useUiStore } from "../store/sidebarState";
 import ThemeToggleButton from "../atoms/themeToggleButton";
-import UserMenu from "../atoms/userMenu";
 import { greeting } from "@/utils/utils";
 import { LuMenu, LuX } from "react-icons/lu";
 import { Bell, LogOut, Search, User2 } from "lucide-react";

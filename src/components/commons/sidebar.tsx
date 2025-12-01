@@ -33,12 +33,44 @@ const Sidebar: React.FC = () => {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const handleResize = () => {
+
+    // Attendre que le store soit hydraté depuis localStorage avant de modifier l'état
+    const checkHydration = () => {
+      const isHydrated =
+        (
+          useUiStore as unknown as { persist?: { hasHydrated?: () => boolean } }
+        )?.persist?.hasHydrated?.() ?? true;
+
+      if (!isHydrated) {
+        // Si pas encore hydraté, réessayer dans 50ms
+        setTimeout(checkHydration, 50);
+        return;
+      }
+
+      // Une fois hydraté, détecter mobile/desktop
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-      setSidebarOpen(!mobile);
+
+      // Sur mobile, toujours fermer le sidebar
+      // Sur desktop, NE PAS modifier l'état - laisser Zustand restaurer depuis localStorage
+      if (mobile) {
+        setSidebarOpen(false);
+      }
+      // Sur desktop, on ne touche pas à l'état - Zustand a déjà restauré depuis localStorage
     };
-    handleResize();
+
+    checkHydration();
+
+    const handleResize = () => {
+      const newMobile = window.innerWidth < 1024;
+      setIsMobile(newMobile);
+      // Sur mobile, toujours fermer le sidebar lors du resize
+      if (newMobile) {
+        setSidebarOpen(false);
+      }
+      // Sur desktop, ne pas modifier l'état lors du resize
+    };
+
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [setSidebarOpen]);
