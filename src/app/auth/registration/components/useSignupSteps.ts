@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, startTransition } from "react";
 import { useRouter } from "next/navigation";
 import { signupSteps } from "./steps.config";
 import { ApiInputType } from "@/types/types";
@@ -66,10 +66,13 @@ export function useSignupSteps(): UseSignupStepsReturn {
     if (hydratedFormRef.current === serialized) return;
     hydratedFormRef.current = serialized;
 
-    setFormData((prev) => ({
-      ...serverForm,
-      ...prev,
-    }));
+    // Utiliser startTransition pour éviter les rendus en cascade
+    startTransition(() => {
+      setFormData((prev) => ({
+        ...serverForm,
+        ...prev,
+      }));
+    });
   }, [serverForm]);
 
   useEffect(() => {
@@ -113,7 +116,7 @@ export function useSignupSteps(): UseSignupStepsReturn {
   >(
     async (payload) => {
       const response = await registerTaxpayer(payload);
-      console.log("response registration", response);
+      console.log("response registration", payload);
       if (!response) throw new Error("Soumission échouée");
       return response;
     },

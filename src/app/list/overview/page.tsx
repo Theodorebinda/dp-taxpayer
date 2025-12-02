@@ -4,6 +4,8 @@ import { getTaxpayerById } from "@/services/taxpayer.service";
 import { getDeclarableRecipes } from "@/services/recipe.service";
 import OverviewContent from "./components/OverviewContent";
 import { redirect } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { Button } from "@/components/ui";
 
 export default async function OverviewPage() {
   // Récupération de la session côté serveur
@@ -21,20 +23,13 @@ export default async function OverviewPage() {
   const taxpayerId = session.user?.taxpayerId ?? session.user?.id;
   if (!taxpayerId || !accessToken) {
     return (
-      <main className="flex h-full w-full items-center justify-center p-0 md:p-6">
+      <main className="flex h-[calc(90vh)] w-full items-center justify-center p-0 md:p-6">
         <div className="max-w-xl rounded-lg border border-yellow-200 bg-yellow-50 px-8 py-6 text-center text-yellow-700 shadow-md dark:border-yellow-900/60 dark:bg-yellow-950/40">
-          <p className="mb-2 text-2xl font-bold">Session invalide</p>
+          <p className="mb-2 text-2xl font-bold">Session Expirée</p>
           <p className="mb-4   leading-relaxed">
-            Cette plateforme est exclusivement destinée aux assujettis. Vous ne
-            devez pas vous connecter avec ce compte.
+            Votre session a expiré. Veuillez vous reconnecter.
           </p>
-          <a
-            href="https://www.digipublic.app/auth/login"
-            className="inline-block rounded bg-yellow-600 px-4 py-2 text-sm font-semibold text-white hover:bg-yellow-700"
-            target="_blank"
-          >
-            Accéder à la plateforme Agent
-          </a>
+          <Button>Se reconnecter</Button>
         </div>
       </main>
     );
