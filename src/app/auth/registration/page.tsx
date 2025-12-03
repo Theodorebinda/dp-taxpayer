@@ -87,8 +87,8 @@ export default function DigiPublicSignupForm() {
       </div>
 
       {/* Contenu principal */}
-      <div className="w-full max-lg:h-full flex lg:items-center max-lg:items-center items-start justify-center max-lg:justify-center p-5   max-lg:bg-transparent z-10 relative max-lg:overflow-y-auto">
-        <div className="w-full lg:p-10   max-lg:w-full max-lg:max-w-md lg:w-3/4 flex flex-col gap-4 rounded-xl z-10 backdrop-blur-lg bg-background/10 dark:bg-app-blue-700  lg:shadow-lg">
+      <div className="w-full max-lg:h-full py-5 max-lg:px-10 flex lg:items-center max-lg:items-center items-start justify-center max-lg:justify-center p-5   max-lg:bg-transparent z-10 relative max-lg:overflow-y-auto">
+        <div className="w-full lg:p-10   max-lg:w-full  lg:w-3/4 flex flex-col gap-4 rounded-xl z-10  bg-background/10 dark:bg-app-blue-700  lg:shadow-lg">
           {/* Mobile: Stepper */}
           <div className="lg:hidden mb-4">
             <MobileStepper

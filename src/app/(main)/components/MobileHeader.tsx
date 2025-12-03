@@ -79,9 +79,7 @@ export default function MobileHeader() {
     <header className="relative z-50 lg:hidden">
       {/* Header principal */}
       <div
-        className={`w-full backdrop-blur-xl transition-shadow ${
-          scrolled ? "shadow-lg" : ""
-        }`}
+        className={`w-full  transition-shadow ${scrolled ? "shadow-lg" : ""}`}
         style={navSurfaceStyle}
       >
         <div className="layout-shell py-4 flex items-center justify-between">
@@ -136,7 +134,7 @@ export default function MobileHeader() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+              className="fixed inset-0 bg-black/20  z-40"
               onClick={() => setIsMenuOpen(false)}
             />
 
