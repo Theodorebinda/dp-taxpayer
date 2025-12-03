@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import Loader from "@/components/atoms/loader";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { DeclarationPDF } from "../components/exportPdf";
-import { Button, Modal } from "@/components/ui";
-import PaymentWizard from "@/components/payment/PaymentWizard";
+import { Button, Dialog } from "@/components/ui";
 
 type Transaction = {
   amount: number;
@@ -59,7 +58,7 @@ export default function ResultPage() {
     base64: string;
   } | null>(null);
   const [loadingImport, setLoadingImport] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -218,7 +217,7 @@ export default function ResultPage() {
         ))}
       </div>
 
-      <div className="flex flex-col md:flex-row justify-end gap-4 w-full">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full">
         <Button
           variant="primary"
           className="w-full md:w-5/12 flex justify-center py-3 px-6 rounded-lg font-semibold hover:bg-blue-50 "
@@ -237,31 +236,87 @@ export default function ResultPage() {
         </Button>
         <Button
           variant="primary"
-          onClick={() => setIsPaymentModalOpen(true)}
+          onClick={() => setIsPaymentDialogOpen(true)}
           className="w-full md:w-5/12 flex justify-center py-3 px-6 rounded-lg font-semibold bg-green-600 hover:bg-green-700 text-white"
         >
           💳 Procéder au paiement
         </Button>
       </div>
 
+      {/* Optionnel : afficher statut d'import */}
       {loadingImport && <p>Import du PDF en cours…</p>}
 
-      {/* Modal de paiement */}
-      <Modal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        title="Paiement"
+      {/* Dialog de paiement */}
+      <Dialog
+        isOpen={isPaymentDialogOpen}
+        onClose={() => setIsPaymentDialogOpen(false)}
+        title="Procéder au paiement"
+        size="lg"
+        footer={
+          <div className="flex gap-3 justify-end">
+            <Button
+              variant="secondary"
+              onClick={() => setIsPaymentDialogOpen(false)}
+            >
+              Annuler
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setIsPaymentDialogOpen(false);
+                router.push(`/list/operations/payments?operationId=${d.id}`);
+              }}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              Continuer vers le paiement
+            </Button>
+          </div>
+        }
       >
-        <PaymentWizard
-          operationId={d.id}
-          defaultAmount={d.totalAmount}
-          onSuccess={() => {
-            setIsPaymentModalOpen(false);
-            // Optionnel : rafraîchir la page ou afficher un message de succès
-            router.refresh();
-          }}
-        />
-      </Modal>
+        <div className="space-y-4">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+            <h3 className="font-semibold text-lg mb-3">
+              Résumé de la transaction
+            </h3>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">
+                  Numéro de déclaration :
+                </span>
+                <span className="font-medium">{d.serialNumber}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">
+                  Montant total :
+                </span>
+                <span className="font-bold text-green-700 text-lg">
+                  {d.totalAmount} {d.currency.formatKey}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">
+                  Statut :
+                </span>
+                <span className="font-medium">{d.status}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">
+                  Organisation :
+                </span>
+                <span className="font-medium">{d.organization.name}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t pt-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Vous allez être redirigé vers la page de paiement pour finaliser
+              votre transaction. Assurez-vous d&apos;avoir vos informations de
+              paiement à portée de main.
+            </p>
+          </div>
+        </div>
+      </Dialog>
     </section>
   );
 }

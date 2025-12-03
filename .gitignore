@@ -32,7 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-# docs/*
+docs/*
 /.cursor
 
 
@@ -44,6 +44,6 @@ yarn-error.log*
 next-env.d.ts
 
 audit.md
-# docs/
+docs/
 .env.local
 .env
