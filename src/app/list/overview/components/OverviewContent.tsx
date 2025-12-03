@@ -87,9 +87,9 @@ export default function OverviewContent({
       </header>
       <div className="grid grid-cols-1 gap-10">
         <section
-          className={`rounded-lg bg-background px-6 py-6 text-sm text-muted-foreground shadow ${
+          className={`rounded-lg bg-background px-6 py-6 text-sm text-muted-foreground  ${
             hasTaxpayerInfo
-              ? "shadow-md"
+              ? "dark:shadow-md"
               : "border border-dashed border-border/40 border-gray-300 dark:border-gray-700"
           }`}
         >
@@ -161,7 +161,7 @@ export default function OverviewContent({
         <section
           className={`rounded-xl bg-background px-6 py-6 text-sm text-muted-foreground ${
             hasPropertyOverview
-              ? "border border-border/30 border-gray-300 dark:border-gray-700"
+              ? "dark:shadow-md"
               : "border border-dashed border-border/40 border-gray-300 dark:border-gray-700"
           }`}
         >
@@ -267,7 +267,7 @@ export default function OverviewContent({
 
               const buttonContent = (
                 <button
-                  className={`flex w-70 h-full flex-col rounded-lg border hover:border/70 p-6 text-left shadow-sm transition ${
+                  className={`flex w-70 h-full flex-col rounded-lg border hover:border/70 p-6 text-left  transition ${
                     isDisabled
                       ? "cursor-not-allowed border-dashed border-border/40 text-muted-foreground opacity-70"
                       : `${borderColor} hover:${borderColor} hover:shadow-md cursor-pointer`

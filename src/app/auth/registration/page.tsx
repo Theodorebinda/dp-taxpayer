@@ -62,7 +62,7 @@ export default function DigiPublicSignupForm() {
       </div>
 
       <div className="w-full max-lg:h-full flex lg:items-center items-start justify-center p-5 max-lg:bg-background/80 z-10 ">
-        <div className="lg:p-10 p-5 w-3/4 max-lg:w-full flex flex-col gap-4 rounded-xl z-10 backdrop-blur-lg dark:bg-background/10 shadow-lg">
+        <div className="lg:p-10 p-5 w-3/4 max-lg:w-full flex flex-col gap-4 rounded-xl z-10 backdrop-blur-lg bg-background/10 dark:bg-app-blue-700  lg:shadow-lg">
           <span className="text-2xl font-bold mb-4  drop-shadow-lg text-primary uppercase tracking-wide text-center ">
             Créer un compte
           </span>

@@ -8,18 +8,14 @@ import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui";
 
 export default async function OverviewPage() {
-  // Récupération de la session côté serveur
   const session = await getServerSession(authOptions);
 
   if (!session) {
     redirect("/auth/login");
   }
 
-  // Extraction du token d'accès
   const accessToken = session.accessToken;
 
-  // Extraction de l'ID du taxpayer depuis la session
-  // Le taxpayerId est stocké dans user.taxpayerId (ajouté dans le callback session)
   const taxpayerId = session.user?.taxpayerId ?? session.user?.id;
   if (!taxpayerId || !accessToken) {
     return (
