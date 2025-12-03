@@ -8,7 +8,7 @@ interface LoaderProps {
 
 const Loader: React.FC<LoaderProps> = () => {
   return (
-    <div className=" w-full h-[calc(90vh)] min-h-40 flex items-center justify-center">
+    <div className=" w-full h-[calc(70vh)] min-h-40 flex items-center justify-center">
       <div className="flex  justify-center items-center gap-8 w-full h-full">
         <span className="pulse w-5 h-5"></span>
         <Image

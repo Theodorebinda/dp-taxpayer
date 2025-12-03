@@ -6,6 +6,7 @@ import Loader from "@/components/atoms/loader";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { DeclarationPDF } from "../components/exportPdf";
 import { Button, Dialog } from "@/components/ui";
+import { PaymentWizard } from "@/components/ui/modules/payment-mode/payment-mode";
 
 type Transaction = {
   amount: number;
@@ -127,7 +128,7 @@ export default function ResultPage() {
   };
 
   return (
-    <section className="p-6 flex flex-col gap-6  mx-auto max-w-7xl">
+    <section className="md:p-6 flex flex-col gap-6  w-full">
       {/* Intro */}
       <div className="bg-background  p-5 rounded-xl">
         <h1 className="text-2xl font-bold text-foreground/70">
@@ -220,7 +221,7 @@ export default function ResultPage() {
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full">
         <Button
           variant="primary"
-          className="w-full md:w-5/12 flex justify-center py-3 px-6 rounded-lg font-semibold hover:bg-blue-50 "
+          className="w-full   flex justify-center py-4 px-6 rounded-lg font-semibold hover:bg-blue-50 "
         >
           <PDFDownloadLink
             document={<DeclarationPDF data={d} />}
@@ -237,7 +238,7 @@ export default function ResultPage() {
         <Button
           variant="primary"
           onClick={() => setIsPaymentDialogOpen(true)}
-          className="w-full md:w-5/12 flex justify-center py-3 px-6 rounded-lg font-semibold bg-green-600 hover:bg-green-700 text-white"
+          className="w-full  flex justify-center py-4 px-6 rounded-lg font-semibold bg-green-600 hover:bg-green-700 text-white"
         >
           💳 Procéder au paiement
         </Button>
@@ -251,71 +252,41 @@ export default function ResultPage() {
         isOpen={isPaymentDialogOpen}
         onClose={() => setIsPaymentDialogOpen(false)}
         title="Procéder au paiement"
-        size="lg"
-        footer={
-          <div className="flex gap-3 justify-end">
-            <Button
-              variant="secondary"
-              onClick={() => setIsPaymentDialogOpen(false)}
-            >
-              Annuler
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => {
-                setIsPaymentDialogOpen(false);
-                router.push(`/list/operations/payments?operationId=${d.id}`);
-              }}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              Continuer vers le paiement
-            </Button>
-          </div>
-        }
+        size="xl"
+        // footer={
+        //   <div className="flex gap-3 justify-end">
+        //     <Button
+        //       variant="secondary"
+        //       onClick={() => setIsPaymentDialogOpen(false)}
+        //     >
+        //       Annuler
+        //     </Button>
+        //     <Button
+        //       variant="primary"
+        //       onClick={() => {
+        //         setIsPaymentDialogOpen(false);
+        //         router.push(`/list/operations/payments?operationId=${d.id}`);
+        //       }}
+        //       className="bg-green-600 hover:bg-green-700"
+        //     >
+        //       Continuer vers le paiement
+        //     </Button>
+        //   </div>
+        // }
       >
-        <div className="space-y-4">
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <h3 className="font-semibold text-lg mb-3">
-              Résumé de la transaction
-            </h3>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">
-                  Numéro de déclaration :
-                </span>
-                <span className="font-medium">{d.serialNumber}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">
-                  Montant total :
-                </span>
-                <span className="font-bold text-green-700 text-lg">
-                  {d.totalAmount} {d.currency.formatKey}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">
-                  Statut :
-                </span>
-                <span className="font-medium">{d.status}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">
-                  Organisation :
-                </span>
-                <span className="font-medium">{d.organization.name}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t pt-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Vous allez être redirigé vers la page de paiement pour finaliser
-              votre transaction. Assurez-vous d&apos;avoir vos informations de
-              paiement à portée de main.
-            </p>
-          </div>
-        </div>
+        <PaymentWizard
+          operationId={d.id}
+          defaultAmount={d.totalAmount}
+          onSuccess={() => {
+            setIsPaymentDialogOpen(false);
+            // Les données du sessionStorage sont déjà supprimées dans handleSubmit
+            // Rediriger vers l'accueil
+            router.push("/list/overview");
+          }}
+          onCancel={() => {
+            setIsPaymentDialogOpen(false);
+          }}
+        />
       </Dialog>
     </section>
   );
