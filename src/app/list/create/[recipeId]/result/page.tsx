@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Loader from "@/components/atoms/loader";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { DeclarationPDF } from "../components/exportPdf";
-import { Button } from "@/components/ui";
+import { Button, Modal } from "@/components/ui";
+import PaymentWizard from "@/components/payment/PaymentWizard";
 
 type Transaction = {
   amount: number;
@@ -58,6 +59,7 @@ export default function ResultPage() {
     base64: string;
   } | null>(null);
   const [loadingImport, setLoadingImport] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -219,15 +221,6 @@ export default function ResultPage() {
       <div className="flex flex-col md:flex-row justify-end gap-4 w-full">
         <Button
           variant="primary"
-          onClick={() =>
-            router.push(`/list/operations/payments?operationId=${d.id}`)
-          }
-          className="w-full md:w-5/12 flex justify-center py-3 px-6 rounded-lg font-semibold bg-green-600 hover:bg-green-700 text-white"
-        >
-          💳 Procéder au paiement
-        </Button>
-        <Button
-          variant="primary"
           className="w-full md:w-5/12 flex justify-center py-3 px-6 rounded-lg font-semibold hover:bg-blue-50 "
         >
           <PDFDownloadLink
@@ -242,10 +235,33 @@ export default function ResultPage() {
             }
           </PDFDownloadLink>
         </Button>
+        <Button
+          variant="primary"
+          onClick={() => setIsPaymentModalOpen(true)}
+          className="w-full md:w-5/12 flex justify-center py-3 px-6 rounded-lg font-semibold bg-green-600 hover:bg-green-700 text-white"
+        >
+          💳 Procéder au paiement
+        </Button>
       </div>
 
-      {/* Optionnel : afficher statut d'import */}
       {loadingImport && <p>Import du PDF en cours…</p>}
+
+      {/* Modal de paiement */}
+      <Modal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        title="Paiement"
+      >
+        <PaymentWizard
+          operationId={d.id}
+          defaultAmount={d.totalAmount}
+          onSuccess={() => {
+            setIsPaymentModalOpen(false);
+            // Optionnel : rafraîchir la page ou afficher un message de succès
+            router.refresh();
+          }}
+        />
+      </Modal>
     </section>
   );
 }
