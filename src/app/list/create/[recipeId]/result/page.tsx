@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Loader from "@/components/atoms/loader";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { DeclarationPDF } from "../components/exportPdf";
@@ -50,6 +51,7 @@ const STORAGE_KEY = "fresh-operation";
 const STORAGE_PDF_KEY = "fresh-operation-pdf";
 
 export default function ResultPage() {
+  const router = useRouter();
   const [data, setData] = useState<FreshOperation | null>(null);
   const [importedPdf, setImportedPdf] = useState<{
     name: string;
@@ -214,8 +216,16 @@ export default function ResultPage() {
         ))}
       </div>
 
-      {/* Actions: Télécharger PDF (react-pdf) */}
-      <div className="flex justify-end w-full">
+      <div className="flex flex-col md:flex-row justify-end gap-4 w-full">
+        <Button
+          variant="primary"
+          onClick={() =>
+            router.push(`/list/operations/payments?operationId=${d.id}`)
+          }
+          className="w-full md:w-5/12 flex justify-center py-3 px-6 rounded-lg font-semibold bg-green-600 hover:bg-green-700 text-white"
+        >
+          💳 Procéder au paiement
+        </Button>
         <Button
           variant="primary"
           className="w-full md:w-5/12 flex justify-center py-3 px-6 rounded-lg font-semibold hover:bg-blue-50 "

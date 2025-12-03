@@ -128,7 +128,7 @@ export default function StepSidebar({
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
-                  className="flex gap-2  font-medium w-4/6"
+                  className="flex gap-2  font-medium w-3/5"
                 >
                   <ArrowRightCircle
                     color="var(--primary)"
