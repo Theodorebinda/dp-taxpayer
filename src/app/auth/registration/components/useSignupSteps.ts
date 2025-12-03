@@ -50,9 +50,25 @@ export function useSignupSteps(): UseSignupStepsReturn {
   } = useApiQuery<RegistrationFieldsPayload>(
     qk.taxpayer.registration(),
     async () => {
-      const response = await getRegistrationFields();
-      if (!response) throw new Error("Impossible de charger les champs.");
-      return response;
+      try {
+        const response = await getRegistrationFields();
+        if (!response) {
+          throw new Error("Impossible de charger les champs d'enregistrement.");
+        }
+        return response;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : "Une erreur s'est produite lors du chargement des champs.";
+        throw new Error(errorMessage);
+      }
+    },
+    {
+      retry: 1,
+      retryDelay: 2000,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false, // Éviter les re-fetch automatiques
     }
   );
 
@@ -156,7 +172,7 @@ export function useSignupSteps(): UseSignupStepsReturn {
     goPrevious,
     submit,
     currentFields,
-    isLoading,
+    isLoading: isLoading && !registrationPayload, // Ne montrer le loader que si on n'a pas encore de données
     isError,
     error,
     isSubmitting: mutation.isPending,
