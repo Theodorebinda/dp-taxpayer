@@ -1,7 +1,9 @@
 import { apiClient } from "@/lib/api/client";
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
+import type { OperationView } from "@/types/operation-view.type";
 
 export async function listOperations(
+  taxpayerId: string,
   params?: Record<string, unknown>,
   accessToken?: string
 ) {
@@ -12,8 +14,8 @@ export async function listOperations(
         )
       ).toString()}`
     : "";
-  const res = await apiClient.get<{ data: unknown[] }>(
-    `${API_ENDPOINTS.OPERATIONS}${query}`,
+  const res = await apiClient.get<{ data: OperationView[] }>(
+    `${API_ENDPOINTS.OPERATIONS(taxpayerId)}${query}`,
     undefined,
     accessToken
   );
@@ -22,5 +24,5 @@ export async function listOperations(
   const data = (
     typeof fromWrapper !== "undefined" ? fromWrapper : (res.data as unknown)
   ) as unknown;
-  return (data as unknown[]) ?? [];
+  return (data as OperationView[]) ?? [];
 }

@@ -6,9 +6,11 @@ import type { TaxpayerAccount } from "@/types/taxpayer-account.type";
 import type { DeclarableRecipe } from "@/types/recipe.type";
 import { useTaxpayer } from "@/hooks/useTaxpayer";
 import { useDeclarableRecipes } from "@/hooks/useRecipe";
+import { useOperations } from "@/hooks/useOperations";
 import Loader from "@/components/atoms/loader";
 import { Button } from "@/components/ui";
 import Link from "next/link";
+import LatestOperationsCard from "./LatestOperationsCard";
 
 type OverviewContentProps = {
   initialData: TaxpayerAccount | null;
@@ -24,6 +26,10 @@ export default function OverviewContent({
   const { data: taxpayer, isLoading, isError } = useTaxpayer(taxpayerId);
   const { data: recipesData, isLoading: isLoadingRecipes } =
     useDeclarableRecipes();
+  const { data: operations, isLoading: isLoadingOperations } =
+    useOperations(taxpayerId);
+
+  console.log({ operations });
 
   const taxpayerData =
     taxpayer && typeof taxpayer === "object" ? taxpayer : initialData;
@@ -32,14 +38,14 @@ export default function OverviewContent({
   const recipes =
     recipesData && Array.isArray(recipesData) ? recipesData : initialRecipes;
 
-  // Mapper les recipes en actions rapides
   const quickActions = useMemo(() => mapRecipesToActions(recipes), [recipes]);
 
   // console.log("quickActions", quickActions);
 
   if (
     (isLoading && !initialData) ||
-    (isLoadingRecipes && initialRecipes.length === 0)
+    (isLoadingRecipes && initialRecipes.length === 0) ||
+    isLoadingOperations
   ) {
     return <Loader />;
   }
@@ -106,7 +112,7 @@ export default function OverviewContent({
                 </Link>
               </div>
 
-              <p className="text-xs text-muted-foreground/70">
+              <p className="text-sm text-muted-foreground/70">
                 Identifiants principaux et synthèse des déclarations
               </p>
             </div>
@@ -170,7 +176,7 @@ export default function OverviewContent({
               <h3 className="text-xl font-semibold text-foreground">
                 Mes Propriétés et Ouvrages
               </h3>
-              <p className="text-xs text-muted-foreground/70">
+              <p className="text-sm text-muted-foreground/70">
                 Suivi des actifs fonciers, chantiers en cours et dernière mise à
                 jour
               </p>
@@ -237,6 +243,17 @@ export default function OverviewContent({
             )}
           </div>
         </section>
+
+        <section
+          className={`rounded-xl bg-background   ${
+            operations && operations.length > 0
+              ? "dark:shadow-md"
+              : "border border-dashed border-border/40 border-gray-300 dark:border-gray-700"
+          }`}
+        >
+          <LatestOperationsCard operations={operations} />
+        </section>
+
         <section className="space-y-4">
           <div className="flex flex-col gap-1">
             <h3 className="text-xl font-semibold text-foreground">

@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api/client";
+import { API_ENDPOINTS } from "@/lib/api/endpoints";
 import type {
   DeclarableRecipe,
   DeclarableRecipesResponse,
@@ -70,7 +71,7 @@ export async function getDeclarableRecipes(
   accessToken?: string
 ): Promise<DeclarableRecipe[] | false> {
   const res = await apiClient.get<DeclarableRecipesResponse>(
-    "/search/recipe/recipe/declarable",
+    API_ENDPOINTS.DECLARABLE_RECIPES,
     undefined,
     accessToken
   );
@@ -92,13 +93,9 @@ export async function getRecipeFormFields(
 ): Promise<RecipeFormFieldsPayload | false> {
   const res = await apiClient.get<
     ApiInputType[] | FormStep[] | { data: ApiInputType[] | FormStep[] }
-  >(`/list/recipe/recipe/${recipeId}/forms`, undefined, accessToken);
+  >(API_ENDPOINTS.RECIPE_FORM(recipeId), undefined, accessToken);
   if (!res) return false;
 
-  // La réponse peut être :
-  // 1. Un tableau direct de ApiInputType[]
-  // 2. Un tableau de FormStep[] (avec fields dans chaque step)
-  // 3. Un objet avec { data: ApiInputType[] | FormStep[] }
   let payload: ApiInputType[] = [];
 
   if (Array.isArray(res)) {
@@ -227,7 +224,7 @@ export async function createRecipeDeclaration(
   accessToken?: string
 ): Promise<{ data: Record<string, unknown>; message?: string } | false> {
   const res = await apiClient.post<Record<string, unknown>>(
-    `/list/recipe/recipe/${recipeId}/declarations`,
+    API_ENDPOINTS.CREATE_RECIPE_DECLARATION(recipeId),
     payload,
     undefined,
     accessToken
@@ -246,7 +243,7 @@ export async function fetchDeclaration(
   accessToken?: string
 ): Promise<OperationView | null> {
   const res = await apiClient.get<Record<string, unknown>>(
-    `/view/core/possession/${id}`,
+    API_ENDPOINTS.FETCH_POSSESSION(id),
     undefined,
     accessToken
   );

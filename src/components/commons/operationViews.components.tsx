@@ -28,6 +28,15 @@ export const Card = ({
     </div>
   );
 };
+export const CardHeader = (props: React.ComponentProps<"div">) => (
+  <div className="flex flex-col space-y-1.5 p-6" {...props} />
+);
+export const CardTitle = (props: React.ComponentProps<"h3">) => (
+  <h3 className="font-semibold leading-none tracking-tight" {...props} />
+);
+export const CardContent = (props: React.ComponentProps<"div">) => (
+  <div className="p-6 pt-0" {...props} />
+);
 
 export const QuickStats = ({
   title,

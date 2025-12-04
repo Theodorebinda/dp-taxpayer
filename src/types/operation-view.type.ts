@@ -1,12 +1,20 @@
-type PaiementStatus =
+export type PaiementStatus =
   | "PENDING"
   | "REFUNDED"
   | "PAID"
   | "UNPAID"
   | "PARTIALLY_PAID"
-  | "CANCELED";
+  | "CANCELED"
+  | "FAILED"
+  | "CREATED";
 
-type OperationStatus = "PENDING" | "CLOSED" | "REJECTED" | "REVERSED" | "POSED";
+export type OperationStatus =
+  | "PENDING"
+  | "IN_PROGRESS"
+  | "CLOSED"
+  | "REJECTED"
+  | "REVERSED"
+  | "POSED";
 
 type TransactionType = "DEBIT" | "DEBIT";
 
@@ -56,9 +64,13 @@ export interface OperationView {
   action: "TAXATION" | "LIQUIDATION" | "PAIEMENT";
   totalAmount: number;
   paiedAmount: number;
+  currency?: {
+    id?: string;
+    symbol?: string;
+  } | null;
   isClosed: boolean;
   isScanned: boolean;
-  meta: Record<string, any>;
+  meta: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
@@ -108,8 +120,14 @@ export interface OperationView {
   }[];
   documentInstances: DocumentInstances[];
   operationRecipeStepOffices: {
+    office: {
+      id: string;
+      name: string;
+    };
     recipeStep: {
-      step: {
+      id: string;
+      step?: {
+        id: string;
         name: string;
       };
     };

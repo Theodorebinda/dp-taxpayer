@@ -16,7 +16,7 @@ export const API_ENDPOINTS = {
   MENU_VISITS: (menuId: string) => `/menu/${menuId}/visit`,
   MENU: "/menu",
   VIEWS: (id: string | number) => `/views/${id}`,
-  OPERATIONS: "/operations",
+  OPERATIONS: (taxpayerId: string) => `taxpayer/${taxpayerId}/operation`,
   TAXPAYER_ACCOUNT: (id: string) => `/read/taxpayer/${id}/account`,
   DECLARATION_FORM: (type: string) => `/declarations/${type}/form`,
   CREATE_DECLARATION: (type: string) => `/declarations/${type}`,
@@ -28,4 +28,5 @@ export const API_ENDPOINTS = {
   RECIPE_FORM: (recipeId: string) => `/list/recipe/recipe/${recipeId}/forms`,
   CREATE_RECIPE_DECLARATION: (recipeId: string) =>
     `/list/recipe/recipe/${recipeId}/declarations`,
+  FETCH_POSSESSION: (id: string) => `/view/core/possession/${id}`,
 } as const;
