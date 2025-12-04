@@ -21,8 +21,8 @@ export interface RecipeViewModel {
   description: string;
   generatingFact: string | null;
   isActive: boolean;
-  meta: Record<string, any>; // ou un type plus spécifique si vous connaissez la structure
-  createdAt: string; // ou Date si vous convertissez les chaînes en dates
+  meta: Record<string, unknown>; // ou un type plus spécifique si vous connaissez la structure
+  createdAt: string | Date;
   currency: Currency | null;
   activitySector: ActivitySector | null;
 }
@@ -34,7 +34,7 @@ export interface StepList {
   description: string;
   orderIndex: number;
   parentId: string | null;
-  createdAt: string;
+  createdAt: string | Date;
   recipeSteps: { office: { id: string; name: string } }[];
   children: StepList[];
 }
