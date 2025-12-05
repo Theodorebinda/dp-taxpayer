@@ -26,7 +26,7 @@ const Button: React.FC<ButtonProps> = ({
 
   const variants = {
     primary:
-      "flex items-center gap-2 bg-primary text-background px-4 py-2 rounded-md shadow hover:bg-primary/70",
+      "flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-md shadow hover:bg-primary/70",
     secondary:
       "bg-bg-secondary text-foreground hover:!text-background hover:bg-foreground disabled:bg-gray-300 disabled:cursor-not-allowed",
     outline:

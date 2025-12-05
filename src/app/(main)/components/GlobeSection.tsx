@@ -2,6 +2,7 @@
 
 // import DPGlobe from "../../../components/ui/Globe";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function GlobeSection() {
   return (
@@ -28,19 +29,19 @@ export default function GlobeSection() {
           </p>
 
           <div className="mt-8">
-            <a
-              href="/public/registration"
+            <Link
+              href="/auth/registration"
               className="px-6 py-3 bg-[#048996] font-semibold text-white rounded-lg hover:bg-[#17a9b6] transition"
             >
               Commencer
-            </a>
+            </Link>
           </div>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1 }}
-          className="w-full lg:w-1/2 h-[100%] md:h-[100%]"
+          className="w-full lg:w-1/2 h-full"
         >
           {/* <DPGlobe /> */}
         </motion.div>

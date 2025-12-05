@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import Loader from "@/components/atoms/loader";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { DeclarationPDF } from "../components/exportPdf";
@@ -60,6 +61,7 @@ export default function ResultPage() {
   } | null>(null);
   const [loadingImport, setLoadingImport] = useState(false);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  const [showTimeoutMessage, setShowTimeoutMessage] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -86,7 +88,76 @@ export default function ResultPage() {
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  if (!data) return <Loader />;
+  // Timeout pour afficher le message après 5 secondes si aucune donnée
+  useEffect(() => {
+    if (!data) {
+      const timeout = setTimeout(() => {
+        setShowTimeoutMessage(true);
+      }, 5000); // 5 secondes
+
+      return () => clearTimeout(timeout);
+    }
+  }, [data]);
+
+  // Handler pour retourner au dashboard et nettoyer le storage
+  const handleBackToDashboard = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(STORAGE_PDF_KEY);
+    }
+    router.push("/list/overview");
+  };
+
+  if (!data) {
+    if (showTimeoutMessage) {
+      return (
+        <section className="md:p-6 flex flex-col gap-6 w-full">
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="bg-background p-8 rounded-xl shadow-lg max-w-md w-full text-center space-y-6">
+              <div className="flex justify-center items-center gap-2">
+                <div className=" flex items-center justify-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-10 w-10 text-amber-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  </svg>
+                </div>
+                <span className="text-amber-600 text-4xl font-bold">Oops!</span>
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold text-foreground">
+                  Aucune donnée trouvée
+                </h2>
+                <p className="text-muted-foreground">
+                  Il semble qu&apos;aucune opération ne soit disponible. Vous
+                  pouvez retourner au tableau de bord pour créer une nouvelle
+                  déclaration.
+                </p>
+              </div>
+              <Button
+                variant="primary"
+                onClick={handleBackToDashboard}
+                className="w-full flex items-center justify-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Retour au tableau de bord
+              </Button>
+            </div>
+          </div>
+        </section>
+      );
+    }
+    return <Loader />;
+  }
 
   const d = data;
 
@@ -129,7 +200,18 @@ export default function ResultPage() {
 
   return (
     <section className="md:p-6 flex flex-col gap-6  w-full">
-      {/* Intro */}
+      {/* Bouton retour au dashboard */}
+      <div className="flex justify-start">
+        <Button
+          variant="secondary"
+          onClick={handleBackToDashboard}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour au dashboard
+        </Button>
+      </div>
+
       <div className="bg-background  p-5 rounded-xl">
         <h1 className="text-2xl font-bold text-foreground/70">
           🎉 Félicitations! Votre déclaration a été créée avec succès.
