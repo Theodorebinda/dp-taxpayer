@@ -253,26 +253,6 @@ export default function ResultPage() {
         onClose={() => setIsPaymentDialogOpen(false)}
         title="Procéder au paiement"
         size="xl"
-        // footer={
-        //   <div className="flex gap-3 justify-end">
-        //     <Button
-        //       variant="secondary"
-        //       onClick={() => setIsPaymentDialogOpen(false)}
-        //     >
-        //       Annuler
-        //     </Button>
-        //     <Button
-        //       variant="primary"
-        //       onClick={() => {
-        //         setIsPaymentDialogOpen(false);
-        //         router.push(`/list/operations/payments?operationId=${d.id}`);
-        //       }}
-        //       className="bg-green-600 hover:bg-green-700"
-        //     >
-        //       Continuer vers le paiement
-        //     </Button>
-        //   </div>
-        // }
       >
         <PaymentWizard
           operationId={d.id}

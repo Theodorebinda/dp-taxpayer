@@ -1,8 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, CreditCard, Upload, ArrowRight, ArrowLeft } from "lucide-react";
+import {
+  Check,
+  CreditCard,
+  Upload,
+  ArrowRight,
+  ArrowLeft,
+  InfoIcon,
+} from "lucide-react";
 import Button from "@/components/commons/button";
+import Tooltip from "@/components/atoms/tooltip";
 
 export type PaymentMethod = "easypay" | "other";
 
@@ -242,9 +250,21 @@ const PaymentMethodStep: React.FC<{
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Tabs à gauche */}
       <div className="lg:col-span-1 space-y-3">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          Mode de paiement
-        </h3>
+        <div className="flex  justify-between items-start">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-primary/90 mb-4">
+            Choisir le mode de paiement
+          </h3>
+          <Tooltip
+            content="Choisissez le mode de paiement pour procéder au paiement."
+            position="right"
+            trigger="hover"
+            minWidth="140px"
+            variant="dark"
+          >
+            <InfoIcon className="w-4 h-4 text-gray-500" />
+          </Tooltip>
+        </div>
+
         {methods.map((method) => {
           const Icon = method.icon;
           const isSelected = selectedMethod === method.id;
@@ -317,22 +337,34 @@ const PaymentMethodStep: React.FC<{
         <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           {selectedMethod ? (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Informations requises
-              </h3>
               {selectedMethod === "easypay" ? (
-                <div className="space-y-3 text-sm text-gray-600">
-                  <p>• Nom complet</p>
-                  <p>• Adresse email</p>
-                  <p>• Numéro de téléphone</p>
-                  <p>• Montant à payer</p>
-                </div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Pour effectuer le paiement via{" "}
+                  <span className="font-bold text-primary hover:underline cursor-pointer">
+                    EasyPay
+                  </span>
+                  , veuillez remplir les informations suivantes :
+                </h3>
               ) : (
-                <div className="space-y-3 text-sm text-gray-600">
-                  <p>• Preuve de paiement (fichier)</p>
-                  <p>• Référence de transaction</p>
-                  <p>• Notes (optionnel)</p>
-                </div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Pour effectuer le paiement via un autre mode, veuillez remplir
+                  les informations suivantes :
+                </h3>
+              )}
+
+              {selectedMethod === "easypay" ? (
+                <ul className="space-y-3 text-sm text-gray-600">
+                  <li> Nom complet</li>
+                  <li>Adresse email</li>
+                  <li>Numéro de téléphone</li>
+                  <li>Montant à payer</li>
+                </ul>
+              ) : (
+                <ul className="space-y-3 text-sm text-gray-600">
+                  <li>Preuve de paiement (fichier)</li>
+                  <li>Référence de transaction</li>
+                  <li>Notes (optionnel)</li>
+                </ul>
               )}
             </div>
           ) : (

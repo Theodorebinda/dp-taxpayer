@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2, HelpCircle } from "lucide-react";
 import {
   FormulaLine,
   OperationView,
@@ -12,11 +14,14 @@ import {
   CardTitle,
 } from "@/components/commons/operationViews.components";
 import Link from "next/link";
-import { Button } from "@/components/ui";
+import { Button, Dialog } from "@/components/ui";
+import { Tooltip } from "@/components/atoms/tooltip";
+import { PaymentWizard } from "@/components/ui/modules/payment-mode/payment-mode";
 import {
   FILTER_OPTIONS,
   FilterOption,
   getEmptyMessage,
+  getStatusLabel,
   StatusBadge,
 } from "@/utils/constants/status";
 
@@ -34,7 +39,11 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
   operations,
   maxDisplay = 4,
 }) => {
+  const router = useRouter();
   const [filter, setFilter] = useState<FilterOption>("latest");
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  const [selectedOperation, setSelectedOperation] =
+    useState<OperationView | null>(null);
 
   // Filtrer et trier les opérations selon le filtre sélectionné
   const filteredOperations = useMemo(() => {
@@ -61,7 +70,6 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
         break;
       case "latest":
       default:
-        // Par défaut, trier par date décroissante (les plus récentes en premier)
         filtered = filtered.sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -77,6 +85,42 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
   const remainingOperations = filteredOperations
     ? filteredOperations.length - displayOperations.length
     : 0;
+
+  // Composant pour l'icône de statut de paiement avec tooltip
+  const PaymentStatusIcon: React.FC<{ status: PaiementStatus }> = ({
+    status,
+  }) => {
+    const isPaid = status === "PAID";
+    const statusLabel = getStatusLabel(status);
+
+    return (
+      <Tooltip
+        content={statusLabel}
+        position="top"
+        trigger="both"
+        minWidth="120px"
+        variant="dark"
+      >
+        <button
+          type="button"
+          className="focus:outline-none"
+          aria-label={`Statut de paiement: ${statusLabel}`}
+        >
+          {isPaid ? (
+            <CheckCircle2
+              size={18}
+              className="text-green-500 cursor-pointer transition-colors hover:text-green-600"
+            />
+          ) : (
+            <HelpCircle
+              size={18}
+              className="text-gray-400 cursor-pointer transition-colors hover:text-gray-600"
+            />
+          )}
+        </button>
+      </Tooltip>
+    );
+  };
 
   // Variantes d'animation pour le conteneur
   const containerVariants = {
@@ -120,6 +164,12 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
     },
   };
 
+  // Handler pour ouvrir le dialog de paiement
+  const handleOpenPaymentDialog = (operation: OperationView) => {
+    setSelectedOperation(operation);
+    setIsPaymentDialogOpen(true);
+  };
+
   // Composant pour une seule opération
   const OperationItem: React.FC<{ operation: OperationView }> = ({
     operation,
@@ -137,27 +187,35 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
         line.label.includes("Impôt Foncier")
       ) || formulaResult.find((line: FormulaLine) => line.total > 0);
 
-    return (
-      <Card className="hover:shadow-lg transition-shadow duration-200 shadow-md">
+    const isPaid = operation.paiementStatus === "PAID";
+    const isClickable = !isPaid;
+
+    const cardContent = (
+      <Card
+        className={`transition-all duration-200 shadow-md ${
+          isClickable ? "hover:shadow-lg hover:scale-[1.02]" : "hover:shadow-lg"
+        }`}
+      >
         <CardHeader className=" flex flex-row items-center justify-between space-y-0 pb-2">
-          {/* Titre et Numéro de Série */}
           <div className="flex flex-col">
-            <CardTitle className="text-base">
-              {operation.reason || operation.action}
+            <CardTitle className="text-base flex flex-row items-center gap-2">
+              <span className="text-muted-foreground/80">
+                {operation.reason || operation.action}
+              </span>
+              <PaymentStatusIcon status={operation.paiementStatus} />
             </CardTitle>
             <p className="text-sm text-muted-foreground/80">
               N° {operation.serialNumber || "N/A"}
             </p>
           </div>
 
-          {/* Badge de Statut Principal */}
+          {/* Badge de Statut operation */}
           <span className={`rounded-full px-3 py-1 text-sm font-medium `}>
             <StatusBadge status={operation.status} />
           </span>
         </CardHeader>
 
         <CardContent className="p-4 pt-0 space-y-3">
-          {/* Informations Clés */}
           <div className="grid grid-cols-2 gap-2 ">
             <div className="flex flex-col">
               <span className="text-sm font-medium text-muted-foreground">
@@ -195,9 +253,9 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
           {/* Statut de Paiement et Date */}
           <div className="flex items-center justify-between text-sm">
             <span className={`rounded-full px-2 py-0.5 font-medium `}>
-              <StatusBadge
+              {/* <StatusBadge
                 status={operation.paiementStatus as PaiementStatus}
-              />
+              /> */}
             </span>
             <span className="text-muted-foreground">
               {new Date(operation.createdAt).toLocaleDateString("fr-FR", {
@@ -228,6 +286,19 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
         </CardContent>
       </Card>
     );
+
+    if (isClickable) {
+      return (
+        <div
+          onClick={() => handleOpenPaymentDialog(operation)}
+          className="cursor-pointer"
+        >
+          {cardContent}
+        </div>
+      );
+    }
+
+    return cardContent;
   };
 
   return (
@@ -267,7 +338,6 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
               exit="exit"
               className="space-y-4"
             >
-              {/* Grille des Opérations */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {displayOperations.map((operation) => (
                   <motion.div key={operation.id} variants={itemVariants} layout>
@@ -276,7 +346,6 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
                 ))}
               </div>
 
-              {/* Lien pour voir plus si nécessaire */}
               {remainingOperations > 0 && (
                 <motion.div
                   key={`more-${filter}`}
@@ -319,8 +388,39 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
           )}
         </AnimatePresence>
       </CardContent>
+
+      {/* Dialog de paiement */}
+      <Dialog
+        isOpen={isPaymentDialogOpen}
+        onClose={() => {
+          setIsPaymentDialogOpen(false);
+          setSelectedOperation(null);
+        }}
+        title={` Paiement de ${
+          selectedOperation?.reason || selectedOperation?.action
+        } - N° ${selectedOperation?.serialNumber || "N/A"}`}
+        size="xl"
+      >
+        {selectedOperation && (
+          <PaymentWizard
+            operationId={selectedOperation.id}
+            defaultAmount={selectedOperation.totalAmount}
+            onSuccess={() => {
+              setIsPaymentDialogOpen(false);
+              setSelectedOperation(null);
+              // Les données du sessionStorage sont déjà supprimées dans handleSubmit
+              // Rediriger vers l'accueil
+              router.push("/list/overview");
+            }}
+            onCancel={() => {
+              setIsPaymentDialogOpen(false);
+              setSelectedOperation(null);
+            }}
+          />
+        )}
+      </Dialog>
     </Card>
   );
 };
 
-export default LatestOperationsCard; // Ou export const
+export default LatestOperationsCard;
