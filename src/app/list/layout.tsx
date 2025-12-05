@@ -65,12 +65,12 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="flex h-screen bg-(--dp-bg) dark:bg-app-blue-900 text-foreground overflow-hidden">
+    <div className="flex h-screen bg-(--dp-bg) dark:bg-app-blue-600 text-foreground overflow-hidden">
       <Sidebar />
-      <main className="flex flex-1 flex-col overflow-y-auto hide-scrollbar p-4 lg:p-8 md:max-w-7xl mx-auto min-w-0">
+      <main className="flex flex-1  flex-col overflow-y-auto hide-scrollbar p-4 lg:p-8 md:max-w-7xl mx-auto min-w-0">
         <TopBanner />
 
-        <div className="py-4"> {children}</div>
+        <div className="py-4 "> {children}</div>
       </main>
     </div>
   );

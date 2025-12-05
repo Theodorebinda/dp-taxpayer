@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
+  FormulaLine,
   OperationView,
   type PaiementStatus,
-  type OperationStatus,
 } from "@/types/operation-view.type";
 import {
   Card,
@@ -12,27 +13,12 @@ import {
 } from "@/components/commons/operationViews.components";
 import Link from "next/link";
 import { Button } from "@/components/ui";
-
-const getStatusClasses = (status: OperationStatus | PaiementStatus) => {
-  switch (status) {
-    case "PENDING":
-    case "PARTIALLY_PAID":
-      return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
-    case "PAID":
-    case "CLOSED":
-    case "POSED":
-      return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
-    case "UNPAID":
-    case "REJECTED":
-      return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
-    case "REFUNDED":
-      return "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400";
-    case "CANCELED":
-    case "REVERSED":
-    default:
-      return "bg-gray-100 text-gray-700 dark:bg-gray-700/30 dark:text-gray-300";
-  }
-};
+import {
+  FILTER_OPTIONS,
+  FilterOption,
+  getEmptyMessage,
+  StatusBadge,
+} from "@/utils/constants/status";
 
 interface LatestOperationsProps {
   operations?: OperationView[];
@@ -41,26 +27,103 @@ interface LatestOperationsProps {
 
 /**
  * Affiche une liste de cartes représentant les dernières opérations d'un assujetti.
- * @param {LatestOperationsProps} { operations, maxDisplay }
+ * @param {LatestOperationsProps}
  * @returns {JSX.Element}
  */
 export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
   operations,
   maxDisplay = 4,
 }) => {
-  const displayOperations = operations?.slice(0, maxDisplay) || [];
+  const [filter, setFilter] = useState<FilterOption>("latest");
+
+  // Filtrer et trier les opérations selon le filtre sélectionné
+  const filteredOperations = useMemo(() => {
+    if (!operations || operations.length === 0) return [];
+
+    let filtered = [...operations];
+
+    // Appliquer le filtre
+    switch (filter) {
+      case "pending":
+        filtered = filtered.filter((op) => op.status === "PENDING");
+        break;
+      case "paid":
+        filtered = filtered.filter((op) => op.paiementStatus === "PAID");
+        break;
+      case "unpaid":
+        filtered = filtered.filter((op) => op.paiementStatus === "UNPAID");
+        break;
+      case "closed":
+        filtered = filtered.filter((op) => op.status === "CLOSED");
+        break;
+      case "rejected":
+        filtered = filtered.filter((op) => op.status === "REJECTED");
+        break;
+      case "latest":
+      default:
+        // Par défaut, trier par date décroissante (les plus récentes en premier)
+        filtered = filtered.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        break;
+    }
+
+    return filtered;
+  }, [operations, filter]);
+
+  const displayOperations = filteredOperations.slice(0, maxDisplay) || [];
   const hasOperations = displayOperations.length > 0;
-  const remainingOperations = operations
-    ? operations.length - displayOperations.length
+  const remainingOperations = filteredOperations
+    ? filteredOperations.length - displayOperations.length
     : 0;
+
+  // Variantes d'animation pour le conteneur
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
+      },
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        staggerChildren: 0.05,
+        staggerDirection: -1,
+      },
+    },
+  };
+
+  // Variantes d'animation pour chaque carte
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.3,
+        ease: [0.4, 0, 0.2, 1] as const,
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      scale: 0.95,
+      transition: {
+        duration: 0.2,
+        ease: [0.4, 0, 1, 1] as const,
+      },
+    },
+  };
 
   // Composant pour une seule opération
   const OperationItem: React.FC<{ operation: OperationView }> = ({
     operation,
   }) => {
-    const statusClass = getStatusClasses(operation.status);
-    const paymentStatusClass = getStatusClasses(operation.paiementStatus);
-
     // Nom du bureau/étape pour une meilleure information
     const officeName =
       operation.operationRecipeStepOffices?.[0]?.office?.name ||
@@ -70,11 +133,12 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
     // Les détails de la formule si disponibles (pour l'impôt foncier)
     const formulaResult = operation.meta?.formulaResult?.lines || [];
     const mainTax =
-      formulaResult.find((line: any) => line.label.includes("Impôt Foncier")) ||
-      formulaResult.find((line: any) => line.total > 0);
+      formulaResult.find((line: FormulaLine) =>
+        line.label.includes("Impôt Foncier")
+      ) || formulaResult.find((line: FormulaLine) => line.total > 0);
 
     return (
-      <Card className="hover:shadow-lg transition-shadow duration-200">
+      <Card className="hover:shadow-lg transition-shadow duration-200 shadow-md">
         <CardHeader className=" flex flex-row items-center justify-between space-y-0 pb-2">
           {/* Titre et Numéro de Série */}
           <div className="flex flex-col">
@@ -87,10 +151,8 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
           </div>
 
           {/* Badge de Statut Principal */}
-          <span
-            className={`rounded-full px-3 py-1 text-sm font-medium ${statusClass}`}
-          >
-            {operation.status}
+          <span className={`rounded-full px-3 py-1 text-sm font-medium `}>
+            <StatusBadge status={operation.status} />
           </span>
         </CardHeader>
 
@@ -132,10 +194,10 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
 
           {/* Statut de Paiement et Date */}
           <div className="flex items-center justify-between text-sm">
-            <span
-              className={`rounded-full px-2 py-0.5 font-medium ${paymentStatusClass}`}
-            >
-              {operation.paiementStatus.replace(/_/g, " ")}
+            <span className={`rounded-full px-2 py-0.5 font-medium `}>
+              <StatusBadge
+                status={operation.paiementStatus as PaiementStatus}
+              />
             </span>
             <span className="text-muted-foreground">
               {new Date(operation.createdAt).toLocaleDateString("fr-FR", {
@@ -179,47 +241,83 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
             Historique des opérations fiscales récentes
           </p>
         </div>
-        <Link href="/list/operations">
-          <Button variant="outline" size="small">
-            Voir toutes
-          </Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value as FilterOption)}
+            className="px-3 py-2 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+          >
+            {FILTER_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </CardHeader>
 
       <CardContent className=" grow  pt-0">
-        {hasOperations ? (
-          <div className="space-y-4">
-            {/* Grille des Opérations */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {displayOperations.map((operation) => (
-                <OperationItem key={operation.id} operation={operation} />
-              ))}
-            </div>
-
-            {/* Lien pour voir plus si nécessaire */}
-            {remainingOperations > 0 && (
-              <div className="text-center pt-2">
-                <Link href="/list/operations">
-                  <Button variant="outline" size="small">
-                    Voir {remainingOperations} opération(s) supplémentaire(s)
-                  </Button>
-                </Link>
+        <AnimatePresence mode="wait">
+          {hasOperations ? (
+            <motion.div
+              key={`operations-${filter}`}
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="space-y-4"
+            >
+              {/* Grille des Opérations */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {displayOperations.map((operation) => (
+                  <motion.div key={operation.id} variants={itemVariants} layout>
+                    <OperationItem operation={operation} />
+                  </motion.div>
+                ))}
               </div>
-            )}
-          </div>
-        ) : (
-          /* État : Aucune Opération */
-          <div className="flex h-full min-h-[200px] items-center justify-center rounded-lg border border-dashed text-center bg-muted/20">
-            <div className="flex flex-col gap-2 p-4">
-              <span className="text-xl font-semibold text-gray-500">
-                Aucune opération enregistrée
-              </span>
-              <span className="text-sm text-muted-foreground">
-                Vous n&apos;avez pas encore d&apos;opérations sur votre compte.
-              </span>
-            </div>
-          </div>
-        )}
+
+              {/* Lien pour voir plus si nécessaire */}
+              {remainingOperations > 0 && (
+                <motion.div
+                  key={`more-${filter}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.3 }}
+                  className="text-center pt-2"
+                >
+                  <Link href="/list/operations">
+                    <Button variant="outline" size="small">
+                      Voir {remainingOperations} opération(s) supplémentaire(s)
+                    </Button>
+                  </Link>
+                </motion.div>
+              )}
+            </motion.div>
+          ) : (
+            <motion.div
+              key={`empty-${filter}`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+              className="flex h-full min-h-[200px] items-center justify-center rounded-lg border border-dashed text-center bg-muted/20"
+            >
+              {(() => {
+                const emptyMessage = getEmptyMessage(filter);
+                return (
+                  <div className="flex flex-col gap-2 p-4">
+                    <span className="text-xl font-semibold text-gray-500">
+                      {emptyMessage.title}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {emptyMessage.description}
+                    </span>
+                  </div>
+                );
+              })()}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </CardContent>
     </Card>
   );

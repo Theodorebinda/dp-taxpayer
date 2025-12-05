@@ -244,15 +244,11 @@ export default function OverviewContent({
           </div>
         </section>
 
-        <section
-          className={`rounded-xl bg-background   ${
-            operations && operations.length > 0
-              ? "dark:shadow-md"
-              : "border border-dashed border-border/40 border-gray-300 dark:border-gray-700"
-          }`}
-        >
-          <LatestOperationsCard operations={operations} />
-        </section>
+        {operations && operations.length > 0 && (
+          <section className="">
+            <LatestOperationsCard operations={operations} />
+          </section>
+        )}
 
         <section className="space-y-4">
           <div className="flex flex-col gap-1">

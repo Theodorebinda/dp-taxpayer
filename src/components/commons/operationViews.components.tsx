@@ -23,7 +23,7 @@ export const Card = ({
   className?: string;
 }) => {
   return (
-    <div className={`p-5 lg:p-8 bg-background rounded-md ${className}`}>
+    <div className={`p-5 lg:p-8 bg-background/70 rounded-md ${className}`}>
       {children}
     </div>
   );
@@ -63,7 +63,7 @@ export const QuickStats = ({
   }
   return (
     <div
-      className={`p-5 bg-background rounded-md flex flex-col gap-3 w-full" + ${className}`}
+      className={`p-5  rounded-md flex flex-col gap-3 w-full" + ${className}`}
     >
       <span>{title}</span>
       <span>
@@ -256,7 +256,7 @@ export default function DocumentComments() {
       </div>
 
       <div className="flex-1 min-w-0 space-y-2">
-        <div className="bg-background border border-foreground/10 rounded-lg p-4">
+        <div className=" border border-foreground/10 rounded-lg p-4">
           <div className="flex items-start justify-between mb-2">
             <div className="flex items-center gap-5">
               <h4 className="font-semibold text-foreground">
@@ -293,7 +293,7 @@ export default function DocumentComments() {
 
   return (
     <div className="w-full">
-      <div className="bg-background rounded-xl shadow-sm border border-foreground/10 overflow-hidden">
+      <div className=" rounded-xl shadow-sm border border-foreground/10 overflow-hidden">
         <div className="border-b border-foreground/10 p-6 flex items-center gap-3">
           <MessageSquare className="w-6 h-6 text-primary" />
           <h2 className="text-xl font-semibold text-foreground flex-1">
@@ -310,7 +310,7 @@ export default function DocumentComments() {
           ))}
         </div>
 
-        <div className="border-t border-foreground/10 p-4 bg-background">
+        <div className="border-t border-foreground/10 p-4 ">
           {replyingTo && (
             <div className="mb-3 flex items-center gap-2 text-foreground/60">
               <Reply className="w-4 h-4" />
@@ -354,7 +354,7 @@ export default function DocumentComments() {
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Ajouter un commentaire..."
-                  className="w-full px-4 py-3 bg-background text-foreground placeholder:text-foreground/40 outline-none resize-none"
+                  className="w-full px-4 py-3 text-foreground placeholder:text-foreground/40 outline-none resize-none"
                   rows={3}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && (e.metaKey || e.ctrlKey))
@@ -362,7 +362,7 @@ export default function DocumentComments() {
                   }}
                 />
 
-                <div className="flex items-center justify-between px-3 py-2 bg-background/50 border-t border-foreground/10">
+                <div className="flex items-center justify-between px-3 py-2 border-t border-foreground/10">
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() =>

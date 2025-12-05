@@ -18,6 +18,12 @@ export type OperationStatus =
 
 type TransactionType = "DEBIT" | "DEBIT";
 
+export type FormulaLine = {
+  label: string;
+  total: number;
+  unit?: string;
+  details?: Record<string, unknown>;
+};
 export type InnerPossession = {
   id: string;
   uniqueNumber: string;
@@ -70,7 +76,14 @@ export interface OperationView {
   } | null;
   isClosed: boolean;
   isScanned: boolean;
-  meta: Record<string, unknown>;
+  meta: {
+    formulaResult: {
+      lines: FormulaLine[];
+      total: number;
+      unit: string;
+      success: boolean;
+    };
+  };
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
