@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { useUiStore } from "../store/sidebarState";
 import ThemeToggleButton from "../atoms/themeToggleButton";
 import { greeting } from "@/utils/utils";
@@ -6,13 +7,30 @@ import { LuMenu, LuX } from "react-icons/lu";
 import { Bell, LogOut, Search, User2 } from "lucide-react";
 import LogoutButton from "../ui/LogoutButton";
 import { useSession } from "next-auth/react";
+import NotificationsPanel, {
+  mockNotifications,
+  Notification,
+} from "./NotificationsPanel";
 
 const TopBanner = () => {
   const { data: session } = useSession();
   const setSidebarOpen = useUiStore((state) => state.setSidebarOpen);
   const isSidebarOpen = useUiStore((state) => state.isSidebarOpen);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const userName = (session?.user as { name?: string } | undefined)?.name;
+  console.log({ session });
+
+  // TODO: Remplacer par des notifications réelles depuis l'API
+  const handleMarkAsRead = (id: string) => {
+    // Implémenter la logique pour marquer une notification comme lue
+    console.log("Mark as read:", id);
+  };
+
+  const handleMarkAllAsRead = () => {
+    // Implémenter la logique pour marquer toutes les notifications comme lues
+    console.log("Mark all as read");
+  };
 
   return (
     <div className="flex md:px-6 flex-col justify-start md:flex-row md:justify-between md:items-center  w-full">
@@ -74,16 +92,26 @@ const TopBanner = () => {
               <ThemeToggleButton />
             </div>
             <div className=" flex items-center justify-end gap-3">
-              <button
-                type="button"
-                className="relative inline-flex size-10 items-center justify-center rounded-full border border-foreground/10 bg-background/70 text-foreground transition hover:border-foreground/30"
-                aria-label="Voir les notifications"
-              >
-                <Bell className="size-4" />
-                <span className="absolute -right-0.5 -top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold">
-                  3
-                </span>
-              </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                  className="relative inline-flex size-10 items-center justify-center rounded-full border border-foreground/10 bg-background/70 text-foreground transition hover:border-foreground/30"
+                  aria-label="Voir les notifications"
+                >
+                  <Bell className="size-4" />
+                  <span className="absolute -right-0.5 -top-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold">
+                    {mockNotifications.filter((n: Notification) => !n.read)
+                      .length || 0}
+                  </span>
+                </button>
+                <NotificationsPanel
+                  isOpen={isNotificationsOpen}
+                  onClose={() => setIsNotificationsOpen(false)}
+                  onMarkAsRead={handleMarkAsRead}
+                  onMarkAllAsRead={handleMarkAllAsRead}
+                />
+              </div>
               <div>
                 <div className=" hidden md:block">
                   <LogoutButton
