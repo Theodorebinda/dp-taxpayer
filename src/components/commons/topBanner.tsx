@@ -7,6 +7,7 @@ import { LuMenu, LuX } from "react-icons/lu";
 import { Bell, LogOut, Search, User2 } from "lucide-react";
 import LogoutButton from "../ui/LogoutButton";
 import { useSession } from "next-auth/react";
+import { useAuth } from "@/hooks/useAuth";
 import NotificationsPanel, {
   mockNotifications,
   Notification,
@@ -14,6 +15,7 @@ import NotificationsPanel, {
 
 const TopBanner = () => {
   const { data: session } = useSession();
+  const { logout } = useAuth();
   const setSidebarOpen = useUiStore((state) => state.setSidebarOpen);
   const isSidebarOpen = useUiStore((state) => state.isSidebarOpen);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -121,7 +123,13 @@ const TopBanner = () => {
                   />
                 </div>
                 <div className="block md:hidden">
-                  <LogOut className="size-6" />
+                  <button
+                    onClick={logout}
+                    className="inline-flex items-center justify-center p-2 rounded-md text-foreground hover:bg-primary/10"
+                    aria-label="Déconnexion"
+                  >
+                    <LogOut className="size-6" />
+                  </button>
                 </div>
               </div>
             </div>
