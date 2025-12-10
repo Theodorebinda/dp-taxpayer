@@ -354,7 +354,7 @@ export const LatestOperationsCard: React.FC<LatestOperationsProps> = ({
                   transition={{ delay: 0.4, duration: 0.3 }}
                   className="text-center pt-2"
                 >
-                  <Link href="/list/operations">
+                  <Link href="/list/operations/declarations">
                     <Button variant="outline" size="small">
                       Voir {remainingOperations} opération(s) supplémentaire(s)
                     </Button>

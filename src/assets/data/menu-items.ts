@@ -16,7 +16,6 @@ export const MENU_ITEMS: MenuItemType[] = [
     key: "operations",
     label: "Opérations",
     icon: "ri:dashboard-line",
-    url: "/list/operations",
     children: [
       {
         key: "operations-declarations",

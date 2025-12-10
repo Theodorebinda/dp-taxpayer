@@ -1,14 +1,26 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth-options";
 import { listOperations } from "@/services/operations.service";
-import DeclarationsContent from "./components/DeclarationsContent";
+import DeclarationDetailContent from "./components/DeclarationDetailContent";
 import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+
+type DeclarationDetailPageProps = {
+  params: Promise<{
+    type: string;
+    id: string;
+  }>;
+};
 
 /**
- * Page de liste des déclarations
+ * Page de détail d'une déclaration
  * Server Component qui récupère les données depuis la session NextAuth
  */
-export default async function DeclarationsPage() {
+export default async function DeclarationDetailPage({
+  params,
+}: DeclarationDetailPageProps) {
+  const { id } = await params;
+
   // Récupération de la session côté serveur
   const session = await getServerSession(authOptions);
 
@@ -35,18 +47,14 @@ export default async function DeclarationsPage() {
     );
   }
 
-  // Fetch initial côté serveur
-  const initialOperations = await listOperations(
-    taxpayerId,
-    undefined,
-    accessToken
-  );
+  // Récupérer l'opération depuis la liste des opérations
+  const operations = await listOperations(taxpayerId, undefined, accessToken);
+  const operation = operations.find((op) => op.id === id);
+
+  if (!operation) {
+    notFound();
+  }
 
   // Passer les données au composant client
-  return (
-    <DeclarationsContent
-      taxpayerId={taxpayerId}
-      initialData={initialOperations}
-    />
-  );
+  return <DeclarationDetailContent id={id} initialData={operation} />;
 }
