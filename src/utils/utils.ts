@@ -145,3 +145,42 @@ export function removeLastElements(
   if (n >= parts.length) return "";
   return parts.slice(0, parts.length - n).join(separator);
 }
+
+/**
+ * Convertit une date au format DD/MM/YYYY ou autre format en YYYY-MM-DD pour les inputs date HTML
+ * @param dateString - Date au format DD/MM/YYYY, YYYY-MM-DD, ISO string, ou autre format
+ * @returns Date au format YYYY-MM-DD ou chaîne vide si invalide
+ */
+export function formatDateForInput(
+  dateString: string | null | undefined
+): string {
+  if (!dateString) return "";
+
+  try {
+    // Si c'est déjà au format YYYY-MM-DD, le retourner tel quel
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      return dateString;
+    }
+
+    // Si c'est au format DD/MM/YYYY (ex: "15/05/1990")
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+      const [day, month, year] = dateString.split("/");
+      return `${year}-${month}-${day}`;
+    }
+
+    // Si c'est un ISO string avec l'heure, extraire juste la date
+    if (dateString.includes("T")) {
+      return dateString.split("T")[0];
+    }
+
+    // Essayer de parser avec new Date
+    const date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+      return date.toISOString().split("T")[0];
+    }
+
+    return "";
+  } catch {
+    return "";
+  }
+}

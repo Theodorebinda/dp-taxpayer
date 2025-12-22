@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { formatDateForInput } from "@/utils/utils";
 
 type ProfilContentProps = {
   initialData: TaxpayerAccount | null;
@@ -68,32 +69,6 @@ export default function ProfilContent({
   const [systemForm, setSystemForm] = useState({
     approvalStatus: "",
   });
-
-  // Fonction pour formater une date pour l'input date
-  const formatDateForInput = (
-    dateString: string | null | undefined
-  ): string => {
-    if (!dateString) return "";
-    try {
-      // Si c'est déjà au format YYYY-MM-DD, le retourner tel quel
-      if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-        return dateString;
-      }
-      // Sinon, essayer de parser la date
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        // Si la date est invalide, essayer d'extraire juste la partie date si c'est un ISO string
-        if (dateString.includes("T")) {
-          return dateString.split("T")[0];
-        }
-        return "";
-      }
-      return date.toISOString().split("T")[0];
-    } catch {
-      // En cas d'erreur, retourner une chaîne vide
-      return "";
-    }
-  };
 
   // Fonctions pour ouvrir les modals et initialiser les formulaires
   const openIdentityModal = () => {
