@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AccordionItemProps {
   title: string;
@@ -73,34 +74,65 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
   };
 
   return (
-    <div className="">
+    <div className="space-y-2">
       {items.map((item, index) => (
-        <div
+        <motion.div
           key={index}
-          className=" overflow-hidden border-b border-primary/20"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: index * 0.1 }}
+          className="overflow-hidden border-b border-primary/20 rounded-lg"
         >
-          <button
+          <motion.button
             onClick={() => toggleItem(index)}
             className="w-full flex items-center justify-between p-6 hover:bg-muted/50 transition-colors"
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
           >
             <div className="flex items-center gap-3">
-              {item.icon && <div className="text-primary">{item.icon}</div>}
+              {item.icon && (
+                <motion.div
+                  className="text-primary"
+                  animate={{ rotate: openItems.has(index) ? 360 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {item.icon}
+                </motion.div>
+              )}
               <h2 className="text-xl font-semibold text-foreground">
                 {item.title}
               </h2>
             </div>
-            <ChevronDown
-              className={`size-5 text-muted-foreground transition-transform duration-200 ${
-                openItems.has(index) ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-          {openItems.has(index) && (
-            <div className="px-6 pb-6 pt-0 ">
-              <div className="pt-4 space-y-4">{item.children}</div>
-            </div>
-          )}
-        </div>
+            <motion.div
+              animate={{ rotate: openItems.has(index) ? 180 : 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <ChevronDown className="size-5 text-muted-foreground" />
+            </motion.div>
+          </motion.button>
+          <AnimatePresence>
+            {openItems.has(index) && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <div className="px-6 pb-6 pt-0">
+                  <motion.div
+                    initial={{ y: -10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                    className="pt-4 space-y-4"
+                  >
+                    {item.children}
+                  </motion.div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       ))}
     </div>
   );

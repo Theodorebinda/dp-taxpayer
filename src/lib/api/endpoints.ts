@@ -3,7 +3,6 @@ export const API_ENDPOINTS = {
   AUTH_LOGIN: "/auth/login",
   AUTH_PASSWORD_FORGOT: "/auth/password/forgot",
   AUTH_REFRESH: "/auth/refresh",
-  AUTH_ME: "/auth/me",
   AUTH_PASSWORD_RESET_REQUEST: "/auth/password_reset",
   AUTH_PASSWORD_UPDATE: "/change/auth/password",
   AUTH_VALIDATE_RESET_TOKEN: (token: string) =>
@@ -18,6 +17,7 @@ export const API_ENDPOINTS = {
   VIEWS: (id: string | number) => `/views/${id}`,
   OPERATIONS: (taxpayerId: string) => `taxpayer/${taxpayerId}/operation`,
   TAXPAYER_ACCOUNT: (id: string) => `/read/taxpayer/${id}/account`,
+  UPDATE_TAXPAYER: (id: string) => `/change/taxpayer/TaxPayerManager/${id}`,
   DECLARATION_FORM: (type: string) => `/declarations/${type}/form`,
   CREATE_DECLARATION: (type: string) => `/declarations/${type}`,
   UPDATE_DECLARATION: (type: string, id: string | number) =>

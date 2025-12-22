@@ -113,3 +113,35 @@ export async function getTaxpayerById(
   if (!accountData) return false;
   return accountData;
 }
+
+/**
+ * Met à jour les informations d'un contribuable
+ * @param id - ID du contribuable
+ * @param payload - Données à mettre à jour
+ * @param accessToken - Token d'accès NextAuth (optionnel, pour appels serveur)
+ * @returns Les données mises à jour ou false en cas d'erreur
+ */
+export async function updateTaxpayer(
+  id: string,
+  payload: Record<string, unknown>,
+  accessToken?: string
+): Promise<{ data: Record<string, unknown>; message?: string } | false> {
+  const res = await apiClient.patch<Record<string, unknown>>(
+    API_ENDPOINTS.UPDATE_TAXPAYER(id),
+    payload,
+    undefined,
+    accessToken
+  );
+
+  console.log("res", res);
+  console.log("payload", payload);
+  console.log("accessToken", accessToken);
+  console.log("id", id);
+  if (!res) return false;
+  const data = unwrapData<Record<string, unknown>>(res);
+  const message =
+    typeof res.message === "string" && res.message.trim().length > 0
+      ? res.message
+      : undefined;
+  return { data, message };
+}

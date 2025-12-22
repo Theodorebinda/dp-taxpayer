@@ -158,18 +158,6 @@ export async function refresh(refreshToken: string): Promise<RefreshResult> {
   };
 }
 
-export async function me(
-  accessToken?: string
-): Promise<Record<string, unknown>> {
-  const res = await apiClient.get<Record<string, unknown>>(
-    API_ENDPOINTS.AUTH_ME,
-    undefined,
-    accessToken
-  );
-  if (!res) throw new Error("Impossible de charger le profil");
-  return (res.data as unknown as Record<string, unknown>) ?? {};
-}
-
 // -----------------------------------------------------------------------------
 // OTP SERVICES
 // -----------------------------------------------------------------------------

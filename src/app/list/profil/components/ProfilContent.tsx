@@ -1,9 +1,11 @@
 "use client";
 
 import type { TaxpayerAccount } from "@/types/taxpayer-account.type";
-import { useTaxpayer } from "@/hooks/useTaxpayer";
+import { useTaxpayer, useUpdateTaxpayer } from "@/hooks/useTaxpayer";
 import Loader from "@/components/atoms/loader";
+import toast from "react-hot-toast";
 import { Button, Accordion } from "@/components/ui";
+import Dialog from "@/components/atoms/dialog";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -13,6 +15,8 @@ import {
   Edit2,
   ArrowRight,
 } from "lucide-react";
+import { motion } from "framer-motion";
+import { useState } from "react";
 
 type ProfilContentProps = {
   initialData: TaxpayerAccount | null;
@@ -30,8 +34,104 @@ export default function ProfilContent({
     refetch,
   } = useTaxpayer(taxpayerId);
 
+  const updateTaxpayerMutation = useUpdateTaxpayer(taxpayerId);
+
   const taxpayerData =
     taxpayer && typeof taxpayer === "object" ? taxpayer : initialData;
+
+  console.log("taxpayerData", taxpayerData);
+
+  // États pour les modals
+  const [isIdentityModalOpen, setIsIdentityModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [isSystemModalOpen, setIsSystemModalOpen] = useState(false);
+
+  // États pour les formulaires
+  const [identityForm, setIdentityForm] = useState({
+    firstName: "",
+    lastName: "",
+    middleName: "",
+    birthDate: "",
+    birthPlace: "",
+    sex: "",
+    martialStatus: "",
+  });
+
+  const [contactForm, setContactForm] = useState({
+    mobile: "",
+    email: "",
+    physicalAddress: "",
+    identityCard: "",
+    identityCardNumber: "",
+  });
+
+  const [systemForm, setSystemForm] = useState({
+    approvalStatus: "",
+  });
+
+  // Fonction pour formater une date pour l'input date
+  const formatDateForInput = (
+    dateString: string | null | undefined
+  ): string => {
+    if (!dateString) return "";
+    try {
+      // Si c'est déjà au format YYYY-MM-DD, le retourner tel quel
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        return dateString;
+      }
+      // Sinon, essayer de parser la date
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        // Si la date est invalide, essayer d'extraire juste la partie date si c'est un ISO string
+        if (dateString.includes("T")) {
+          return dateString.split("T")[0];
+        }
+        return "";
+      }
+      return date.toISOString().split("T")[0];
+    } catch {
+      // En cas d'erreur, retourner une chaîne vide
+      return "";
+    }
+  };
+
+  // Fonctions pour ouvrir les modals et initialiser les formulaires
+  const openIdentityModal = () => {
+    if (taxpayerData) {
+      setIdentityForm({
+        firstName: taxpayerData.firstName || "",
+        lastName: taxpayerData.lastName || "",
+        middleName: taxpayerData.middleName || "",
+        birthDate: formatDateForInput(taxpayerData.birthDate),
+        birthPlace: taxpayerData.birthPlace || "",
+        sex: taxpayerData.sex || "",
+        martialStatus: taxpayerData.martialStatus || "",
+      });
+    }
+    setIsIdentityModalOpen(true);
+  };
+
+  const openContactModal = () => {
+    if (taxpayerData) {
+      setContactForm({
+        mobile: taxpayerData.mobile || "",
+        email: taxpayerData.email || "",
+        physicalAddress: taxpayerData.physicalAddress || "",
+        identityCard: taxpayerData.identityCard || "",
+        identityCardNumber: taxpayerData.identityCardNumber || "",
+      });
+    }
+    setIsContactModalOpen(true);
+  };
+
+  const openSystemModal = () => {
+    if (taxpayerData) {
+      setSystemForm({
+        approvalStatus: taxpayerData.approvalStatus || "",
+      });
+    }
+    setIsSystemModalOpen(true);
+  };
 
   if (isLoading && !initialData) {
     return <Loader />;
@@ -92,49 +192,80 @@ export default function ProfilContent({
   };
 
   return (
-    <section className="flex flex-col gap-6 p-0 md:p-6">
-      <div>
+    <motion.section
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col gap-6 p-0 md:p-6"
+    >
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-4">
-            <Link href="/list/overview">
-              <Button variant="outline" size="small">
-                <ArrowLeft className="size-4" />
-                Retour
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link href="/list/overview">
+                <Button variant="outline" size="small">
+                  <ArrowLeft className="size-4" />
+                  Retour
+                </Button>
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="outline"
+                size="small"
+                onClick={() => refetch()}
+                disabled={isLoading}
+              >
+                Actualiser
               </Button>
-            </Link>
-            <Button
-              variant="outline"
-              size="small"
-              onClick={() => refetch()}
-              disabled={isLoading}
-            >
-              Actualiser
-            </Button>
+            </motion.div>
           </div>
-          <div>
+          <motion.div
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
             <h1 className="text-3xl font-semibold">
               {taxpayerData.fullName || "N/A"}
             </h1>
             <p className="text-sm text-muted-foreground">
               Vos informations détaillées
             </p>
-          </div>
+          </motion.div>
         </div>
 
         <div className="relative flex flex-col lg:flex-row gap-6 items-center w-full lg:justify-between justify-center lg:h-[calc(70vh-100px)]">
           {/* Photo de profil fixe à gauche */}
-          <div className="lg:shrink-0 flex justify-center ">
+          <motion.div
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="lg:shrink-0 flex justify-center"
+          >
             <div className="lg:sticky lg:top-6 lg:self-start">
-              <div className="flex flex-col items-center gap-4">
+              <motion.div
+                className="flex flex-col items-center gap-4"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.3 }}
+              >
                 <div className="relative">
                   <div className="mx-4 lg:mx-0 size-96 rounded-full bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center border-4 border-primary/20">
                     <User className="size-40 text-primary/60" />
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </div>
-          <div className="flex-1 min-w-0 w-full lg:w-auto max-w-2xl">
+          </motion.div>
+          <motion.div
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex-1 min-w-0 w-full lg:w-auto max-w-2xl"
+          >
             <div className="w-full mx-auto">
               <Accordion
                 items={[
@@ -240,20 +371,27 @@ export default function ProfilContent({
                             </span>
                           </div>
                         )}
-                        <div className="pt-4  w-fit self-end">
-                          <Button
-                            variant="outline"
-                            size="small"
-                            className="w-full px-4 py-2"
-                            onClick={() => {
-                              // TODO: Implémenter la mise à jour de l'identité
-                              console.log("Mettre à jour l'identité");
-                            }}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className="pt-4 w-fit self-end"
+                        >
+                          <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                           >
-                            <Edit2 className="size-4 mr-2" />
-                            Mettre à jour
-                          </Button>
-                        </div>
+                            <Button
+                              variant="outline"
+                              size="small"
+                              className="w-full px-4 py-2"
+                              onClick={openIdentityModal}
+                            >
+                              <Edit2 className="size-4 mr-2" />
+                              Mettre à jour
+                            </Button>
+                          </motion.div>
+                        </motion.div>
                       </div>
                     ),
                   },
@@ -310,20 +448,27 @@ export default function ProfilContent({
                             </span>
                           </div>
                         )}
-                        <div className="pt-4  w-fit self-end">
-                          <Button
-                            variant="outline"
-                            size="small"
-                            className="w-full px-4 py-2"
-                            onClick={() => {
-                              // TODO: Implémenter la mise à jour du contact
-                              console.log("Mettre à jour le contact");
-                            }}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className="pt-4 w-fit self-end"
+                        >
+                          <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                           >
-                            <Edit2 className="size-4 mr-2" />
-                            Mettre à jour
-                          </Button>
-                        </div>
+                            <Button
+                              variant="outline"
+                              size="small"
+                              className="w-full px-4 py-2"
+                              onClick={openContactModal}
+                            >
+                              <Edit2 className="size-4 mr-2" />
+                              Mettre à jour
+                            </Button>
+                          </motion.div>
+                        </motion.div>
                       </div>
                     ),
                   },
@@ -364,44 +509,425 @@ export default function ProfilContent({
                             {taxpayerData.id}
                           </span>
                         </div>
-                        <div className="pt-4  w-fit self-end">
-                          <Button
-                            variant="outline"
-                            size="small"
-                            className="w-full px-4 py-2"
-                            onClick={() => {
-                              // TODO: Implémenter la mise à jour des informations système
-                              console.log(
-                                "Mettre à jour les informations système"
-                              );
-                            }}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className="pt-4 w-fit self-end"
+                        >
+                          <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            title="Mettre à jour les informations système"
                           >
-                            <Edit2 className="size-4 mr-2" />
-                            Mettre à jour
-                          </Button>
-                        </div>
+                            <Button
+                              variant="outline"
+                              size="small"
+                              className="w-full px-4 py-2"
+                              onClick={openSystemModal}
+                            >
+                              <Edit2 className="size-4 mr-2" />
+                              Mettre à jour
+                            </Button>
+                          </motion.div>
+                        </motion.div>
                       </div>
                     ),
                   },
                 ]}
               />
             </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="w-full flex justify-end mt-8"
+            >
+              <motion.div
+                whileHover={{ scale: 1.05, x: 5 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  size="small"
+                  className="px-4 py-3"
+                  onClick={() => {
+                    // router.push("/list/property");
+                    console.log("Voir vos Biens");
+                  }}
+                >
+                  Voir vos Biens{" "}
+                  <motion.span
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      repeatDelay: 1,
+                    }}
+                    className="inline-block"
+                  >
+                    <ArrowRight className="size-4 ml-2" />
+                  </motion.span>
+                </Button>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* Modal Identité */}
+      <Dialog
+        isOpen={isIdentityModalOpen}
+        onClose={() => setIsIdentityModalOpen(false)}
+        title="Modifier l'identité"
+        size="lg"
+        variant="default"
+      >
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            try {
+              await updateTaxpayerMutation.mutateAsync(identityForm);
+              toast.success("Informations d'identité mises à jour avec succès");
+              setIsIdentityModalOpen(false);
+              refetch();
+            } catch (error) {
+              toast.error(
+                error instanceof Error
+                  ? error.message
+                  : "Erreur lors de la mise à jour"
+              );
+            }
+          }}
+          className="space-y-4"
+        >
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-foreground">
+                Prénom <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={identityForm.firstName}
+                onChange={(e) =>
+                  setIdentityForm({
+                    ...identityForm,
+                    firstName: e.target.value,
+                  })
+                }
+                className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-foreground">
+                Nom <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={identityForm.lastName}
+                onChange={(e) =>
+                  setIdentityForm({ ...identityForm, lastName: e.target.value })
+                }
+                className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                required
+              />
+            </div>
           </div>
-        </div>
-        <div className="w-full flex justify-end mt-4">
-          <Button
-            variant="outline"
-            size="small"
-            className="px-4 py-2"
-            onClick={() => {
-              // router.push("/list/property");
-              console.log("Voir vos Biens");
-            }}
-          >
-            Voir vos Biens <ArrowRight className="size-4 ml-2" />
-          </Button>
-        </div>
-      </div>
-    </section>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-foreground">
+              Nom du milieu
+            </label>
+            <input
+              type="text"
+              value={identityForm.middleName}
+              onChange={(e) =>
+                setIdentityForm({ ...identityForm, middleName: e.target.value })
+              }
+              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-foreground">
+              Date de naissance
+            </label>
+            <input
+              type="date"
+              value={identityForm.birthDate || ""}
+              onChange={(e) =>
+                setIdentityForm({
+                  ...identityForm,
+                  birthDate: e.target.value,
+                })
+              }
+              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-foreground">
+              Lieu de naissance
+            </label>
+            <input
+              type="text"
+              value={identityForm.birthPlace}
+              onChange={(e) =>
+                setIdentityForm({ ...identityForm, birthPlace: e.target.value })
+              }
+              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-foreground">
+                Sexe
+              </label>
+              <select
+                value={identityForm.sex}
+                onChange={(e) =>
+                  setIdentityForm({ ...identityForm, sex: e.target.value })
+                }
+                className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="">Sélectionner</option>
+                <option value="HOMME">Masculin</option>
+                <option value="Femme">Féminin</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-foreground">
+                Statut matrimonial
+              </label>
+              <select
+                value={identityForm.martialStatus}
+                onChange={(e) =>
+                  setIdentityForm({
+                    ...identityForm,
+                    martialStatus: e.target.value,
+                  })
+                }
+                className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="">Sélectionner</option>
+                <option value="Célibataire">Célibataire</option>
+                <option value="Marié(e)">Marié(e)</option>
+                <option value="Divorcé(e)">Divorcé(e)</option>
+                <option value="Veuf(ve)">Veuf(ve)</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setIsIdentityModalOpen(false)}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={updateTaxpayerMutation.isPending}
+            >
+              {updateTaxpayerMutation.isPending
+                ? "Enregistrement..."
+                : "Enregistrer"}
+            </Button>
+          </div>
+        </form>
+      </Dialog>
+
+      {/* Modal Contact */}
+      <Dialog
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+        title="Modifier les informations de contact"
+        size="lg"
+        variant="default"
+      >
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            try {
+              await updateTaxpayerMutation.mutateAsync(contactForm);
+              toast.success("Informations de contact mises à jour avec succès");
+              setIsContactModalOpen(false);
+              refetch();
+            } catch (error) {
+              toast.error(
+                error instanceof Error
+                  ? error.message
+                  : "Erreur lors de la mise à jour"
+              );
+            }
+          }}
+          className="space-y-4"
+        >
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-foreground">
+              Téléphone mobile <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="tel"
+              value={contactForm.mobile}
+              onChange={(e) =>
+                setContactForm({ ...contactForm, mobile: e.target.value })
+              }
+              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-foreground">Email</label>
+            <input
+              type="email"
+              value={contactForm.email || ""}
+              onChange={(e) =>
+                setContactForm({ ...contactForm, email: e.target.value })
+              }
+              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-foreground">
+              Adresse physique
+            </label>
+            <textarea
+              value={contactForm.physicalAddress || ""}
+              onChange={(e) =>
+                setContactForm({
+                  ...contactForm,
+                  physicalAddress: e.target.value,
+                })
+              }
+              rows={3}
+              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-foreground">
+                Type de pièce d&apos;identité
+              </label>
+              <select
+                value={contactForm.identityCard || ""}
+                onChange={(e) =>
+                  setContactForm({
+                    ...contactForm,
+                    identityCard: e.target.value,
+                  })
+                }
+                className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="">Sélectionner</option>
+                <option value="Carte d'identité">Carte d&apos;identité</option>
+                <option value="Passeport">Passeport</option>
+                <option value="Permis de conduire">Permis de conduire</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-foreground">
+                Numéro de pièce d&apos;identité
+              </label>
+              <input
+                type="text"
+                value={contactForm.identityCardNumber || ""}
+                onChange={(e) =>
+                  setContactForm({
+                    ...contactForm,
+                    identityCardNumber: e.target.value,
+                  })
+                }
+                className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setIsContactModalOpen(false)}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={updateTaxpayerMutation.isPending}
+            >
+              {updateTaxpayerMutation.isPending
+                ? "Enregistrement..."
+                : "Enregistrer"}
+            </Button>
+          </div>
+        </form>
+      </Dialog>
+
+      {/* Modal Informations système */}
+      <Dialog
+        isOpen={isSystemModalOpen}
+        onClose={() => setIsSystemModalOpen(false)}
+        title="Modifier les informations système"
+        size="md"
+        variant="default"
+      >
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            try {
+              await updateTaxpayerMutation.mutateAsync(systemForm);
+              toast.success("Informations système mises à jour avec succès");
+              setIsSystemModalOpen(false);
+              refetch();
+            } catch (error) {
+              toast.error(
+                error instanceof Error
+                  ? error.message
+                  : "Erreur lors de la mise à jour"
+              );
+            }
+          }}
+          className="space-y-4"
+        >
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-foreground">
+              Statut d&apos;approbation
+            </label>
+            <select
+              value={systemForm.approvalStatus}
+              onChange={(e) =>
+                setSystemForm({
+                  ...systemForm,
+                  approvalStatus: e.target.value,
+                })
+              }
+              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="">Sélectionner</option>
+              <option value="APPROVED">Approuvé</option>
+              <option value="PENDING">En attente</option>
+              <option value="REJECTED">Rejeté</option>
+            </select>
+          </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setIsSystemModalOpen(false)}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={updateTaxpayerMutation.isPending}
+            >
+              {updateTaxpayerMutation.isPending
+                ? "Enregistrement..."
+                : "Enregistrer"}
+            </Button>
+          </div>
+        </form>
+      </Dialog>
+    </motion.section>
   );
 }
