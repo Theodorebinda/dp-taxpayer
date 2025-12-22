@@ -312,7 +312,7 @@ export default function ProfilContent({
                               Date de naissance
                             </span>
                             <span className="text-base font-medium text-foreground">
-                              {formatDate(taxpayerData.birthDate)}
+                              {taxpayerData.birthDate}
                             </span>
                           </div>
                         )}
