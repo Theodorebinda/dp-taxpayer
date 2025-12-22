@@ -61,6 +61,7 @@ export function formatNumberWithGroups(number: string | number): string {
   return result;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getValueFromPath(obj: Record<string, any>, path: string) {
   // Divise le chemin en segments en utilisant le point comme séparateur
   const segments = path.split(".");
@@ -131,7 +132,7 @@ export function capitalizeWords(str: string): string {
     .join(" ");
 }
 
-export function isPlainObject(obj: any): boolean {
+export function isPlainObject(obj: unknown): boolean {
   return Object.prototype.toString.call(obj) === "[object Object]";
 }
 

@@ -55,7 +55,7 @@ export function useUpdateTaxpayer(taxpayerId: string) {
   }, [session]);
 
   return useApiMutation<
-    Record<string, unknown>,
+    Record<string, unknown> | FormData,
     { data: Record<string, unknown>; message?: string }
   >(
     async (payload) => {

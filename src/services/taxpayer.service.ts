@@ -123,7 +123,7 @@ export async function getTaxpayerById(
  */
 export async function updateTaxpayer(
   id: string,
-  payload: Record<string, unknown>,
+  payload: Record<string, unknown> | FormData,
   accessToken?: string
 ): Promise<{ data: Record<string, unknown>; message?: string } | false> {
   const res = await apiClient.patch<Record<string, unknown>>(

@@ -32,6 +32,7 @@ export type TaxpayerAccount = {
   mobile: string;
   uniqueId: string;
   userId: string | null;
+  // photo: string | null;
   firstName: string;
   middleName: string | null;
   lastName: string;
@@ -54,6 +55,10 @@ export type TaxpayerAccount = {
   createdByUserId: string;
   approvalStatus: string;
   isDeleted: boolean;
+  user: {
+    photo: string | null;
+    mail: string | null;
+  };
   meta: Record<string, unknown>;
   possessions: TaxpayerPossession[];
 };

@@ -2,6 +2,7 @@
 
 import type { TaxpayerAccount } from "@/types/taxpayer-account.type";
 import { useTaxpayer, useUpdateTaxpayer } from "@/hooks/useTaxpayer";
+import profilImage from "@/../public/images/profil.png";
 import Loader from "@/components/atoms/loader";
 import toast from "react-hot-toast";
 import { Button, Accordion } from "@/components/ui";
@@ -14,10 +15,13 @@ import {
   User,
   Edit2,
   ArrowRight,
+  Camera,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { formatDateForInput } from "@/utils/utils";
+import Image from "next/image";
+import { objectToFormData } from "@/components/form/utils";
 
 type ProfilContentProps = {
   initialData: TaxpayerAccount | null;
@@ -69,6 +73,71 @@ export default function ProfilContent({
   const [systemForm, setSystemForm] = useState({
     approvalStatus: "",
   });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [selectedPhotoFile, setSelectedPhotoFile] = useState<File | null>(null);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Veuillez sélectionner un fichier image");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+        setSelectedPhotoFile(file);
+      };
+      reader.onerror = () => {
+        toast.error("Erreur lors de la lecture de l'image");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCancelPhoto = () => {
+    setPhotoPreview(null);
+    setSelectedPhotoFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleValidatePhoto = async () => {
+    if (!selectedPhotoFile) {
+      toast.error("Aucune photo sélectionnée");
+      return;
+    }
+
+    try {
+      const payload = {
+        user: {
+          photo: selectedPhotoFile,
+        },
+      };
+
+      const formData = objectToFormData(payload);
+
+      await updateTaxpayerMutation.mutateAsync(formData);
+
+      toast.success("Photo mise à jour avec succès");
+
+      setPhotoPreview(null);
+      setSelectedPhotoFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de l'upload de la photo"
+      );
+    }
+  };
 
   // Fonctions pour ouvrir les modals et initialiser les formulaires
   const openIdentityModal = () => {
@@ -138,19 +207,6 @@ export default function ProfilContent({
     );
   }
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A";
-    try {
-      return new Date(dateString).toLocaleDateString("fr-FR", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    } catch {
-      return dateString;
-    }
-  };
-
   const formatDateTime = (dateString: string | null) => {
     if (!dateString) return "N/A";
     try {
@@ -165,6 +221,8 @@ export default function ProfilContent({
       return dateString;
     }
   };
+
+  // console.log("taxpayerData.photo", taxpayerData.user?.photo);
 
   return (
     <motion.section
@@ -228,9 +286,77 @@ export default function ProfilContent({
                 transition={{ duration: 0.3 }}
               >
                 <div className="relative">
-                  <div className="mx-4 lg:mx-0 size-96 rounded-full bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center border-4 border-primary/20">
-                    <User className="size-40 text-primary/60" />
+                  <div className="mx-4 lg:mx-0 size-96 rounded-full bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center border-4 border-primary/20 overflow-hidden">
+                    <Image
+                      src={
+                        photoPreview ||
+                        taxpayerData.user?.photo ||
+                        profilImage.src
+                      }
+                      alt="Photo de profil"
+                      width={200}
+                      height={200}
+                      className="object-cover rounded-full"
+                      style={{ width: "100%", height: "100%" }}
+                    />
                   </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                  />
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => {
+                      fileInputRef.current?.click();
+                    }}
+                    className="absolute bottom-2 right-2 lg:bottom-4 lg:right-4 size-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:bg-primary/90 transition-colors border-2 border-background z-10"
+                    title="Modifier la photo de profil"
+                  >
+                    <Camera className="size-5" />
+                  </motion.button>
+
+                  {/* Boutons Annuler et Valider - affichés uniquement si une photo est sélectionnée */}
+                  {photoPreview && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex gap-3 z-10"
+                    >
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="small"
+                          onClick={handleCancelPhoto}
+                          className="px-4 py-2"
+                        >
+                          Annuler
+                        </Button>
+                      </motion.div>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button
+                          type="button"
+                          variant="primary"
+                          size="small"
+                          onClick={handleValidatePhoto}
+                          className="px-4 py-2"
+                        >
+                          Valider
+                        </Button>
+                      </motion.div>
+                    </motion.div>
+                  )}
                 </div>
               </motion.div>
             </div>
@@ -484,28 +610,6 @@ export default function ProfilContent({
                             {taxpayerData.id}
                           </span>
                         </div>
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.2 }}
-                          className="pt-4 w-fit self-end"
-                        >
-                          <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            title="Mettre à jour les informations système"
-                          >
-                            <Button
-                              variant="outline"
-                              size="small"
-                              className="w-full px-4 py-2"
-                              onClick={openSystemModal}
-                            >
-                              <Edit2 className="size-4 mr-2" />
-                              Mettre à jour
-                            </Button>
-                          </motion.div>
-                        </motion.div>
                       </div>
                     ),
                   },
@@ -838,7 +942,7 @@ export default function ProfilContent({
       </Dialog>
 
       {/* Modal Informations système */}
-      <Dialog
+      {/* <Dialog
         isOpen={isSystemModalOpen}
         onClose={() => setIsSystemModalOpen(false)}
         title="Modifier les informations système"
@@ -903,6 +1007,7 @@ export default function ProfilContent({
           </div>
         </form>
       </Dialog>
+       */}
     </motion.section>
   );
 }
