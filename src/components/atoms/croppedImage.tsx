@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo, memo } from "react";
 import Cropper from "react-easy-crop";
 import { Area } from "react-easy-crop";
 
@@ -70,51 +70,112 @@ const CropperModal: React.FC<CropperModalProps> = ({
     setCroppedAreaPixels(croppedArea);
   }, []);
 
-  const handleDone = async () => {
+  const handleCropChange = useCallback((newCrop: { x: number; y: number }) => {
+    setCrop(newCrop);
+  }, []);
+
+  const handleZoomChange = useCallback((newZoom: number) => {
+    setZoom(newZoom);
+  }, []);
+
+  const handleDone = useCallback(async () => {
     if (!croppedAreaPixels) return;
-    const { blob, dataUrl } = await getCroppedImg(
-      imageSrc,
-      croppedAreaPixels,
-      outputWidth,
-      outputHeight
-    );
-    onCropComplete(blob, dataUrl);
-    onClose();
-  };
+    try {
+      const { blob, dataUrl } = await getCroppedImg(
+        imageSrc,
+        croppedAreaPixels,
+        outputWidth,
+        outputHeight
+      );
+      onCropComplete(blob, dataUrl);
+      onClose();
+    } catch (error) {
+      console.error("Erreur lors du recadrage:", error);
+    }
+  }, [
+    croppedAreaPixels,
+    imageSrc,
+    outputWidth,
+    outputHeight,
+    onCropComplete,
+    onClose,
+  ]);
+
+  const handleZoomInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setZoom(Number(e.target.value));
+    },
+    []
+  );
+
+  const containerStyle = useMemo(
+    () => ({
+      willChange: "transform" as const,
+      transform: "translateZ(0)" as const,
+    }),
+    []
+  );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
-      <div className="relative w-[90vw] h-[90vh] max-w-[500px] max-h-[500px]">
-        <Cropper
-          image={imageSrc}
-          crop={crop}
-          zoom={zoom}
-          aspect={aspectRatio}
-          onCropChange={setCrop}
-          onZoomChange={setZoom}
-          onCropComplete={handleCropComplete}
-        />
+    <div
+      className="fixed inset-0 z-9999 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+      style={containerStyle}
+    >
+      <div
+        className="relative w-[90vw] h-[90vh] max-w-[500px] max-h-[500px] bg-background rounded-lg overflow-hidden shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+        style={containerStyle}
+      >
+        <div
+          className="relative w-full h-full"
+          style={{ willChange: "transform" }}
+        >
+          <Cropper
+            image={imageSrc}
+            crop={crop}
+            zoom={zoom}
+            aspect={aspectRatio}
+            onCropChange={handleCropChange}
+            onZoomChange={handleZoomChange}
+            onCropComplete={handleCropComplete}
+            restrictPosition={true}
+            showGrid={false}
+            style={{
+              containerStyle: {
+                willChange: "transform",
+              },
+            }}
+          />
+        </div>
 
-        <input
-          type="range"
-          min={1}
-          max={3}
-          step={0.1}
-          value={zoom}
-          onChange={(e) => setZoom(Number(e.target.value))}
-          className="absolute bottom-20 left-0 right-0 w-full mx-auto"
-        />
+        <div className="absolute bottom-20 left-0 right-0 px-4 z-10">
+          <input
+            type="range"
+            min={1}
+            max={3}
+            step={0.1}
+            value={zoom}
+            onChange={handleZoomInputChange}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+            style={{ willChange: "auto" }}
+          />
+        </div>
 
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-4">
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-4 px-4 z-10">
           <button
             type="button"
-            className="px-4 py-2 bg-gray-200 rounded"
+            className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
             onClick={onClose}
           >
             Annuler
           </button>
           <button
-            className="px-4 py-2 bg-blue-500 text-white rounded"
+            className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
             type="button"
             onClick={handleDone}
           >
@@ -126,4 +187,4 @@ const CropperModal: React.FC<CropperModalProps> = ({
   );
 };
 
-export default CropperModal;
+export default memo(CropperModal);

@@ -22,6 +22,7 @@ import { useState, useRef } from "react";
 import { formatDateForInput } from "@/utils/utils";
 import Image from "next/image";
 import { objectToFormData } from "@/components/form/utils";
+import CropperModal from "@/components/atoms/croppedImage";
 
 type ProfilContentProps = {
   initialData: TaxpayerAccount | null;
@@ -77,6 +78,8 @@ export default function ProfilContent({
 
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [selectedPhotoFile, setSelectedPhotoFile] = useState<File | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [tempImage, setTempImage] = useState<string | null>(null);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -88,14 +91,22 @@ export default function ProfilContent({
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
-        setSelectedPhotoFile(file);
+        setTempImage(reader.result as string);
+        setShowCropper(true);
       };
       reader.onerror = () => {
         toast.error("Erreur lors de la lecture de l'image");
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleCropComplete = (blob: Blob, dataUrl: string) => {
+    const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+    setSelectedPhotoFile(file);
+    setPhotoPreview(dataUrl);
+    setShowCropper(false);
+    setTempImage(null);
   };
 
   const handleCancelPhoto = () => {
@@ -287,18 +298,31 @@ export default function ProfilContent({
               >
                 <div className="relative">
                   <div className="mx-4 lg:mx-0 size-96 rounded-full bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center border-4 border-primary/20 overflow-hidden">
-                    <Image
-                      src={
-                        photoPreview ||
-                        taxpayerData.user?.photo ||
-                        profilImage.src
-                      }
-                      alt="Photo de profil"
-                      width={200}
-                      height={200}
-                      className="object-cover rounded-full"
-                      style={{ width: "100%", height: "100%" }}
-                    />
+                    <motion.div
+                      whileHover={photoPreview ? { scale: 1.02 } : {}}
+                      className={`w-full h-full ${
+                        photoPreview ? "cursor-pointer" : ""
+                      }`}
+                      onClick={() => {
+                        if (photoPreview) {
+                          setTempImage(photoPreview);
+                          setShowCropper(true);
+                        }
+                      }}
+                    >
+                      <Image
+                        src={
+                          photoPreview ||
+                          taxpayerData.user?.photo ||
+                          profilImage.src
+                        }
+                        alt="Photo de profil"
+                        width={200}
+                        height={200}
+                        className="object-cover rounded-full"
+                        style={{ width: "100%", height: "100%" }}
+                      />
+                    </motion.div>
                   </div>
                   <input
                     ref={fileInputRef}
@@ -352,12 +376,25 @@ export default function ProfilContent({
                           onClick={handleValidatePhoto}
                           className="px-4 py-2"
                         >
-                          Valider
+                          Confirmer
                         </Button>
                       </motion.div>
                     </motion.div>
                   )}
                 </div>
+
+                {/* Modal de recadrage */}
+                {showCropper && tempImage && (
+                  <CropperModal
+                    imageSrc={tempImage}
+                    onClose={() => {
+                      setShowCropper(false);
+                      setTempImage(null);
+                    }}
+                    onCropComplete={handleCropComplete}
+                    aspectRatio={1}
+                  />
+                )}
               </motion.div>
             </div>
           </motion.div>
