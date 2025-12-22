@@ -40,8 +40,6 @@ export default function LoginComponent() {
     e.preventDefault();
     setSubmitting(true);
 
-    console.log({ identifier, password });
-
     if (!pendingToastId.current) {
       pendingToastId.current = info("Connexion en cours...", {
         id: "login-status",
@@ -51,8 +49,6 @@ export default function LoginComponent() {
     try {
       const res = await login({ identifier, password });
 
-      console.log({ res });
-
       if (res.ok) {
         success(res.message || "Connexion réussie");
         return;
@@ -60,15 +56,10 @@ export default function LoginComponent() {
 
       // Si OTP est requis, rediriger vers la page OTP
       if (res.requiresOtp && res.otpData) {
-        console.log("OTP requis détecté, données OTP:", res.otpData);
         // Vérifier que c'est bien le type avec redirectToOpt: true
         const redirectToOpt = res.otpData.redirectToOpt;
         const hasToken = "token" in res.otpData;
         const hasOtpMethod = "otpMethod" in res.otpData;
-
-        console.log("redirectToOpt:", redirectToOpt);
-        console.log("hasToken:", hasToken);
-        console.log("hasOtpMethod:", hasOtpMethod);
 
         const isOtpRequired =
           redirectToOpt === true ||
@@ -87,7 +78,6 @@ export default function LoginComponent() {
 
           const otpToken = otpData.token;
           const otpMethods = otpData.otpMethod;
-          console.log("Redirection vers /auth/otp avec token:", otpToken);
           // Stocker les données OTP dans sessionStorage pour la page OTP
           sessionStorage.setItem(
             "otp_data",

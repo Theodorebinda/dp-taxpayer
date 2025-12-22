@@ -21,17 +21,14 @@ const TopBanner = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const userName = (session?.user as { name?: string } | undefined)?.name;
-  console.log({ session });
 
   // TODO: Remplacer par des notifications réelles depuis l'API
   const handleMarkAsRead = (id: string) => {
     // Implémenter la logique pour marquer une notification comme lue
-    console.log("Mark as read:", id);
   };
 
   const handleMarkAllAsRead = () => {
     // Implémenter la logique pour marquer toutes les notifications comme lues
-    console.log("Mark all as read");
   };
 
   return (

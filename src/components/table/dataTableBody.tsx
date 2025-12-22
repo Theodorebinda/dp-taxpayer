@@ -68,7 +68,7 @@ const DataTableBody = <
   };
 
   return (
-    <div className="overflow-x-auto border border-foreground/30 rounded-xl text-foreground">
+    <div className="overflow-x-auto  rounded-xl text-foreground">
       <table className="min-w-full divide-y divide-foreground/30">
         <thead className="bg-foreground/10">
           <tr>
@@ -76,7 +76,7 @@ const DataTableBody = <
               <th className="w-12 px-4 py-3">
                 <input
                   type="checkbox"
-                  className="rounded border-bg-secondary bg-bg-secondary text-foreground"
+                  className="rounded b bg-bg-secondary text-foreground"
                   checked={selectedRows.length === filteredData.length}
                   onChange={() => {
                     // const selected = e.target.checked ? filteredData : [];

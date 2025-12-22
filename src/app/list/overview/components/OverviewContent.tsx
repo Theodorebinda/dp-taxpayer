@@ -29,8 +29,6 @@ export default function OverviewContent({
   const { data: operations, isLoading: isLoadingOperations } =
     useOperations(taxpayerId);
 
-  console.log({ operations });
-
   const taxpayerData =
     taxpayer && typeof taxpayer === "object" ? taxpayer : initialData;
 
@@ -39,8 +37,6 @@ export default function OverviewContent({
     recipesData && Array.isArray(recipesData) ? recipesData : initialRecipes;
 
   const quickActions = useMemo(() => mapRecipesToActions(recipes), [recipes]);
-
-  // console.log("quickActions", quickActions);
 
   if (
     (isLoading && !initialData) ||

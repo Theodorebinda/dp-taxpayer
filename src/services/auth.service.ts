@@ -189,19 +189,15 @@ export async function sendOtp(
   payload: SendOtpPayload
 ): Promise<SendOtpResponse> {
   const endpoint = API_ENDPOINTS.AUTH_OTP_SEND(payload.method);
-  console.log("sendOtp - endpoint:", endpoint);
-  console.log("sendOtp - payload:", payload);
-  console.log("sendOtp - token:", payload.token);
+  // console.log("sendOtp - endpoint:", endpoint);
+  // console.log("sendOtp - payload:", payload);
+  // console.log("sendOtp - token:", payload.token);
 
   const res = await apiClient.get<SendOtpResponse>(
     endpoint,
     undefined,
     payload.token
   );
-
-  console.log("sendOtp - response:", res);
-  console.log("sendOtp - response type:", typeof res);
-  console.log("sendOtp - response is false:", res === false);
 
   if (!res) {
     // Extraire l'erreur du client API de manière plus robuste
@@ -273,9 +269,12 @@ function unwrapOtpData<T>(res: unknown): T {
 export async function verifyOtp(
   payload: VerifyOtpPayload
 ): Promise<VerifyOtpResponse> {
+  // Envoyer le token dans le header Bearer, pas dans le body
   const res = await apiClient.post<VerifyOtpResponse>(
     API_ENDPOINTS.AUTH_OTP_VALIDATION,
-    payload
+    { code: payload.code }, // Ne pas inclure le token dans le body
+    undefined, // Pas de customHeaders
+    payload.token // Token dans le header Authorization Bearer
   );
   if (!res) throw new Error("Code OTP invalide");
   // Extraire les données de la réponse wrappée

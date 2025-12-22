@@ -4,10 +4,6 @@ import { getTaxpayerById } from "@/services/taxpayer.service";
 import ProfilContent from "./components/ProfilContent";
 import { redirect } from "next/navigation";
 
-/**
- * Page de profil du contribuable connecté
- * Server Component qui récupère les données depuis la session NextAuth
- */
 export default async function ProfilPage() {
   // Récupération de la session côté serveur
   const session = await getServerSession(authOptions);
@@ -38,7 +34,6 @@ export default async function ProfilPage() {
   // Fetch initial côté serveur avec l'ID de l'utilisateur connecté
   const taxpayerData = await getTaxpayerById(taxpayerId, accessToken);
 
-  // Si les données ne sont pas trouvées
   if (!taxpayerData) {
     return (
       <section className="flex flex-col gap-3 p-0 md:p-6">
@@ -53,7 +48,5 @@ export default async function ProfilPage() {
     );
   }
 
-  // Passer les données au composant client
-  // Le composant client peut utiliser useTaxpayer pour le refresh automatique
   return <ProfilContent initialData={taxpayerData} taxpayerId={taxpayerId} />;
 }

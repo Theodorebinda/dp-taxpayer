@@ -132,7 +132,7 @@ export function useSignupSteps(): UseSignupStepsReturn {
   >(
     async (payload) => {
       const response = await registerTaxpayer(payload);
-      console.log("response registration", payload);
+    
       if (!response) throw new Error("Soumission échouée");
       return response;
     },
@@ -158,7 +158,7 @@ export function useSignupSteps(): UseSignupStepsReturn {
   );
 
   const submit = () => {
-    // console.log("formData", formData);
+  
     mutation.mutate(formData);
   };
 

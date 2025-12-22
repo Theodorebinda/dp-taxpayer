@@ -123,8 +123,6 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.identifier || !credentials?.password) return null;
 
-        console.log({ credentials });
-
         const result = await loginApi({
           identifier: credentials.identifier,
           password: credentials.password,

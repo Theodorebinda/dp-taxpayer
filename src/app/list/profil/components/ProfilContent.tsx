@@ -3,9 +3,16 @@
 import type { TaxpayerAccount } from "@/types/taxpayer-account.type";
 import { useTaxpayer } from "@/hooks/useTaxpayer";
 import Loader from "@/components/atoms/loader";
-import { Button } from "@/components/ui";
+import { Button, Accordion } from "@/components/ui";
 import Link from "next/link";
-import { ArrowLeft, Phone, Calendar, User, Building2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Phone,
+  Calendar,
+  User,
+  Edit2,
+  ArrowRight,
+} from "lucide-react";
 
 type ProfilContentProps = {
   initialData: TaxpayerAccount | null;
@@ -86,328 +93,313 @@ export default function ProfilContent({
 
   return (
     <section className="flex flex-col gap-6 p-0 md:p-6">
-      {/* Header */}
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-4">
-          <Link href="/list/overview">
-            <Button variant="outline" size="small">
-              <ArrowLeft className="size-4" />
-              Retour
+      <div>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-4">
+            <Link href="/list/overview">
+              <Button variant="outline" size="small">
+                <ArrowLeft className="size-4" />
+                Retour
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              size="small"
+              onClick={() => refetch()}
+              disabled={isLoading}
+            >
+              Actualiser
             </Button>
-          </Link>
+          </div>
+          <div>
+            <h1 className="text-3xl font-semibold">
+              {taxpayerData.fullName || "N/A"}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Vos informations détaillées
+            </p>
+          </div>
+        </div>
+
+        <div className="relative flex flex-col lg:flex-row gap-6 items-center w-full lg:justify-between justify-center lg:h-[calc(70vh-100px)]">
+          {/* Photo de profil fixe à gauche */}
+          <div className="lg:shrink-0 flex justify-center ">
+            <div className="lg:sticky lg:top-6 lg:self-start">
+              <div className="flex flex-col items-center gap-4">
+                <div className="relative">
+                  <div className="mx-4 lg:mx-0 size-96 rounded-full bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center border-4 border-primary/20">
+                    <User className="size-40 text-primary/60" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 min-w-0 w-full lg:w-auto max-w-2xl">
+            <div className="w-full mx-auto">
+              <Accordion
+                items={[
+                  {
+                    title: "Identité",
+                    icon: <User className="size-5" />,
+                    defaultOpen: true,
+                    children: (
+                      <div className="space-y-4">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            Nom complet
+                          </span>
+                          <span className="text-base font-medium text-foreground">
+                            {taxpayerData.fullName || "N/A"}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              Prénom
+                            </span>
+                            <span className="text-base font-medium text-foreground">
+                              {taxpayerData.firstName || "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              Nom
+                            </span>
+                            <span className="text-base font-medium text-foreground">
+                              {taxpayerData.lastName || "N/A"}
+                            </span>
+                          </div>
+                        </div>
+                        {taxpayerData.middleName && (
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              Nom du milieu
+                            </span>
+                            <span className="text-base font-medium text-foreground">
+                              {taxpayerData.middleName}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            Identifiant unique (NIF)
+                          </span>
+                          <span className="text-base font-medium text-foreground">
+                            {taxpayerData.uniqueId || "N/A"}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            Catégorie
+                          </span>
+                          <span className="text-base font-medium text-foreground">
+                            {taxpayerData.category === "PHYSIQUE"
+                              ? "Personne physique"
+                              : taxpayerData.category === "MORALE"
+                              ? "Personne morale"
+                              : taxpayerData.category || "N/A"}
+                          </span>
+                        </div>
+                        {taxpayerData.birthDate && (
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              Date de naissance
+                            </span>
+                            <span className="text-base font-medium text-foreground">
+                              {formatDate(taxpayerData.birthDate)}
+                            </span>
+                          </div>
+                        )}
+                        {taxpayerData.birthPlace && (
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              Lieu de naissance
+                            </span>
+                            <span className="text-base font-medium text-foreground">
+                              {taxpayerData.birthPlace}
+                            </span>
+                          </div>
+                        )}
+                        {taxpayerData.sex && (
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              Sexe
+                            </span>
+                            <span className="text-base font-medium text-foreground">
+                              {taxpayerData.sex}
+                            </span>
+                          </div>
+                        )}
+                        {taxpayerData.martialStatus && (
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              Statut matrimonial
+                            </span>
+                            <span className="text-base font-medium text-foreground">
+                              {taxpayerData.martialStatus}
+                            </span>
+                          </div>
+                        )}
+                        <div className="pt-4  w-fit self-end">
+                          <Button
+                            variant="outline"
+                            size="small"
+                            className="w-full px-4 py-2"
+                            onClick={() => {
+                              // TODO: Implémenter la mise à jour de l'identité
+                              console.log("Mettre à jour l'identité");
+                            }}
+                          >
+                            <Edit2 className="size-4 mr-2" />
+                            Mettre à jour
+                          </Button>
+                        </div>
+                      </div>
+                    ),
+                  },
+                  {
+                    title: "Contact",
+                    icon: <Phone className="size-5" />,
+                    children: (
+                      <div className="space-y-4">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            Téléphone mobile
+                          </span>
+                          <span className="text-base font-medium text-foreground">
+                            {taxpayerData.mobile || "N/A"}
+                          </span>
+                        </div>
+                        {taxpayerData.email && (
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              Email
+                            </span>
+                            <span className="text-base font-medium text-foreground">
+                              {taxpayerData.email}
+                            </span>
+                          </div>
+                        )}
+                        {taxpayerData.physicalAddress && (
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              Adresse physique
+                            </span>
+                            <span className="text-base font-medium text-foreground">
+                              {taxpayerData.physicalAddress}
+                            </span>
+                          </div>
+                        )}
+                        {taxpayerData.identityCard && (
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              Type de pièce d&apos;identité
+                            </span>
+                            <span className="text-base font-medium text-foreground">
+                              {taxpayerData.identityCard}
+                            </span>
+                          </div>
+                        )}
+                        {taxpayerData.identityCardNumber && (
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                              Numéro de pièce d&apos;identité
+                            </span>
+                            <span className="text-base font-medium text-foreground">
+                              {taxpayerData.identityCardNumber}
+                            </span>
+                          </div>
+                        )}
+                        <div className="pt-4  w-fit self-end">
+                          <Button
+                            variant="outline"
+                            size="small"
+                            className="w-full px-4 py-2"
+                            onClick={() => {
+                              // TODO: Implémenter la mise à jour du contact
+                              console.log("Mettre à jour le contact");
+                            }}
+                          >
+                            <Edit2 className="size-4 mr-2" />
+                            Mettre à jour
+                          </Button>
+                        </div>
+                      </div>
+                    ),
+                  },
+                  {
+                    title: "Informations système",
+                    icon: <Calendar className="size-5" />,
+                    children: (
+                      <div className="space-y-4">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            Statut d&apos;approbation
+                          </span>
+                          <span className="text-base font-medium text-foreground">
+                            {taxpayerData.approvalStatus || "N/A"}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            Date de création
+                          </span>
+                          <span className="text-base font-medium text-foreground">
+                            {formatDateTime(taxpayerData.createdAt)}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            Dernière mise à jour
+                          </span>
+                          <span className="text-base font-medium text-foreground">
+                            {formatDateTime(taxpayerData.updatedAt)}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                            ID du contribuable
+                          </span>
+                          <span className="text-sm font-mono text-foreground/70">
+                            {taxpayerData.id}
+                          </span>
+                        </div>
+                        <div className="pt-4  w-fit self-end">
+                          <Button
+                            variant="outline"
+                            size="small"
+                            className="w-full px-4 py-2"
+                            onClick={() => {
+                              // TODO: Implémenter la mise à jour des informations système
+                              console.log(
+                                "Mettre à jour les informations système"
+                              );
+                            }}
+                          >
+                            <Edit2 className="size-4 mr-2" />
+                            Mettre à jour
+                          </Button>
+                        </div>
+                      </div>
+                    ),
+                  },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="w-full flex justify-end mt-4">
           <Button
             variant="outline"
             size="small"
-            onClick={() => refetch()}
-            disabled={isLoading}
+            className="px-4 py-2"
+            onClick={() => {
+              // router.push("/list/property");
+              console.log("Voir vos Biens");
+            }}
           >
-            Actualiser
+            Voir vos Biens <ArrowRight className="size-4 ml-2" />
           </Button>
-        </div>
-        <div>
-          <h1 className="text-3xl font-semibold">
-            {taxpayerData.fullName || "N/A"}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Vos informations détaillées
-          </p>
-        </div>
-      </div>
-
-      {/* Informations principales */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Carte Identité */}
-        <div className="rounded-xl border bg-background p-6 shadow-sm">
-          <div className="mb-4 flex items-center gap-2 border-b border-border/40 pb-3">
-            <User className="size-5 text-primary" />
-            <h2 className="text-xl font-semibold text-foreground">Identité</h2>
-          </div>
-          <div className="space-y-4">
-            <div className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                Nom complet
-              </span>
-              <span className="text-base font-medium text-foreground">
-                {taxpayerData.fullName || "N/A"}
-              </span>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Prénom
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {taxpayerData.firstName || "N/A"}
-                </span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Nom
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {taxpayerData.lastName || "N/A"}
-                </span>
-              </div>
-            </div>
-            {taxpayerData.middleName && (
-              <div className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Nom du milieu
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {taxpayerData.middleName}
-                </span>
-              </div>
-            )}
-            <div className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                Identifiant unique (NIF)
-              </span>
-              <span className="text-base font-medium text-foreground">
-                {taxpayerData.uniqueId || "N/A"}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                Catégorie
-              </span>
-              <span className="text-base font-medium text-foreground">
-                {taxpayerData.category === "PHYSIQUE"
-                  ? "Personne physique"
-                  : taxpayerData.category === "MORALE"
-                  ? "Personne morale"
-                  : taxpayerData.category || "N/A"}
-              </span>
-            </div>
-            {taxpayerData.birthDate && (
-              <div className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Date de naissance
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {formatDate(taxpayerData.birthDate)}
-                </span>
-              </div>
-            )}
-            {taxpayerData.birthPlace && (
-              <div className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Lieu de naissance
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {taxpayerData.birthPlace}
-                </span>
-              </div>
-            )}
-            {taxpayerData.sex && (
-              <div className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Sexe
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {taxpayerData.sex}
-                </span>
-              </div>
-            )}
-            {taxpayerData.martialStatus && (
-              <div className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Statut matrimonial
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {taxpayerData.martialStatus}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Carte Contact */}
-        <div className="rounded-xl border bg-background p-6 shadow-sm">
-          <div className="mb-4 flex items-center gap-2 border-b border-border/40 pb-3">
-            <Phone className="size-5 text-primary" />
-            <h2 className="text-xl font-semibold text-foreground">Contact</h2>
-          </div>
-          <div className="space-y-4">
-            <div className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                Téléphone mobile
-              </span>
-              <span className="text-base font-medium text-foreground">
-                {taxpayerData.mobile || "N/A"}
-              </span>
-            </div>
-            {taxpayerData.email && (
-              <div className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Email
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {taxpayerData.email}
-                </span>
-              </div>
-            )}
-            {taxpayerData.physicalAddress && (
-              <div className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Adresse physique
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {taxpayerData.physicalAddress}
-                </span>
-              </div>
-            )}
-            {taxpayerData.identityCard && (
-              <div className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Type de pièce d&apos;identité
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {taxpayerData.identityCard}
-                </span>
-              </div>
-            )}
-            {taxpayerData.identityCardNumber && (
-              <div className="flex flex-col gap-1">
-                <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Numéro de pièce d&apos;identité
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {taxpayerData.identityCardNumber}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Carte Informations système */}
-        <div className="rounded-xl border bg-background p-6 shadow-sm">
-          <div className="mb-4 flex items-center gap-2 border-b border-border/40 pb-3">
-            <Calendar className="size-5 text-primary" />
-            <h2 className="text-xl font-semibold text-foreground">
-              Informations système
-            </h2>
-          </div>
-          <div className="space-y-4">
-            <div className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                Statut d&apos;approbation
-              </span>
-              <span className="text-base font-medium text-foreground">
-                {taxpayerData.approvalStatus || "N/A"}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                Date de création
-              </span>
-              <span className="text-base font-medium text-foreground">
-                {formatDateTime(taxpayerData.createdAt)}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                Dernière mise à jour
-              </span>
-              <span className="text-base font-medium text-foreground">
-                {formatDateTime(taxpayerData.updatedAt)}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                ID du contribuable
-              </span>
-              <span className="text-sm font-mono text-foreground/70">
-                {taxpayerData.id}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Carte Possessions */}
-        <div className="rounded-xl border bg-background p-6 shadow-sm">
-          <div className="mb-4 flex items-center gap-2 border-b border-border/40 pb-3">
-            <Building2 className="size-5 text-primary" />
-            <h2 className="text-xl font-semibold text-foreground">
-              Possessions ({taxpayerData.possessions?.length ?? 0})
-            </h2>
-          </div>
-          {taxpayerData.possessions && taxpayerData.possessions.length > 0 ? (
-            <div className="space-y-4 max-h-96 overflow-y-auto">
-              {taxpayerData.possessions.map((possession) => (
-                <div
-                  key={possession.id}
-                  className="rounded-lg border border-border/40 bg-muted/20 p-4"
-                >
-                  <div className="mb-2 flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-foreground">
-                        {possession.uniqueNumber || "Sans numéro"}
-                      </h3>
-                      {possession.description && (
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {possession.description}
-                        </p>
-                      )}
-                    </div>
-                    <span
-                      className={`rounded-full px-2 py-1 text-xs font-medium ${
-                        possession.isVoucher
-                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                          : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                      }`}
-                    >
-                      {possession.isVoucher ? "Vignette" : "Autre"}
-                    </span>
-                  </div>
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <span className="text-muted-foreground">
-                        Opérations:{" "}
-                      </span>
-                      <span className="font-medium text-foreground">
-                        {possession._count?.operations ?? 0}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Statut: </span>
-                      <span className="font-medium text-foreground">
-                        {possession.approvalStatus}
-                      </span>
-                    </div>
-                  </div>
-                  {possession.meta &&
-                    Object.keys(possession.meta).length > 0 && (
-                      <div className="mt-3 rounded border border-border/40 bg-background/50 p-2">
-                        <p className="mb-1 text-xs font-semibold text-muted-foreground">
-                          Métadonnées:
-                        </p>
-                        <div className="grid grid-cols-2 gap-1 text-xs">
-                          {Object.entries(possession.meta).map(
-                            ([key, value]) => (
-                              <div key={key}>
-                                <span className="text-muted-foreground">
-                                  {key}:{" "}
-                                </span>
-                                <span className="font-medium text-foreground">
-                                  {String(value)}
-                                </span>
-                              </div>
-                            )
-                          )}
-                        </div>
-                      </div>
-                    )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-border/40 bg-muted/20">
-              <p className="text-sm text-muted-foreground">
-                Aucune possession enregistrée
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </section>

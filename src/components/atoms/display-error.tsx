@@ -42,7 +42,6 @@ export const JsonFeedBacksCard = ({
     try {
       return JSON.stringify(data, null, 2);
     } catch (e) {
-      console.log(e);
       return String(data);
     }
   };

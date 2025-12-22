@@ -248,8 +248,6 @@ export async function fetchDeclaration(
     accessToken
   );
 
-  console.log({ res });
-
   if (!res) return null;
   return unwrapData<OperationView>(res);
 }

@@ -153,7 +153,7 @@ const DataTableRow = <T extends { id?: string | number; children?: T[] }>({
           <td className="px-4 py-2 whitespace-nowrap">
             <input
               type="checkbox"
-              className="rounded border-gray-300"
+              className="rounded "
               checked={selectedRows.includes(item.id as T)}
               onChange={handleCheckboxChange}
             />

@@ -52,6 +52,21 @@ const DataTableHeader: React.FC<Props> = ({
 
   useEffect(() => {
     const requester = async () => {
+      // Si app ou model ne sont pas disponibles, utiliser des valeurs par défaut
+      if (!params.app || !params.model) {
+        // Utiliser queueMicrotask pour éviter l'appel synchrone de setState
+        queueMicrotask(() => {
+          setActions({
+            create: { active: false },
+            export: { active: true },
+            filter: { active: false },
+            view: { active: true },
+            search: { active: true },
+          });
+        });
+        return;
+      }
+
       const httpClient = new HttpClient();
       const data:
         | {
@@ -76,7 +91,13 @@ const DataTableHeader: React.FC<Props> = ({
         | false = await httpClient.get(`actions/${params.app}/${params.model}`);
 
       if (!data) {
-        console.error(httpClient.error);
+        setActions({
+          create: { active: false },
+          export: { active: true },
+          filter: { active: false },
+          view: { active: true },
+          search: { active: true },
+        });
       } else {
         setActions(data.data);
         setViewAction(data.data.view || null);
@@ -85,7 +106,7 @@ const DataTableHeader: React.FC<Props> = ({
     };
 
     requester();
-  }, [params.app, params.model]);
+  }, [params.app, params.model, setViewAction]);
 
   if (!actions) {
     return false;
@@ -93,7 +114,7 @@ const DataTableHeader: React.FC<Props> = ({
   return (
     <div className="flex justify-end items-center gap-3 max-md:flex-col">
       <div
-        className={`w-full flex items-center px-7 focus:outline-none focus:ring-2 rounded-full bg-background border-background gap-4 ${
+        className={`w-full flex items-center px-7 focus:outline-none focus:ring-2 rounded-lg bg-background gap-4 ${
           actions?.search?.active
             ? "text-foreground"
             : "cursor-not-allowed opacity-70 text-foreground"
@@ -102,7 +123,7 @@ const DataTableHeader: React.FC<Props> = ({
         <input
           type="text"
           disabled={!actions?.search?.active}
-          placeholder="Rechercher..."
+          placeholder="Rechercher une opération..."
           className={`w-full flex-1 bg-background outline-none h-10 py-5 ${
             actions?.search?.active ? "text-foreground" : "cursor-not-allowed"
           }`}

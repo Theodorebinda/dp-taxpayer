@@ -37,15 +37,15 @@ export function useAuth() {
         password: input.password,
       });
 
-      // console.log("API Response:", apiResponse);
-      // console.log("redirectToOpt:", apiResponse.redirectToOpt);
-      // console.log("Type of redirectToOpt:", typeof apiResponse.redirectToOpt);
-      // console.log(
-      //   "Has redirectToOpt property:",
-      //   "redirectToOpt" in apiResponse
-      // );
-      // console.log("Has token property:", "token" in apiResponse);
-      // console.log("Has otpMethod property:", "otpMethod" in apiResponse);
+      console.log("API Response:", apiResponse);
+      console.log("redirectToOpt:", apiResponse.redirectToOpt);
+      console.log("Type of redirectToOpt:", typeof apiResponse.redirectToOpt);
+      console.log(
+        "Has redirectToOpt property:",
+        "redirectToOpt" in apiResponse
+      );
+      console.log("Has token property:", "token" in apiResponse);
+      console.log("Has otpMethod property:", "otpMethod" in apiResponse);
 
       // Type guard pour vérifier si c'est une réponse OTP
       // Si redirectToOpt existe et est true, ou si token et otpMethod existent, c'est une réponse OTP
@@ -59,12 +59,12 @@ export function useAuth() {
         redirectToOptValue === "true" ||
         String(redirectToOptValue) === "true";
 
-      // console.log("hasOtpFields:", hasOtpFields);
-      // console.log("redirectToOptValue:", redirectToOptValue);
-      // console.log("isOtpResponse:", isOtpResponse);
+      console.log("hasOtpFields:", hasOtpFields);
+      console.log("redirectToOptValue:", redirectToOptValue);
+      console.log("isOtpResponse:", isOtpResponse);
 
       if (isOtpResponse) {
-        // console.log("OTP requis, redirection vers page OTP");
+        console.log("OTP requis, redirection vers page OTP");
         return {
           ok: false,
           error: apiResponse.message,

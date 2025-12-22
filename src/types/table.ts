@@ -55,7 +55,7 @@ export interface TableProps<T> {
   searchKeys?: Array<keyof T>;
   className?: string;
   viewAction: {
-    url?: string;
+    url?: (id: string | number) => string;
     label?: string;
     active: boolean;
   };

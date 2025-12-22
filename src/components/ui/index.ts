@@ -10,3 +10,4 @@ export {
   type TooltipPosition,
   type TooltipTrigger,
 } from "@/components/atoms/tooltip";
+export { Accordion, AccordionItem } from "@/components/ui/accordion";

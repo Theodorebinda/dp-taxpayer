@@ -58,10 +58,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/list", req.url));
   }
 
-  console.log("MIDDLEWARE PATH:", pathname);
-  console.log("IS PUBLIC:", isPublicPath(pathname));
-  console.log("TOKEN:", !!token);
-
   // Autoriser tout le reste (y compris landing, marketing, public…)
   return NextResponse.next();
 }
