@@ -5,25 +5,30 @@
 export type TaxpayerPossession = {
   id: string;
   uniqueNumber: string;
-  typeId: string;
-  taxPayerId: string;
+  typeId?: string;
+  taxPayerId?: string;
   description: string | null;
-  parentId: string | null;
-  organizationId: string;
+  parentId?: string | null;
+  organizationId?: string;
   isVoucher: boolean;
   additionnalData: Record<string, unknown> | null;
   createdAt: string;
-  updatedAt: string;
-  updatedByUserId: string | null;
-  createdByUserId: string | null;
-  approvalStatus: string;
-  isDeleted: boolean;
+  updatedAt?: string;
+  updatedByUserId?: string | null;
+  createdByUserId?: string | null;
+  approvalStatus?: string;
+  isDeleted?: boolean;
   meta: Record<string, unknown> | null;
+  type: {
+    id: string;
+    name: string;
+  };
   _count: {
     operations: number;
     recipes: number;
-    operationPossessions: number;
+    operationPossessions?: number;
   };
+  children?: TaxpayerPossession[];
 };
 
 export type TaxpayerAccount = {

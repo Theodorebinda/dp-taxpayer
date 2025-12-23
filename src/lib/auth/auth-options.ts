@@ -159,7 +159,10 @@ export const authOptions: NextAuthOptions = {
         // Build Unified User Object
         const user = {
           id: backendUser.id ?? credentials.identifier,
-          name: backendUser.name ?? backendUser.mail ?? backendUser.id,
+          name:
+            backendUser.taxPayer?.fullName ??
+            backendUser.mail ??
+            backendUser.id,
           email: backendUser.mail ?? null,
           roles: Array.isArray(backendUser.role)
             ? backendUser.role

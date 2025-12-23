@@ -33,10 +33,10 @@ const TopBanner = () => {
 
   return (
     <div className="flex md:px-6 flex-col justify-start md:flex-row md:justify-between md:items-center  w-full">
-      <div className="hidden   w-full md:w-1/2 md:flex justify-start gap-3">
+      <div className="hidden   w-full md:w-2/5 md:flex justify-start gap-3">
         <div className="flex items-center gap-2">
           <button
-            className="hidden w-fit items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium lg:flex"
+            className="hidden w-fit items-center gap-1 rounded-lg border px-3 py-2 text-sm font-medium lg:flex"
             onClick={() => setSidebarOpen(!isSidebarOpen)}
           >
             {isSidebarOpen ? (

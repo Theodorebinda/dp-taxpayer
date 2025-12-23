@@ -96,14 +96,32 @@ export async function registerTaxpayer(
  * Récupère les informations complètes d'un contribuable par son ID
  * @param id - ID du contribuable
  * @param accessToken - Token d'accès NextAuth (optionnel, pour appels serveur)
+ * @param paginationParams - Paramètres de pagination (skip, limit)
  * @returns Les données du contribuable ou false en cas d'erreur
  */
 export async function getTaxpayerById(
   id: string,
-  accessToken?: string
+  accessToken?: string,
+  paginationParams?: { skip?: number; limit?: number }
 ): Promise<TaxpayerAccount | false> {
+  let endpoint = API_ENDPOINTS.TAXPAYER_ACCOUNT(id);
+
+  if (paginationParams) {
+    const params = new URLSearchParams();
+    if (paginationParams.skip !== undefined) {
+      params.append("skip", String(paginationParams.skip));
+    }
+    if (paginationParams.limit !== undefined) {
+      params.append("limit", String(paginationParams.limit));
+    }
+    const queryString = params.toString();
+    if (queryString) {
+      endpoint = `${endpoint}?${queryString}`;
+    }
+  }
+
   const res = await apiClient.get<TaxpayerAccount>(
-    API_ENDPOINTS.TAXPAYER_ACCOUNT(id),
+    endpoint,
     undefined,
     accessToken
   );

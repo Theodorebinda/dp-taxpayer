@@ -10,9 +10,13 @@ import { useQueryClient } from "@tanstack/react-query";
 /**
  * Hook TanStack Query pour récupérer les informations d'un contribuable
  * @param taxpayerId - ID du contribuable (optionnel, si non fourni, utilise l'ID de la session)
+ * @param paginationParams - Paramètres de pagination (skip, limit)
  * @returns Query result avec les données du contribuable
  */
-export function useTaxpayer(taxpayerId?: string) {
+export function useTaxpayer(
+  taxpayerId?: string,
+  paginationParams?: { skip?: number; limit?: number }
+) {
   const { data: session } = useSession();
   const accessToken = useMemo(() => {
     const token = (session as unknown as { accessToken?: string } | null)
@@ -27,10 +31,10 @@ export function useTaxpayer(taxpayerId?: string) {
   }, [taxpayerId, session]);
 
   return useApiQuery<TaxpayerAccount | false>(
-    ["taxpayer", effectiveId],
+    ["taxpayer", effectiveId, paginationParams],
     async () => {
       if (!effectiveId) return false;
-      return await getTaxpayerById(effectiveId, accessToken);
+      return await getTaxpayerById(effectiveId, accessToken, paginationParams);
     },
     {
       enabled: Boolean(effectiveId && accessToken),

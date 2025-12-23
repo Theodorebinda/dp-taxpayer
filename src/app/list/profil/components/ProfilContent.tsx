@@ -23,6 +23,7 @@ import { formatDateForInput } from "@/utils/utils";
 import Image from "next/image";
 import { objectToFormData } from "@/components/form/utils";
 import CropperModal from "@/components/atoms/croppedImage";
+import { useRouter } from "next/navigation";
 
 type ProfilContentProps = {
   initialData: TaxpayerAccount | null;
@@ -33,6 +34,7 @@ export default function ProfilContent({
   initialData,
   taxpayerId,
 }: ProfilContentProps) {
+  const router = useRouter();
   const {
     data: taxpayer,
     isLoading,
@@ -668,7 +670,10 @@ export default function ProfilContent({
                   size="small"
                   className="px-4 py-3"
                   onClick={() => {
-                    // router.push("/list/property");
+                    router.push(
+                      // `/list/profil/possessions?taxpayerId=${taxpayerId}`
+                      `/list/profil/possessions`
+                    );
                     console.log("Voir vos Biens");
                   }}
                 >
@@ -977,74 +982,6 @@ export default function ProfilContent({
           </div>
         </form>
       </Dialog>
-
-      {/* Modal Informations système */}
-      {/* <Dialog
-        isOpen={isSystemModalOpen}
-        onClose={() => setIsSystemModalOpen(false)}
-        title="Modifier les informations système"
-        size="md"
-        variant="default"
-      >
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            try {
-              await updateTaxpayerMutation.mutateAsync(systemForm);
-              toast.success("Informations système mises à jour avec succès");
-              setIsSystemModalOpen(false);
-              refetch();
-            } catch (error) {
-              toast.error(
-                error instanceof Error
-                  ? error.message
-                  : "Erreur lors de la mise à jour"
-              );
-            }
-          }}
-          className="space-y-4"
-        >
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-foreground">
-              Statut d&apos;approbation
-            </label>
-            <select
-              value={systemForm.approvalStatus}
-              onChange={(e) =>
-                setSystemForm({
-                  ...systemForm,
-                  approvalStatus: e.target.value,
-                })
-              }
-              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="">Sélectionner</option>
-              <option value="APPROVED">Approuvé</option>
-              <option value="PENDING">En attente</option>
-              <option value="REJECTED">Rejeté</option>
-            </select>
-          </div>
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setIsSystemModalOpen(false)}
-            >
-              Annuler
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={updateTaxpayerMutation.isPending}
-            >
-              {updateTaxpayerMutation.isPending
-                ? "Enregistrement..."
-                : "Enregistrer"}
-            </Button>
-          </div>
-        </form>
-      </Dialog>
-       */}
     </motion.section>
   );
 }
