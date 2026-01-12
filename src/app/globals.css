@@ -1,0 +1,229 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-text: var(--color-text);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-app-blue: var(--app-blue);
+  --color-app-green: var(--app-green);
+
+  --color-app-blue-50: var(--app-blue-50);
+  --color-app-blue-100: var(--app-blue-100);
+  --color-app-blue-200: var(--app-blue-200);
+  --color-app-blue-300: var(--app-blue-300);
+  --color-app-blue-400: var(--app-blue-400);
+  --color-app-blue-500: var(--app-blue-500);
+  --color-app-blue-600: var(--app-blue-600);
+  --color-app-blue-700: var(--app-blue-700);
+  --color-app-blue-800: var(--app-blue-800);
+  --color-app-blue-900: var(--app-blue-900);
+  --color-app-green-50: var(--app-green-50);
+  --color-app-green-100: var(--app-green-100);
+  --color-app-green-200: var(--app-green-200);
+  --color-app-green-300: var(--app-green-300);
+  --color-app-green-400: var(--app-green-400);
+  --color-app-green-500: var(--app-green-500);
+  --color-app-green-600: var(--app-green-600);
+  --color-app-green-700: var(--app-green-700);
+  --color-app-green-800: var(--app-green-800);
+  --color-app-green-900: var(--app-green-900);
+  --font-text-xs: var(--text-xs);
+  --font-text-sm: var(--text-sm);
+  --font-text-md: var(--text-md);
+  --font-text-lg: var(--text-lg);
+  --font-text-xl: var(--text-xl);
+  --font-text-2xl: var(--text-2xl);
+  --font-text-3xl: var(--text-3xl);
+  --font-text-4xl: var(--text-4xl);
+  --font-text-5xl: var(--text-5xl);
+  --font-text-6xl: var(--text-6xl);
+  --font-text-7xl: var(--text-7xl);
+  --font-text-8xl: var(--text-8xl);
+  --font-text-9xl: var(--text-9xl);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #243147;
+  --bg-secondary: #e4e6e9;
+  --primary: #048996;
+  /* Landing palette */
+  --dp-bg: #f6f8ff;
+  --dp-soft: #eef2ff;
+  --color-text: #000;
+  --app-blue: #121823;
+  --app-green: #015963;
+
+  --app-blue-50: #a8b6d2;
+  --app-blue-100: #8498bd;
+  --app-blue-200: #9fa7b8;
+  --app-blue-300: #4a5c7f;
+  --app-blue-400: #515a75;
+  --app-blue-500: #263146;
+  --app-blue-600: #1e2738;
+  --app-blue-700: #181f2c;
+  --app-blue-800: #121823;
+  --app-blue-900: #0c1118;
+  --app-green-50: #e0f7fa;
+  --app-green-100: #b2ebf2;
+  --app-green-200: #80deea;
+  --app-green-300: #4dd0e1;
+  --app-green-400: #26c6da;
+  --app-green-500: #048996;
+  --app-green-600: #027c86;
+  --app-green-700: #016974;
+  --app-green-800: #015963;
+  --app-green-900: #014451;
+
+  --text-xs: 9px;
+  --text-sm: 11px;
+  --text-base: 13px;
+  --text-md: 12px;
+  --text-lg: 15px;
+  --text-xl: 18px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;
+  --text-5xl: 48px;
+  --text-6xl: 60px;
+  --text-7xl: 72px;
+  --text-8xl: 96px;
+  --text-9xl: 128px;
+
+  --layout-max-width: 1200px;
+  --layout-gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --layout-gutter-tight: clamp(1rem, 3vw, 2.5rem);
+}
+
+.dark {
+  /* --background: #010418;
+  --bg-secondary: #1e202e; */
+  --background: #121823;
+  --bg-secondary: #263146;
+  --foreground: #c3c9d3;
+  --primary: #048996;
+  --color-text: #fff;
+}
+
+body {
+  color: var(--color-text);
+  background: var(--background);
+  font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
+  font-weight: 300;
+}
+
+/* Transitions douces au changement de thème */
+html,
+body {
+  transition: background-color 240ms ease, color 240ms ease;
+}
+
+/* LandingPage helpers */
+.hero-gradient {
+  background: radial-gradient(
+      80% 80% at 20% 0%,
+      #8bc6ff 0%,
+      rgba(139, 198, 255, 0) 60%
+    ),
+    linear-gradient(135deg, #5b7cff 0%, #8b5cf6 40%, #ff6b6b 100%);
+}
+.rounded-bubble {
+  border-radius: 32px;
+}
+
+@media not all and (min-width: 1024px) {
+  .text-md {
+    font-size: 14px;
+  }
+}
+
+/* Ajout d'une classe pour s'assurer que le texte prend la couleur du foreground */
+.text-foreground {
+  color: var(--color-text);
+}
+
+.pulse {
+  border-radius: 50%;
+  background: #048996;
+  box-shadow: 0 0 0 0 #04899680;
+  animation: pulse-kefe91md 1.5s infinite linear;
+  position: relative;
+}
+
+.pulse:before,
+.pulse:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 #04899680;
+  animation: inherit;
+  animation-delay: -0.5s;
+}
+
+.pulse:after {
+  animation-delay: -1s;
+}
+
+@keyframes pulse-kefe91md {
+  100% {
+    box-shadow: 0 0 0 44.8px #0000;
+  }
+}
+
+.background-animate {
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+button {
+  cursor: pointer;
+}
+
+body > * {
+  scrollbar-width: 1px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+body *::-webkit-scrollbar {
+  display: none;
+}
+
+/* Classe utilitaire pour masquer les scrollbars tout en gardant le défilement */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.layout-shell {
+  width: min(100%, var(--layout-max-width));
+  margin-inline: auto;
+  padding-inline: var(--layout-gutter);
+}
+
+.layout-shell-tight {
+  width: min(100%, calc(var(--layout-max-width) - 32px));
+  margin-inline: auto;
+  padding-inline: var(--layout-gutter-tight);
+}
