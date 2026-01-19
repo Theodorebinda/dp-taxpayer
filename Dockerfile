@@ -15,6 +15,6 @@ COPY .env ./
 
 RUN yarn build
 
-EXPOSE 3000
+EXPOSE 3600
 
 CMD ["yarn", "start"]

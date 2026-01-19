@@ -3,7 +3,7 @@ set -e
 
 IMAGE_NAME=dp_web_client
 CONTAINER_NAME=dp_web_client
-PORT=3000
+PORT=3600
 
 echo "🛑 Stopping old container..."
 docker stop $CONTAINER_NAME || true
@@ -14,7 +14,7 @@ docker build -t $IMAGE_NAME .
 
 echo "🚀 Running container..."
 docker run -d \
-  -p $PORT:3000 \
+  -p $PORT:3600 \
   --name $CONTAINER_NAME \
   --restart unless-stopped \
   $IMAGE_NAME
