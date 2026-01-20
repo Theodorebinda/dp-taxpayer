@@ -83,22 +83,44 @@ const ChildrenInput: React.FC<InputType & { depth: number }> = (props) => {
   useEffect(() => {
     if (props.multiple == undefined || props.multiple) {
       let limit = 0;
-      const path = props.childrenConfig?.childrenLimit?.returnFromStorePath;
+      let gateDisabled = false;
+      const limitConfig = props.childrenConfig?.childrenLimit;
+      const path = limitConfig?.returnFromStorePath;
       if (path) {
-        limit = getNestedValue(
+        const rawValue = getNestedValue(
           path.startsWith("{PARENT_PATH}")
             ? props.parentValue
             : formStore.value,
           path.split("{PARENT_PATH}.")[1]
         );
-      } else if (props.childrenConfig?.childrenLimit) {
-        limit = props.childrenConfig?.childrenLimit?.return;
+
+        if (typeof rawValue === "boolean") {
+          gateDisabled = !rawValue;
+          limit = 0;
+        } else if (typeof rawValue === "number") {
+          limit = rawValue;
+        } else if (typeof rawValue === "string") {
+          const parsed = Number(rawValue);
+          if (Number.isFinite(parsed)) {
+            limit = parsed;
+          } else {
+            gateDisabled = true;
+            limit = 0;
+          }
+        } else if (rawValue == null) {
+          gateDisabled = true;
+          limit = 0;
+        }
+      } else if (limitConfig) {
+        limit = limitConfig.return;
       }
 
       const valueLength = (Array.isArray(props.value) ? props.value : [])
         .length;
 
-      if (!limit || limit == 0) {
+      if (gateDisabled) {
+        setDisplayAddChildButton(false);
+      } else if (!limit || limit == 0) {
         setDisplayAddChildButton(true);
       } else if (valueLength >= limit) {
         setDisplayAddChildButton(false);

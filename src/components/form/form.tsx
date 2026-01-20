@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useStore } from "zustand";
 import { ApiInputType, FormProps, ValueType } from "@/types/types";
+import { evaluateDisplayIf } from "@/modules/formEngine/validators";
 import SVGComponent from "../atoms/displaySVG";
 import HttpClient from "@/utils/http-client";
 import Loader from "../atoms/loader";
@@ -10,6 +11,92 @@ import Button from "../commons/button";
 import Input from "./inputs/input";
 import { formValueStore } from "../store/form_value.store";
 import { containsFile, objectToFormData } from "./utils";
+
+const buildVisiblePayload = (
+  fields: ApiInputType[],
+  values: Record<string, unknown>
+) => {
+  const payload: Record<string, unknown> = {};
+
+  const extractVisibleValues = (
+    fieldsToProcess: ApiInputType[],
+    currentValues: Record<string, unknown>
+  ) => {
+    for (const field of fieldsToProcess) {
+      if (!evaluateDisplayIf(field.displayIf, currentValues)) {
+        continue;
+      }
+
+      const fieldValue = currentValues[field.property];
+
+      if (field.type === "children" && field.children?.length) {
+        if (field.multiple && Array.isArray(fieldValue)) {
+          const childrenArray = fieldValue.map((childObj) => {
+            if (typeof childObj === "object" && childObj !== null) {
+              const childPayload: Record<string, unknown> = {};
+              field.children!.forEach((childField) => {
+                const childValues = childObj as Record<string, unknown>;
+                if (!evaluateDisplayIf(childField.displayIf, childValues)) {
+                  return;
+                }
+                const childValue = childValues[childField.property];
+                if (
+                  childValue !== undefined &&
+                  childValue !== null &&
+                  childValue !== ""
+                ) {
+                  childPayload[childField.property] = childValue;
+                }
+              });
+              return childPayload;
+            }
+            return childObj;
+          });
+          payload[field.property] = childrenArray;
+        } else if (
+          !field.multiple &&
+          typeof fieldValue === "object" &&
+          fieldValue !== null &&
+          !Array.isArray(fieldValue)
+        ) {
+          const childPayload: Record<string, unknown> = {};
+          const childValues = fieldValue as Record<string, unknown>;
+          field.children.forEach((childField) => {
+            if (!evaluateDisplayIf(childField.displayIf, childValues)) {
+              return;
+            }
+            const childValue = childValues[childField.property];
+            if (
+              childValue !== undefined &&
+              childValue !== null &&
+              childValue !== ""
+            ) {
+              childPayload[childField.property] = childValue;
+            }
+          });
+          payload[field.property] = childPayload;
+        }
+        continue;
+      }
+
+      if (
+        fieldValue !== undefined &&
+        fieldValue !== null &&
+        fieldValue !== ""
+      ) {
+        payload[field.property] = fieldValue;
+      }
+    }
+  };
+
+  extractVisibleValues(fields, values || {});
+
+  if ("id" in values && values.id != null) {
+    payload.id = values.id;
+  }
+
+  return payload;
+};
 
 const Form: React.FC<FormProps> = ({
   title,
@@ -29,10 +116,15 @@ const Form: React.FC<FormProps> = ({
   displaySubmitButton = false,
   updateExternalStore,
 }) => {
+  type FormSubmitResponse = {
+    code: number;
+    message: string;
+    data: Record<string, unknown>;
+  };
   const [formFields, setFormFields] = useState<ApiInputType[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<
-    { code: number; message: string; [key: string]: any } | undefined
+    { code: number; message: string; [key: string]: unknown } | undefined
   >();
 
   const { value, setValue, setValueKey } = useStore(formValueStore);
@@ -63,7 +155,7 @@ const Form: React.FC<FormProps> = ({
 
         setFormFields(response.data);
         if (data) {
-          const valideData: Record<string, any> = {};
+          const valideData: Record<string, unknown> = {};
           for (const field of response.data) {
             valideData[field.property] = data?.[field.property] || null;
           }
@@ -72,12 +164,13 @@ const Form: React.FC<FormProps> = ({
 
 
         console.log({response})
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Erreur inconnue";
         setError({
           code: 500,
           message:
             "Une erreur s'est produite lors du chargement du formulaire.",
-          error: { message: err.message },
+          error: { message },
         });
       } finally {
         setLoading(false);
@@ -88,21 +181,24 @@ const Form: React.FC<FormProps> = ({
     else if (inputs) {
       setFormFields(inputs);
       if (data) {
-        const valideData: Record<string, any> = {};
+        const valideData: Record<string, unknown> = {};
         for (const field of inputs) {
           valideData[field.property] = data?.[field.property] || null;
         }
         setValue({ ...valideData, id: data?.id || null });
       }
     }
-  }, [headPath, inputs, data]);
+  }, [headPath, inputs, data, setValue]);
 
   /* ------------------ Handle Submit ------------------ */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(undefined);
 
-    let formData = containsFile(value) ? objectToFormData(value) : value;
+    const visiblePayload = buildVisiblePayload(formFields, value || {});
+    let formData = containsFile(visiblePayload)
+      ? objectToFormData(visiblePayload)
+      : visiblePayload;
 
     if (doBeforSubmit && !(formData instanceof FormData))
       formData = doBeforSubmit(formData);
@@ -120,7 +216,10 @@ const Form: React.FC<FormProps> = ({
     if (setLoadingState) setLoadingState(true);
 
     const method = submitMethod || (data ? "patch" : "post");
-    const response: any = await httpClient[method](submitPath, formData);
+    const response = (await httpClient[method](
+      submitPath,
+      formData
+    )) as FormSubmitResponse | undefined;
 
     if (response && response.code < 399) {
       onSuccess?.(response);
