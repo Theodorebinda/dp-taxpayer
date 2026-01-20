@@ -47,7 +47,7 @@ export default function ProfilContent({
   const taxpayerData =
     taxpayer && typeof taxpayer === "object" ? taxpayer : initialData;
 
-  console.log("taxpayerData", taxpayerData);
+  // console.log("taxpayerData", taxpayerData);
 
   // États pour les modals
   const [isIdentityModalOpen, setIsIdentityModalOpen] = useState(false);
@@ -674,7 +674,7 @@ export default function ProfilContent({
                       // `/list/profil/possessions?taxpayerId=${taxpayerId}`
                       `/list/profil/possessions`
                     );
-                    console.log("Voir vos Biens");
+                    // console.log("Voir vos Biens");
                   }}
                 >
                   Voir vos Biens{" "}

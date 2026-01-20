@@ -151,10 +151,10 @@ export async function updateTaxpayer(
     accessToken
   );
 
-  console.log("res", res);
-  console.log("payload", payload);
-  console.log("accessToken", accessToken);
-  console.log("id", id);
+  // console.log("res", res);
+  // console.log("payload", payload);
+  // console.log("accessToken", accessToken);
+  // console.log("id", id);
   if (!res) return false;
   const data = unwrapData<Record<string, unknown>>(res);
   const message =

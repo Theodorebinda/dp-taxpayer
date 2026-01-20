@@ -19,6 +19,8 @@ export async function listOperations(
     undefined,
     accessToken
   );
+
+  console.log({res})
   if (!res) return [];
   const fromWrapper = (res.data as unknown as { data?: unknown })?.data;
   const data = (

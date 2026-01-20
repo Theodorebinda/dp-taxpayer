@@ -72,6 +72,8 @@ export async function getDeclarationFormFields(
   );
   if (!res) return false;
 
+  console.log({res})
+
   const payload = unwrapData<ApiInputType[]>(res) ?? [];
   const meta = res as ApiLikePayload;
   const form = extractForm(res) ?? null;

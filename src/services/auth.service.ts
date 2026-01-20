@@ -83,7 +83,7 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
     body
   );
 
-  console.log("login response", res);
+  // console.log("login response", res);
 
   if (!res)
     throw new Error("Échec de connexion, veuillez vérifier vos identifiants");

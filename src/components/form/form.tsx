@@ -48,7 +48,9 @@ const Form: React.FC<FormProps> = ({
           | { code: number; message: string; data: ApiInputType[] }
           | false = headPath
           ? await httpClient.get(headPath)
-          : { code: 200, message: "OK", data: inputs || [] };
+            : { code: 200, message: "OK", data: inputs || [] };
+        
+     
 
         if (!response) {
           console.log(httpClient.error);
@@ -67,6 +69,9 @@ const Form: React.FC<FormProps> = ({
           }
           setValue({ ...valideData, id: data?.id || null });
         }
+
+
+        console.log({response})
       } catch (err: any) {
         setError({
           code: 500,
