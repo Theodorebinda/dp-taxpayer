@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Search,
   Building2,
@@ -32,8 +32,95 @@ interface Props {
   onClose: () => void;
 }
 
+type ProgressBarProps = {
+  steps: StepList[];
+  currentStepIndex: number;
+};
+
+const ProgressBar = ({ steps, currentStepIndex }: ProgressBarProps) => (
+  <div className="flex gap-1 mb-4">
+    {steps.map((step, index) => (
+      <div
+        key={step.id}
+        className={`h-2 flex-1 rounded-full transition-all ${
+          index < currentStepIndex
+            ? "bg-green-500"
+            : index === currentStepIndex
+            ? "bg-primary"
+            : "bg-secondary"
+        }`}
+      />
+    ))}
+  </div>
+);
+
+type CurrentStepCardProps = {
+  currentStep?: StepList;
+};
+
+const CurrentStepCard = ({ currentStep }: CurrentStepCardProps) => (
+  <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
+    <div className="flex items-start gap-3">
+      <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
+        <span className="text-primary-foreground font-bold">
+          {(currentStep?.orderIndex ?? 0) + 1}
+        </span>
+      </div>
+      <div className="flex-1">
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="font-semibold text-foreground">
+            {currentStep?.name}
+          </h3>
+          <span className="px-2 py-0.5 bg-primary/20 text-foreground text-xs rounded font-mono">
+            {currentStep?.nameCode}
+          </span>
+        </div>
+        <p className="text-foreground/70 text-sm">
+          {currentStep?.description}
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+type SelectedOfficeBadgeProps = {
+  selectedOffice?: Office;
+  onClear: () => void;
+};
+
+const SelectedOfficeBadge = ({
+  selectedOffice,
+  onClear,
+}: SelectedOfficeBadgeProps) =>
+  selectedOffice ? (
+    <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 mb-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Check className="w-4 h-4 text-green-600" />
+          <span className="text-sm font-semibold text-foreground">
+            Office sélectionné:
+          </span>
+          <span className="text-sm text-foreground/70">
+            {selectedOffice.name}
+          </span>
+        </div>
+        <button
+          onClick={onClear}
+          className="text-green-600 hover:text-green-700 text-sm underline"
+        >
+          Changer
+        </button>
+      </div>
+    </div>
+  ) : null;
+
 const BureauSearchModal = ({ allSteps, initialStepId, onClose }: Props) => {
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [currentStepIndex, setCurrentStepIndex] = useState(() => {
+    const initialIndex = [...allSteps]
+      .sort((a, b) => a.orderIndex - b.orderIndex)
+      .findIndex((s) => s.id === initialStepId);
+    return initialIndex >= 0 ? initialIndex : 0;
+  });
   const [selectedOffices, setSelectedOffices] = useState<Map<string, Office>>(
     new Map()
   );
@@ -62,22 +149,33 @@ const BureauSearchModal = ({ allSteps, initialStepId, onClose }: Props) => {
     );
   });
 
-  useEffect(() => {
-    const initialIndex = sortedSteps.findIndex((s) => s.id === initialStepId);
-    setCurrentStepIndex(initialIndex >= 0 ? initialIndex : 0);
-  }, [initialStepId]);
+  const handleSelectOffice = useCallback(
+    (office: Office) => {
+      if (!currentStep?.id) return;
+      setSelectedOffices((prev) => {
+        const newSelected = new Map(prev);
+        newSelected.set(currentStep.id, office);
+        return newSelected;
+      });
+    },
+    [currentStep]
+  );
 
   useEffect(() => {
     const fetchOffices = async () => {
       setLoading(true);
       const client = new HttpClient();
-      const response: any = await client.get<Office>("list/core/office");
+      const response = (await client.get<Office>(
+        "list/core/office"
+      )) as { data?: Office[] } | false | undefined;
       if (!response) {
         setError(client.error);
+        setLoading(false);
         return;
       }
-      setOffices(response?.data || []);
-      response?.data?.map((office: any) => {
+      const officeList = response.data || [];
+      setOffices(officeList);
+      officeList.forEach((office: Office) => {
         if (office.id == currentStep.recipeSteps?.[0]?.office?.id) {
           handleSelectOffice(office);
         }
@@ -85,13 +183,7 @@ const BureauSearchModal = ({ allSteps, initialStepId, onClose }: Props) => {
       setLoading(false);
     };
     fetchOffices();
-  }, [currentStep]);
-
-  const handleSelectOffice = (office: Office) => {
-    const newSelected = new Map(selectedOffices);
-    newSelected.set(currentStep.id, office);
-    setSelectedOffices(newSelected);
-  };
+  }, [currentStep, handleSelectOffice]);
 
   const handleSave = async () => {
     if (!selectedOffice) return;
@@ -132,74 +224,14 @@ const BureauSearchModal = ({ allSteps, initialStepId, onClose }: Props) => {
     }
   };
 
-  const ProgressBar = () => (
-    <div className="flex gap-1 mb-4">
-      {sortedSteps.map((step, index) => (
-        <div
-          key={step.id}
-          className={`h-2 flex-1 rounded-full transition-all ${
-            index < currentStepIndex
-              ? "bg-green-500"
-              : index === currentStepIndex
-              ? "bg-primary"
-              : "bg-secondary"
-          }`}
-        />
-      ))}
-    </div>
-  );
-
-  const CurrentStepCard = () => (
-    <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
-      <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-          <span className="text-primary-foreground font-bold">
-            {currentStep?.orderIndex + 1}
-          </span>
-        </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-foreground">
-              {currentStep?.name}
-            </h3>
-            <span className="px-2 py-0.5 bg-primary/20 text-foreground text-xs rounded font-mono">
-              {currentStep?.nameCode}
-            </span>
-          </div>
-          <p className="text-foreground/70 text-sm">
-            {currentStep?.description}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-
-  const SelectedOfficeBadge = () =>
-    selectedOffice ? (
-      <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 mb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Check className="w-4 h-4 text-green-600" />
-            <span className="text-sm font-semibold text-foreground">
-              Office sélectionné:
-            </span>
-            <span className="text-sm text-foreground/70">
-              {selectedOffice.name}
-            </span>
-          </div>
-          <button
-            onClick={() => {
-              const newSelected = new Map(selectedOffices);
-              newSelected.delete(currentStep.id);
-              setSelectedOffices(newSelected);
-            }}
-            className="text-green-600 hover:text-green-700 text-sm underline"
-          >
-            Changer
-          </button>
-        </div>
-      </div>
-    ) : null;
+  const handleClearSelectedOffice = () => {
+    if (!currentStep?.id) return;
+    setSelectedOffices((prev) => {
+      const newSelected = new Map(prev);
+      newSelected.delete(currentStep.id);
+      return newSelected;
+    });
+  };
 
   const OfficeCard = ({ office }: { office: Office }) => {
     const isSelected = selectedOffice?.id === office.id;
@@ -215,7 +247,7 @@ const BureauSearchModal = ({ allSteps, initialStepId, onClose }: Props) => {
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3 flex-1">
             <div
-              className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+              className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
                 isSelected ? "bg-primary/20" : "bg-primary/10"
               }`}
             >
@@ -257,7 +289,7 @@ const BureauSearchModal = ({ allSteps, initialStepId, onClose }: Props) => {
             </div>
           </div>
           {isSelected && (
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
               <Check className="w-5 h-5 text-primary-foreground" />
             </div>
           )}
@@ -293,9 +325,15 @@ const BureauSearchModal = ({ allSteps, initialStepId, onClose }: Props) => {
           </div>
         </div>
 
-        <ProgressBar />
-        <CurrentStepCard />
-        <SelectedOfficeBadge />
+        <ProgressBar
+          steps={sortedSteps}
+          currentStepIndex={currentStepIndex}
+        />
+        <CurrentStepCard currentStep={currentStep} />
+        <SelectedOfficeBadge
+          selectedOffice={selectedOffice}
+          onClear={handleClearSelectedOffice}
+        />
 
         {/* Recherche */}
         <div className="relative">
