@@ -219,6 +219,7 @@ const BureauSearchModal = ({ allSteps, initialStepId, onClose }: Props) => {
       console.log(
         "Associations finales:",
         Array.from(selectedOffices.entries())
+        
       );
       onClose();
     }
